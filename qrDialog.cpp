@@ -112,26 +112,33 @@ void qrDialog::on_pushButtonFirstQty_clicked()
 void qrDialog::on_pushButtonOpenFile_clicked()
 {
     converter.clearInvoiceData();
-    QString invPathTemp = QFileDialog::getOpenFileName(this, "Выберите файл инвойса", QDir::homePath(), "*.xls");
+    QString invPathTemp = QFileDialog::getOpenFileName(this, "Выберите файл инвойса", lastPath.absolutePath(), "*.xls");
     if(invPathTemp.isEmpty())
     {
         ui->labelPath->setText("Выберите файл!");
     }
     else
     {
+        lastPath = invPathTemp;
+
         QDate date = QDate::currentDate();
         QTime time = QTime::currentTime();
+        bool copySucces = false;
 
-        invoiceFileName = "inv" + date.toString("ddMMyy") + time.toString("hhmm");
+        if(!QDir("temp").exists()) QDir().mkdir("temp"); // Создание папки temp
 
-//        QMessageBox::information(this, "DateTime", invoiceFileName);
+        invoiceFileName = "temp/inv" + date.toString("ddMMyy") + time.toString("hhmm") + ".xls"; // Имя копии файла
 
         ui->labelPath->setText(invPathTemp);
 
+        copySucces = QFile::copy(invPathTemp, invoiceFileName);
 
+        if(!copySucces) QMessageBox::information(this, "Открытие файла", "Что-то пошло не так!");
 
-        std::wstring path = invPathTemp.toStdWString();
+        std::wstring path = invoiceFileName.toStdWString();
         converter.readXls(path, converter.invoiceXls);
+
+        QFile::remove(invoiceFileName);
 
         // !!! ТАБЛИЦА !!!
 
@@ -391,29 +398,39 @@ void qrDialog::on_pushButton_clicked()
 // ПРАВАЯ ТАБЛИЦА
 void qrDialog::on_pushButtonOpenQR_clicked()
 {
-    QString qrPathTemp = QFileDialog::getOpenFileName(this, "Выберите файл QR", QDir::homePath(), "*.xls");
+    QString qrPathTemp = QFileDialog::getOpenFileName(this, "Выберите файл QR", lastPath.absolutePath(), "*.xls");
     if(qrPathTemp.isEmpty())
     {
         ui->labelPathQR->setText("Выберите файл!");
     }
     else
     {
+        QDate date = QDate::currentDate();
+        QTime time = QTime::currentTime();
+        bool copySucces = false;
+
+        if(!QDir("temp").exists()) QDir().mkdir("temp");
+
+        qrFileName = "temp/qr" + date.toString("ddMMyy") + time.toString("hhmm") + ".xls";
+
+        copySucces = QFile::copy(qrPathTemp, qrFileName);
+        if(!copySucces) QMessageBox::information(this, "Открытие файла", "Что-то пошло не так!");
+
         ui->labelPathQR->setText(qrPathTemp);
-        std::wstring path = qrPathTemp.toStdWString();
+        std::wstring path = qrFileName.toStdWString();
 
-//        invoice.read(path);
-    converter.readXls(path, converter.qrXls);
-//        // !!! ТАБЛИЦА !!!
+        converter.readXls(path, converter.qrXls);
 
-    std::cout << "Read data complited\n";
+        QFile::remove(qrFileName);
 
-    currentTabQr = 0;
-    converter.qrSheetSettings.resize(converter.qrXls.size());
+        // !!! ТАБЛИЦА !!!
+        currentTabQr = 0;
+        converter.qrSheetSettings.resize(converter.qrXls.size());
 
-    selectedQrCols.resize(converter.qrXls.size());
+        selectedQrCols.resize(converter.qrXls.size());
 
-    showQr = true;
-    showTabQr(converter.qrXls[currentTabQr]);
+        showQr = true;
+        showTabQr(converter.qrXls[currentTabQr]);
     }
 }
 
@@ -1087,7 +1104,34 @@ void qrDialog::on_pushButtonShowNotUsedCodes_clicked()
 
 void qrDialog::on_pushButtonSave_clicked()
 {
-    std::wstring path = L"test.xls";
-    converter.saveResult(path);
+    if(converter.result.size() > 0)
+    {
+        lastPath = QFileInfo(lastPath.path()).absolutePath() + "/result.xls";
+
+        QString fileName = QFileDialog::getSaveFileName(this, tr("Сохранить результат"), lastPath.absolutePath(), tr("Таблица xls (*.xls)"));
+        if (fileName != "")
+        {
+            try
+            {
+                std::wstring path = fileName.toStdWString();
+                converter.saveResult(path);
+                QMessageBox::information(this, "!", "Файл сохранён!");
+            }
+            catch (...)
+            {
+                QMessageBox::critical(this, "!", "Не удалось сохранить файл!");
+            }
+        }
+    }
+    else
+    {
+        QMessageBox::information(this, "!", "Нечего сохранять!");
+    }
+}
+
+
+void qrDialog::on_pushButtonExit_clicked()
+{
+    QCoreApplication::quit();
 }
 

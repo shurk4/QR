@@ -1094,6 +1094,13 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonExit">
+       <property name="text">
+        <string>Выход</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
   </layout>

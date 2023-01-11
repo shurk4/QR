@@ -8,6 +8,7 @@
 #include <iostream>
 #include <fstream>
 
+#include "qdir.h"
 #include "xlsConverter.h"
 
 struct Compare
@@ -42,6 +43,7 @@ public:
 
     QString invoiceFileName;
     QString qrFileName;
+    QDir lastPath = QDir::homePath();
 
     bool showInvoice = false;
     bool showQr = false;
@@ -115,6 +117,8 @@ private slots:
     void on_pushButtonShowNotUsedCodes_clicked();
 
     void on_pushButtonSave_clicked();
+
+    void on_pushButtonExit_clicked();
 
 private:
     Ui::qrDialog *ui;
