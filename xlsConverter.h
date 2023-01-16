@@ -28,7 +28,9 @@ struct StructQR
 
 class xlsConverter
 {
-public:
+public:    
+    bool emptyCell(std::string &str);
+
     std::vector<StructInvoice> invoiceSheetSettings;
     std::vector<std::vector<std::vector<std::string>>> invoiceXls;
     std::vector<std::vector<std::string>> invoiceResult;
@@ -37,6 +39,15 @@ public:
     std::vector<std::vector<std::vector<std::string>>> qrXls;
     std::vector<std::vector<std::string>> qrResult;
 
+    //Артикулы QR
+    std::map<std::string, int> qrArticules;
+    std::vector<std::vector<std::string>> qrArtuculesVec;
+    // Подготовка Артикулов
+    void calculateQrArticules();
+    // Получить подсчитанные Арт.
+    bool qrArtCalculated = false;
+    void clearArt();
+
     std::vector<std::vector<std::string>> result;
     std::vector<std::vector<std::string>> resultInfo;
 
@@ -44,6 +55,7 @@ public:
 
     void clearInvoiceData();
     void clearQrData();
+
 
     void saveResult(std::wstring path);
 

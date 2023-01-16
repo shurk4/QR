@@ -229,6 +229,10 @@ void qrDialog::on_pushButtonResetInvoice_clicked()
     ui->labelPositions->setText("");
     compares.clear();
     converter.clearInvoiceData();
+    converter.clearArt();
+
+    addedToInv = false;
+
     QMessageBox::information(this, "!", "Индексы инвойса очищены");
 }
 // Сбросить все данные
@@ -863,11 +867,13 @@ void qrDialog::on_pushButtonResetQR_clicked()
 
     showQr = false;
 
+    ui->labelPathQR->clear();
     ui->labelColQR->clear();
     ui->labelQrQty->clear();
     ui->listWidget->clear();
     ui->labelCodesFounded->clear();
-
+    ui->labelTabQR->setText("0");
+    ui->labelTabsQR->setText("0");
     ui->tableWidget_2->clearContents();
     ui->tableWidget_2->setRowCount(0);
     ui->tableWidget_2->setColumnCount(0);
@@ -1133,5 +1139,81 @@ void qrDialog::on_pushButtonSave_clicked()
 void qrDialog::on_pushButtonExit_clicked()
 {
     QCoreApplication::quit();
+}
+
+
+void qrDialog::on_pushButtonNew_clicked()
+{
+    ui->tableWidget->clearContents();
+    ui->tableWidget->setRowCount(0);
+    ui->tableWidget->setColumnCount(0);
+    ui->labelPath->clear();
+    ui->labelTab->setText("0");
+    ui->labelTabs->setText("0");
+    ui->labelFirstQty->setText("");
+    ui->labelItemsQty->setText("");
+    ui->labelColQty->setText("");
+    ui->labelItemsQty->setText("");
+    ui->labelPositions->setText("");
+    compares.clear();
+    converter.clearInvoiceData();
+
+    converter.clearQrData();
+    selectedQrCols.clear();
+    addedQrTabs.clear();
+    compares.clear();
+
+    showQr = false;
+
+    ui->labelPathQR->clear();
+    ui->labelColQR->clear();
+    ui->labelQrQty->clear();
+    ui->listWidget->clear();
+    ui->labelCodesFounded->clear();
+    ui->labelTabQR->setText("0");
+    ui->labelTabsQR->setText("0");
+    ui->tableWidget_2->clearContents();
+    ui->tableWidget_2->setRowCount(0);
+    ui->tableWidget_2->setColumnCount(0);
+
+    addedToInv = false;
+}
+
+
+void qrDialog::on_pushButtonArticulesQr_clicked()
+{
+    converter.calculateQrArticules();
+    showTabQr(converter.qrArtuculesVec);
+}
+
+
+void qrDialog::on_pushButtonArticulesQrReset_clicked()
+{
+    converter.clearArt();
+}
+
+
+void qrDialog::on_pushButtonAddToInv_clicked()
+{
+    // Данные из QR для добавления
+    int rowDataToAdd = ui->tableWidget_2->selectionModel()->currentIndex().row();
+    // Целевая строка инвойса
+    int rowItem = ui->tableWidget->selectionModel()->currentIndex().row();
+    // Взять данные из выбранной ячейки
+
+    if(!addedToInv)
+    {
+        for(int row = 0; row < converter.invoiceResult.size(); row++)
+        {
+            converter.invoiceResult[row].push_back("\0");
+        }
+        addedToInv = true;
+    }
+
+    converter.invoiceResult[rowItem][converter.invoiceResult[rowItem].size() - 1] = converter.qrArtuculesVec[rowDataToAdd][0];
+
+//    converter.invoiceResult[rowItem].push_back(converter.qrArtuculesVec[rowDataToAdd][0]);
+
+    showTab(converter.invoiceResult);
 }
 

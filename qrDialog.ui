@@ -878,6 +878,38 @@
       </layout>
      </item>
      <item>
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QPushButton" name="pushButtonArticulesQr">
+         <property name="text">
+          <string>Арт.</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButtonArticulesQrReset">
+         <property name="text">
+          <string>Сбросить</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonAddToInv">
+       <property name="text">
+        <string>Добавить в инв.</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="Line" name="line_14">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -928,7 +960,7 @@
       </widget>
      </item>
      <item>
-      <widget class="Line" name="line">
+      <widget class="Line" name="line_9">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -1078,6 +1110,13 @@
       <widget class="Line" name="line_13">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonNew">
+       <property name="text">
+        <string>Новый</string>
        </property>
       </widget>
      </item>

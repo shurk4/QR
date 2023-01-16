@@ -49,6 +49,7 @@ public:
     bool showQr = false;
     bool analyzed = false;
     bool fullscreen = false;
+    bool addedToInv = false; // Если привязки добавлялись вручную
 
     bool newCompare();
     bool filesOk();
@@ -119,6 +120,14 @@ private slots:
     void on_pushButtonSave_clicked();
 
     void on_pushButtonExit_clicked();
+
+    void on_pushButtonNew_clicked();
+
+    void on_pushButtonArticulesQr_clicked();
+
+    void on_pushButtonArticulesQrReset_clicked();
+
+    void on_pushButtonAddToInv_clicked();
 
 private:
     Ui::qrDialog *ui;

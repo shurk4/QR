@@ -35,6 +35,8 @@ void xlsConverter::clearInvoiceData()
     invoiceResult.clear();
     invoiceSheetSettings.clear();
     invoiceXls.clear();
+    result.clear();
+    resultInfo.clear();
 }
 
 void xlsConverter::clearQrData()
@@ -42,6 +44,71 @@ void xlsConverter::clearQrData()
     qrSheetSettings.clear();
     qrResult.clear();
     qrXls.clear();
+    result.clear();
+    resultInfo.clear();
+}
+
+bool xlsConverter::emptyCell(std::string &str)
+{
+    return str.size() == 0 || str[0] == '\0' || str == "NO DATA";
+}
+
+void xlsConverter::calculateQrArticules()
+{
+    if(!qrArtCalculated)
+    {
+        for(int row = 0; row < qrResult.size(); row++)
+        {
+            std::string tempQr = qrResult[row][0];
+            std::string tempArt;
+
+            // Создание артикула для сопоставления
+            for(int col = 1; col < qrResult[row].size(); col++)
+            {
+                if(emptyCell(qrResult[row][col])) continue;
+                tempArt += qrResult[row][col] + "_";
+            }
+
+            qrResult[row].clear();
+            qrResult[row].push_back(tempQr);
+            qrResult[row].push_back(tempArt);
+
+            if(qrArticules.empty())
+            {
+                qrArticules.emplace(tempArt, 1);
+            }
+            else
+            {
+                auto it = qrArticules.find(tempArt);
+
+                if(it == qrArticules.end())
+                {
+                    qrArticules.emplace(tempArt, 1);
+                }
+                else
+                {
+                    it->second++;
+                }
+            }
+        }
+
+        for(auto it : qrArticules)
+        {
+            std::vector<std::string> tempVec;
+            tempVec.push_back(it.first);
+            tempVec.push_back(std::to_string(it.second));
+
+            qrArtuculesVec.push_back(tempVec);
+        }
+    }
+    qrArtCalculated = true;
+}
+
+void xlsConverter::clearArt()
+{
+    qrArticules.clear();
+    qrArtuculesVec.clear();
+    qrArtCalculated = false;
 }
 
 void xlsConverter::saveResult(std::wstring path)
