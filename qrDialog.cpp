@@ -61,33 +61,6 @@ bool qrDialog::tabAlreadyAdded(int tab)
 }
 // БУЛКИ
 
-// СОПОСТАВЛЕНИЕ КОДОВ
-
-void qrDialog::on_tableWidget_cellClicked(int row, int column) // ЖМЁМ ЯЧЕЙКУ В ТАБЛИЦЕ
-{
-    if(ui->pushButtonFirstQty->isCheckable())
-    {
-        converter.invoiceSheetSettings[currentTab].qtyCol = column;
-        converter.invoiceSheetSettings[currentTab].startRow = row;
-
-        ui->labelFirstQty->setText(QString::number(row + 1));
-        ui->labelColQty->setText(QString::number(column + 1));
-        ui->pushButtonFirstQty->setCheckable(false);
-    }
-}
-
-void qrDialog::on_tableWidget_2_cellClicked(int row, int column)
-{
-    if(ui->pushButtonColQR->isCheckable())
-    {
-        converter.qrSheetSettings[currentTabQr].qrCol = column;
-
-        ui->labelColQR->setText(QString::number(column + 1));
-        ui->pushButtonColQR->setCheckable(false);
-    }
-}
-// СОПОСТАВЛЕНИЕ КОДОВ
-
 // ЛЕВАЯ ТАБЛИЦА
 //Выбор первой ячейки количества
 void qrDialog::on_pushButtonFirstQty_clicked()
@@ -111,8 +84,9 @@ void qrDialog::on_pushButtonFirstQty_clicked()
 // Открыть файл
 void qrDialog::on_pushButtonOpenFile_clicked()
 {
-    converter.clearInvoiceData();
-    QString invPathTemp = QFileDialog::getOpenFileName(this, "Выберите файл инвойса", lastPath.absolutePath(), "*.xls");
+    converter.clearInvoiceData(); // Надо ли делать выборку из нескольких инвойсов
+
+    QString invPathTemp = QFileDialog::getOpenFileName(this, "Выберите файл инвойса", lastPath.absolutePath(), "*.xls *.xlsx");
     if(invPathTemp.isEmpty())
     {
         ui->labelPath->setText("Выберите файл!");
@@ -123,27 +97,43 @@ void qrDialog::on_pushButtonOpenFile_clicked()
 
         QDate date = QDate::currentDate();
         QTime time = QTime::currentTime();
+        QString ext; // расширение файла
         bool copySucces = false;
 
         if(!QDir("temp").exists()) QDir().mkdir("temp"); // Создание папки temp
 
-        invoiceFileName = "temp/inv" + date.toString("ddMMyy") + time.toString("hhmm") + ".xls"; // Имя копии файла
+        // определение разрешения
+        if(invPathTemp.right(4) == "xlsx" || invPathTemp.right(4) == "XLSX")
+        {
+            ext = ".xlsx";
+        }
+        else
+        {
+            ext = ".xls";
+        }
 
-        ui->labelPath->setText(invPathTemp);
+        invoiceFileName = "temp/inv" + date.toString("ddMMyy") + time.toString("hhmm") + ext; // Имя копии файла
 
         copySucces = QFile::copy(invPathTemp, invoiceFileName);
 
         if(!copySucces) QMessageBox::information(this, "Открытие файла", "Что-то пошло не так!");
 
-        std::wstring path = invoiceFileName.toStdWString();
-        converter.readXls(path, converter.invoiceXls);
+        if(ext == ".xlsx")
+        {
+            std::string path = invoiceFileName.toStdString();
+            converter.readXlsX(path, converter.invoiceXls);
+        }
+        else
+        {
+            std::wstring path = invoiceFileName.toStdWString();
+            converter.readXls(path, converter.invoiceXls);
+        }
+
+        ui->labelPath->setText(invPathTemp);
 
         QFile::remove(invoiceFileName);
 
         // !!! ТАБЛИЦА !!!
-
-        std::cout << "Read data complited\n";
-
         currentTab = 0;
         converter.invoiceSheetSettings.resize(converter.invoiceXls.size());
         showTab(converter.invoiceXls[currentTab]);
@@ -184,32 +174,95 @@ void qrDialog::showTab(std::vector<std::vector<std::string>> &inTab)
     ui->labelTab->setText(labelTabString);
     ui->labelTabs->setText(labelTabsString);
 
-        int tab = currentTab;
-        int rows = inTab.size();
+        int rows;
+        if(inTab.size() > 10000)
+        {
+             rows = 10000;
+        }
+        else
+        {
+            rows = inTab.size();
+        }
+
         int cols = inTab[0].size();
+
+        if(ui->checkBoxLogs->isChecked())
+        {
+            file.open("log.txt", std::ios::app);
+            file << "Array size: " << inTab.size() << "/" << inTab[0].size() << "\n";
+            file.close();
+        }
 
         ui->tableWidget->setRowCount(rows);
         ui->tableWidget->setColumnCount(cols);
 
+        if(ui->checkBoxLogs->isChecked())
+        {
+            file.open("log.txt", std::ios::app);
+            file << "Table size installed: " << rows << "/" << cols << "\n";
+            file.close();
+        }
+
         ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "A" << "B" << "C"
                                                    << "D" << "E" << "F" << "G" << "H"
                                                    << "I" << "J" << "K" << "L" << "M"); // Имена столбцов вместо цифр
-        for(int i = 0; i < rows; i++)
-        {
-            for(int j = 0; j < cols; j++)
-            {
-                std::string temp = inTab[i][j];
-//                if(emptyCell(converter.invoiceXls[tab][i][j])) temp = "-EC-"; // ПОМЕТИТЬ ПУСТЫЕ ЯЧЕЙКИ
 
-                QTableWidgetItem *tbl = new QTableWidgetItem(QString::fromStdString(temp));
-//                tbl->setFlags(Qt::ItemIsEditable); // Не редактируется
-//                tbl->setFlags(Qt::ItemIsUserCheckable); // Не выделяется
-                ui->tableWidget->setItem(i, j, tbl);
+        if(ui->checkBoxLogs->isChecked())
+        {
+            file.open("log.txt", std::ios::app);
+            file << "\n-----Show Table\n";
+            file.close();
+        }
+
+        for(int row = 0; row < inTab.size(); row++)
+        {
+            if(ui->checkBoxLogs->isChecked())
+            {
+                file.open("log.txt", std::ios::app);
+                file << "row: " << row << " | ";
+                file.close();
+            }
+
+            for(int col = 0; col < inTab[row].size(); col++)
+            {
+                if(inTab[row].size() > cols) cols = inTab[row].size();
+                QTableWidgetItem *tbl = new QTableWidgetItem(QString::fromStdString(inTab[row][col]));
+                ui->tableWidget->setItem(row, col, tbl);
+
+                if(ui->checkBoxLogs->isChecked())
+                {
+                    file.open("log.txt", std::ios::app);
+                    file << inTab[row][col] << " | ";
+                    file.close();
+                }
+            }
+
+            if(ui->checkBoxLogs->isChecked())
+            {
+                file.open("log.txt", std::ios::app);
+                file << "\n";
+                file.close();
             }
         }
+
+        if(ui->checkBoxLogs->isChecked())
+        {
+            file.open("log.txt", std::ios::app);
+            file << "----- complited!\n";
+            file << "resize table cells\n";
+            file.close();
+        }
+
         // Размеры
         ui->tableWidget->resizeRowsToContents();
         ui->tableWidget->resizeColumnsToContents();
+
+        if(ui->checkBoxLogs->isChecked())
+        {
+            file.open("log.txt", std::ios::app);
+            file << "\nshowTabQR complited!\n\n";
+            file.close();
+        }
 }
 // Вывести данные в таблицу
 
@@ -261,6 +314,12 @@ void qrDialog::on_pushButtonShowInvoice_clicked()
 // Анализируем данные в инвойс по заданным параметрам
 void qrDialog::on_pushButtonAnalyzeInvoice_clicked()
 {
+    if(ui->checkBoxLogs->isChecked())
+    {
+        file.open("log.txt", std::ios::app);
+        file << "\nInvoice analize is started\n\n";
+        file.close();
+    }
     if(!converter.invoiceSheetSettings.empty()
             && (converter.invoiceSheetSettings[currentTab].qtyCol > 0
             || converter.invoiceSheetSettings[currentTab].qtyCol < converter.invoiceXls[currentTab][0].size()))
@@ -272,23 +331,61 @@ void qrDialog::on_pushButtonAnalyzeInvoice_clicked()
         std::vector<int> notEmptyCells;
 
         // поиск строк товаров
+        if(ui->checkBoxLogs->isChecked())
+        {
+            file.open("log.txt", std::ios::app);
+            file << "\nItems Find started!\n";
+            file.close();
+        }
+
         for(int row = converter.invoiceSheetSettings[currentTab].startRow; row < converter.invoiceXls[currentTab].size(); row++)
         {
+            if(ui->checkBoxLogs->isChecked())
+            {
+                file.open("log.txt", std::ios::app);
+                file << "\nRow: " << row << "\n";
+                file.close();
+            }
         std::vector<std::string> tempRow;
         bool notEmpty = true;
 
             if(row == converter.invoiceSheetSettings[currentTab].startRow)
             {
+                if(ui->checkBoxLogs->isChecked())
+                {
+                    file.open("log.txt", std::ios::app);
+                    file << "\nWrite start row\n";
+                    file.close();
+                }
                 for(int col = 0; col < converter.invoiceXls[currentTab][row].size(); col++)
                 {
+                    if(ui->checkBoxLogs->isChecked())
+                    {
+                        file.open("log.txt", std::ios::app);
+                        file << "col: " << col << "\n";
+                        file.close();
+                    }
                     if(!emptyCell(converter.invoiceXls[currentTab][row][col]))
                     {
+                        if(ui->checkBoxLogs->isChecked())
+                        {
+                            file.open("log.txt", std::ios::app);
+                            file << "\nNot empty cell: " << converter.invoiceXls[currentTab][row][col] << "\n";
+                            file.close();
+                        }
                         std::string cellData = converter.invoiceXls[currentTab][row][col];
                         notEmptyCells.push_back(col);
                         tempRow.push_back(cellData);
                         if(col == converter.invoiceSheetSettings[currentTab].qtyCol)
                         {
                             swap(tempRow[tempRow.size() - 1], tempRow[0]);
+
+                            if(ui->checkBoxLogs->isChecked())
+                            {
+                                file.open("log.txt", std::ios::app);
+                                file << "\nColumns is swapped\n";
+                                file.close();
+                            }
                         }
                     }
                 }
@@ -299,10 +396,32 @@ void qrDialog::on_pushButtonAnalyzeInvoice_clicked()
                 int emptyRowsCounter = 0;
                 for(int i = 0; i < notEmptyCells.size(); i++)
                 {
+                    if(ui->checkBoxLogs->isChecked())
+                    {
+                        file.open("log.txt", std::ios::app);
+                        file << "col: " << notEmptyCells[i] << "\n";
+                        file.close();
+                    }
                     tempRow.resize(colsNum);
-                    std:std::string cellData = converter.invoiceXls[currentTab][row][notEmptyCells[i]];
+                    std::string cellData = converter.invoiceXls[currentTab][row][notEmptyCells[i]];
 
-                    if(emptyCell(cellData)) emptyRowsCounter++;
+                    if(ui->checkBoxLogs->isChecked())
+                    {
+                        file.open("log.txt", std::ios::app);
+                        file << "Cell data: (" << converter.invoiceXls[currentTab][row][notEmptyCells[i]] << ")\n";
+                        file.close();
+                    }
+
+                    if(emptyCell(cellData))
+                    {
+                        if(ui->checkBoxLogs->isChecked())
+                        {
+                            file.open("log.txt", std::ios::app);
+                            file << "cell is empty: (" << cellData << ")\n";
+                            file.close();
+                        }
+                        emptyRowsCounter++;
+                    }
 
                     if(notEmptyCells[i] == converter.invoiceSheetSettings[currentTab].qtyCol && !itQty(cellData)) notEmpty = false;
 
@@ -318,8 +437,30 @@ void qrDialog::on_pushButtonAnalyzeInvoice_clicked()
 
             if(notEmpty)
             {
+                if(ui->checkBoxLogs->isChecked())
+                {
+                    file.open("log.txt", std::ios::app);
+                    file << "Row is added\n";
+                    file.close();
+                }
                 converter.invoiceResult.push_back(tempRow);
             }
+            else
+            {
+                if(ui->checkBoxLogs->isChecked())
+                {
+                    file.open("log.txt", std::ios::app);
+                    file << "Row ignored\n";
+                    file.close();
+                }
+            }
+        }
+
+        if(ui->checkBoxLogs->isChecked())
+        {
+            file.open("log.txt", std::ios::app);
+            file << "\nItems Find complited!\n\n";
+            file.close();
         }
         //поиск строк товаров
 
@@ -402,35 +543,58 @@ void qrDialog::on_pushButton_clicked()
 // ПРАВАЯ ТАБЛИЦА
 void qrDialog::on_pushButtonOpenQR_clicked()
 {
-    QString qrPathTemp = QFileDialog::getOpenFileName(this, "Выберите файл QR", lastPath.absolutePath(), "*.xls");
+    converter.qrXls.clear();
+
+    QString qrPathTemp = QFileDialog::getOpenFileName(this, "Выберите файл QR", lastPath.absolutePath(), "*.xls *.xlsx");
     if(qrPathTemp.isEmpty())
     {
         ui->labelPathQR->setText("Выберите файл!");
     }
     else
     {
+        lastPath = qrPathTemp;
+
         QDate date = QDate::currentDate();
         QTime time = QTime::currentTime();
+        QString ext; // расширение файла
         bool copySucces = false;
 
-        if(!QDir("temp").exists()) QDir().mkdir("temp");
+        if(!QDir("temp").exists()) QDir().mkdir("temp"); // Создание папки temp
 
-        qrFileName = "temp/qr" + date.toString("ddMMyy") + time.toString("hhmm") + ".xls";
+        // определение разрешения
+        if(qrPathTemp.right(4) == "xlsx" || qrPathTemp.right(4) == "XLSX")
+        {
+            ext = ".xlsx";
+        }
+        else
+        {
+            ext = ".xls";
+        }
+
+        qrFileName = "temp/qr" + date.toString("ddMMyy") + time.toString("hhmm") + ext; // Имя копии файла
 
         copySucces = QFile::copy(qrPathTemp, qrFileName);
+
         if(!copySucces) QMessageBox::information(this, "Открытие файла", "Что-то пошло не так!");
 
-        ui->labelPathQR->setText(qrPathTemp);
-        std::wstring path = qrFileName.toStdWString();
+        if(ext == ".xlsx")
+        {
+            std::string path = qrFileName.toStdString();
+            converter.readXlsX(path, converter.qrXls);
+        }
+        else
+        {
+            std::wstring path = qrFileName.toStdWString();
+            converter.readXls(path, converter.qrXls);
+        }
 
-        converter.readXls(path, converter.qrXls);
+        ui->labelPathQR->setText(qrPathTemp);
 
         QFile::remove(qrFileName);
 
         // !!! ТАБЛИЦА !!!
         currentTabQr = 0;
         converter.qrSheetSettings.resize(converter.qrXls.size());
-
         selectedQrCols.resize(converter.qrXls.size());
 
         showQr = true;
@@ -521,7 +685,16 @@ void qrDialog::showTabQr(std::vector<std::vector<std::string>> &inTab)
     ui->labelTabQR->setText(labelTabString);
     ui->labelTabsQR->setText(labelTabsString);
 
-        int rows = inTab.size();
+        int rows;
+        if(inTab.size() > 10000)
+        {
+             rows = 10000;
+        }
+        else
+        {
+            rows = inTab.size();
+        }
+
         int cols = inTab[0].size();
 
         if(ui->checkBoxLogs->isChecked())
@@ -544,6 +717,7 @@ void qrDialog::showTabQr(std::vector<std::vector<std::string>> &inTab)
         ui->tableWidget_2->setHorizontalHeaderLabels(QStringList() << "A" << "B" << "C"
                                                    << "D" << "E" << "F" << "G" << "H"
                                                    << "I" << "J" << "K" << "L" << "M"); // Имена столбцов вместо цифр
+
         if(ui->checkBoxLogs->isChecked())
         {
             file.open("log.txt", std::ios::app);
@@ -551,37 +725,25 @@ void qrDialog::showTabQr(std::vector<std::vector<std::string>> &inTab)
             file.close();
         }
 
-        for(int i = 0; i < rows; i++)
+        for(int row = 0; row < inTab.size(); row++)
         {
             if(ui->checkBoxLogs->isChecked())
             {
                 file.open("log.txt", std::ios::app);
-                file << "row: " << i << " | ";
+                file << "row: " << row << " | ";
                 file.close();
             }
 
-            for(int j = 0; j < cols; j++)
+            for(int col = 0; col < inTab[row].size(); col++)
             {
-//                // ПОЛОСКИ В ТАБЛИЦЕ!!!
-//                QTableWidgetItem *tbl;
-//                if(emptyCell(inTab[i][j]))
-//                {
-//                    tbl = new QTableWidgetItem(QString::fromStdString("---"));
-//                }
-//                else
-//                {
-//                    tbl = new QTableWidgetItem(QString::fromStdString(inTab[i][j]));
-//    //                tbl->setFlags(Qt::ItemIsEditable); // Не редактируется
-//    //                tbl->setFlags(Qt::ItemIsUserCheckable); // Не выделяется
-//                }
-//                // ПОЛОСКИ В ТАБЛИЦЕ!!!
-                QTableWidgetItem *tbl = new QTableWidgetItem(QString::fromStdString(inTab[i][j]));
-                ui->tableWidget_2->setItem(i, j, tbl);
+                if(inTab[row].size() > cols) cols = inTab[row].size();
+                QTableWidgetItem *tbl = new QTableWidgetItem(QString::fromStdString(inTab[row][col]));
+                ui->tableWidget_2->setItem(row, col, tbl);
 
                 if(ui->checkBoxLogs->isChecked())
                 {
                     file.open("log.txt", std::ios::app);
-                    file << inTab[i][j] << " | ";
+                    file << inTab[row][col] << " | ";
                     file.close();
                 }
             }
@@ -978,16 +1140,22 @@ void qrDialog::on_pushButtonShowResult_clicked()
             // Заполнение таблиц converter.result converter.resultInfo
 
             int counter = 0; // Номер ПП
+
+            // проход по товарам
             for(int invoiceRow = 0; invoiceRow < tempInvoice.size(); invoiceRow++)
             {
-                int itemsQty = std::stoi(tempInvoice[invoiceRow][0]);
+                int itemsQty = std::stoi(tempInvoice[invoiceRow][0]); // берём количество кодов к товару
                 int numGroup = 0; // номер группы(столбец С)
+
+                // поиск товара в кодах
                 for(int qrRow = 0; qrRow < tempQr.size(); qrRow++)
                 {
                     bool found = true;
                     // Поиск совпадений по указанным сопоставлениям
+                    // Проход по столбцам указанным в сопоставлении
                     for(int i = 0; i < compares.size(); i++)
                     {
+                        // если хоть одно значение в ячейки для сопоставления не сходится
                         if(tempInvoice[invoiceRow][compares[i].invoiceCol] != tempQr[qrRow][compares[i].qrCol])
                         {
                             found = false;
@@ -996,7 +1164,7 @@ void qrDialog::on_pushButtonShowResult_clicked()
                     // Поиск совпадений по указанным сопоставлениям
 
                     // Если найдено совпадение
-                    if(found)
+                    if(found && itemsQty > 0)
                     {
                         counter++;
                         numGroup++;
@@ -1022,7 +1190,7 @@ void qrDialog::on_pushButtonShowResult_clicked()
                             qrCut += qr[k];
                         }
                         tempResultRow.push_back(qrCut);
-                        converter.qrResult[qrRow][0] = "used";
+                        tempQr[qrRow][1] = "used";
 
                         // добавление "Код вида"
                         tempResultRow.push_back(std::to_string(301));

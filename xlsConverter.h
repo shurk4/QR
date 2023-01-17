@@ -7,6 +7,7 @@
 #include <sstream>
 #include <string>
 #include <locale>
+#include "OpenXLSX/OpenXLSX.hpp"
 
 using namespace ExcelFormat;
 
@@ -52,6 +53,7 @@ public:
     std::vector<std::vector<std::string>> resultInfo;
 
     void readXls(std::wstring path, std::vector<std::vector<std::vector<std::string>>> &tempXls);
+    void readXlsX(std::string path, std::vector<std::vector<std::vector<std::string>>> &tempXls);
 
     void clearInvoiceData();
     void clearQrData();

@@ -1,5 +1,7 @@
 #include "xlsConverter.h"
 
+using namespace OpenXLSX;
+
 void xlsConverter::readXls(std::wstring path, std::vector<std::vector<std::vector<std::string>>> &tempXls)
 {
     std::cout << "readXls started\n";
@@ -27,6 +29,64 @@ void xlsConverter::readXls(std::wstring path, std::vector<std::vector<std::vecto
                 tempStream >> tempXls[tab][row][col];
             }
         }
+    }
+}
+
+void xlsConverter::readXlsX(std::string path, std::vector<std::vector<std::vector<std::string> > > &tempXls)
+{
+    std::cout << "readXlsX started\n";
+
+    int maxCols = 0;
+
+    XLDocument doc;
+    doc.open(path);
+
+    auto sheets = doc.workbook().worksheetNames();
+    std::cout << "sheets size: " << sheets.size() << "\n";
+
+    for(auto it : sheets)
+    {
+        std::vector<std::vector<std::string>> tempSheet;
+
+        auto wks = doc.workbook().worksheet(it);
+        std::cout << "Rows: " << wks.rowCount() << "\n\n";
+
+        for (auto& row : wks.rows())
+        {
+            if(row.cellCount() <= 0) continue;
+
+            std::vector<std::string> tempRow;
+            for (auto& value : std::vector<XLCellValue>(row.values()))
+            {
+                std::string tempString;
+                std::cout << value.typeAsString() << "(" << value << ") - ";
+
+                if(value.typeAsString() == "empty")
+                {
+                    tempString = "\0";
+                }
+                else
+                {
+                    std::stringstream tempStream;
+                    tempStream << value;
+                    tempStream >> tempString;
+                }
+
+                tempRow.push_back(tempString);
+            }
+            if(tempRow.size() > maxCols) maxCols = tempRow.size();
+
+            tempSheet.push_back(tempRow);
+            std::cout << std::endl;
+        }
+        // Выравнивание количества столбцов
+        for(int row = 0; row < tempSheet.size(); row++)
+        {
+            tempSheet[row].resize(maxCols);
+        }
+        // Выравнивание количества столбцов
+
+        tempXls.push_back(tempSheet);
     }
 }
 

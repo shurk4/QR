@@ -18,6 +18,9 @@ find_package(Qt6 COMPONENTS
         Widgets
         REQUIRED)
 
+#OPEN XLSX
+add_subdirectory(OpenXLSX)
+
 add_executable(QR WIN32 main.cpp
     XlsFormat.h
     BasicXls.h
@@ -27,21 +30,6 @@ add_executable(QR WIN32 main.cpp
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
-
-#    qrCodes.h
-#    qrCodes.cpp
-
-#    quickStart.h
-#    quickStart.cpp
-#    quickStart.ui
-
-#    TableSelect.h
-#    TableSelect.cpp
-#    TableSelect.ui
-
-#    QrTable.h
-#    QrTable.cpp
-#    QrTable.ui
 
     xlsConverter.h
     xlsConverter.cpp
@@ -54,7 +42,10 @@ target_link_libraries(QR
         Qt6::Core
         Qt6::Gui
         Qt6::Widgets
+        OpenXLSX::OpenXLSX
         )
+
+#target_link_libraries(QR PRIVATE OpenXLSX::OpenXLSX)
 
     if (WIN32)
         set(DEBUG_SUFFIX)

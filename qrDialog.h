@@ -73,8 +73,6 @@ private slots:
 
     void on_pushButtonTabDown_clicked();
 
-    void on_tableWidget_cellClicked(int row, int column);
-
     void on_pushButtonOpenQR_clicked();
 
     void on_pushButtonTabDownQR_clicked();
@@ -84,8 +82,6 @@ private slots:
     void on_pushButtonCancel_clicked();
 
     void on_pushButtonFirstQty_clicked();
-
-    void on_tableWidget_2_cellClicked(int row, int column);
 
     void on_pushButtonBasicSize_clicked();
 
