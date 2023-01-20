@@ -15,6 +15,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButtonStartBasic_clicked()
 {
+    hide();
     qrDialog* qrDiag = new qrDialog;
     qrDiag->exec();
 }

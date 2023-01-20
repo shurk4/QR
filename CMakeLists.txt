@@ -12,6 +12,8 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_PREFIX_PATH "C:/Qt/6.4.0/mingw_64/lib/cmake")
 
+set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/qr.rc")
+
 find_package(Qt6 COMPONENTS
         Core
         Gui
@@ -22,6 +24,7 @@ find_package(Qt6 COMPONENTS
 add_subdirectory(OpenXLSX)
 
 add_executable(QR WIN32 main.cpp
+    ${APP_ICON_RESOURCE_WINDOWS}
     XlsFormat.h
     BasicXls.h
     BasicXls.cpp
@@ -36,7 +39,15 @@ add_executable(QR WIN32 main.cpp
 
     qrDialog.h
     qrDialog.cpp
-    qrDialog.ui)
+    qrDialog.ui
+
+    textfiles.h
+    textfiles.cpp
+    textfiles.ui
+
+    help.h
+    help.cpp
+    help.ui)
 
 target_link_libraries(QR
         Qt6::Core

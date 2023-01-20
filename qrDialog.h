@@ -10,6 +10,7 @@
 
 #include "qdir.h"
 #include "xlsConverter.h"
+#include "help.h"
 
 struct Compare
 {
@@ -125,8 +126,14 @@ private slots:
 
     void on_pushButtonAddToInv_clicked();
 
+    void on_pushButtonHelp_clicked();
+
+    void on_pushButtonText_clicked();
+
 private:
     Ui::qrDialog *ui;
+
+    help *helpWindow;
 };
 
 #endif // QRDIALOG_H

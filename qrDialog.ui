@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>QR to TKS 2.1</string>
+   <string>QR to TKS</string>
   </property>
   <layout class="QGridLayout" name="gridLayout" columnstretch="1,0,1,0,0">
    <property name="leftMargin">
@@ -222,6 +222,13 @@
          </property>
          <property name="text">
           <string>QR/Выбранные</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButtonText">
+         <property name="text">
+          <string>Текстовые</string>
          </property>
         </widget>
        </item>
@@ -1114,6 +1121,13 @@
       <widget class="Line" name="line_12">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonHelp">
+       <property name="text">
+        <string>Помощь</string>
        </property>
       </widget>
      </item>

@@ -1,5 +1,7 @@
 #include "qrDialog.h"
+#include "help.h"
 #include "qscreen.h"
+#include "textfiles.h"
 #include "ui_qrDialog.h"
 #include "QFileDialog"
 #include "QCheckBox"
@@ -16,6 +18,9 @@ qrDialog::qrDialog(QWidget *parent) :
     this->setWindowFlags(windowFlags() | Qt::WindowMinimizeButtonHint
                          | Qt::WindowMaximizeButtonHint
                          | Qt::WindowSystemMenuHint);
+
+
+    helpWindow = new help(this); // Указатель создан в хедере для одновременного использования окон
 }
 
 qrDialog::~qrDialog()
@@ -1058,7 +1063,10 @@ void qrDialog::on_pushButtonBasicSize_clicked()
 void qrDialog::on_pushButtonClear_clicked()
 {
     ui->listWidget->clear();
-    selectedQrCols[currentTabQr].clear();
+    if(!selectedQrCols.empty())
+    {
+        selectedQrCols[currentTabQr].clear();
+    }
 }
 //ГЛАВНОЕ МЕНЮ
 void qrDialog::on_pushButtonDelete_clicked()
@@ -1383,5 +1391,21 @@ void qrDialog::on_pushButtonAddToInv_clicked()
 //    converter.invoiceResult[rowItem].push_back(converter.qrArtuculesVec[rowDataToAdd][0]);
 
     showTab(converter.invoiceResult);
+}
+
+
+void qrDialog::on_pushButtonHelp_clicked()
+{
+    if(!helpWindow->isVisible())
+    {
+        helpWindow->show();
+    }
+}
+
+
+void qrDialog::on_pushButtonText_clicked()
+{
+    textFiles *txtWindow = new textFiles;
+    txtWindow->exec();
 }
 
