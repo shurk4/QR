@@ -134,6 +134,12 @@ private:
     Ui::qrDialog *ui;
 
     help *helpWindow;
+
+signals: // отправка данных
+    void toTextFiles(std::vector<std::vector<std::string>>);
+
+public slots: // Приём данных
+    void fromTextFiles(std::vector<std::vector<std::string>> data);
 };
 
 #endif // QRDIALOG_H

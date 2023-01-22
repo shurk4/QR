@@ -1406,6 +1406,18 @@ void qrDialog::on_pushButtonHelp_clicked()
 void qrDialog::on_pushButtonText_clicked()
 {
     textFiles *txtWindow = new textFiles;
-    txtWindow->exec();
+    txtWindow->setModal(true);
+    txtWindow->show();
+
+    connect(this, &qrDialog::toTextFiles, txtWindow, &textFiles::toTextFiles); // Отправка данных из первого окна во второе
+    emit toTextFiles(converter.invoiceResult);
+
+    connect(txtWindow, &textFiles::fromTextFiles, this, &qrDialog::fromTextFiles); // Получение данных из второго окна
+}
+
+void qrDialog::fromTextFiles(std::vector<std::vector<std::string> > data)
+{
+    converter.qrResult = data;
+    showTabQr(converter.qrResult);
 }
 

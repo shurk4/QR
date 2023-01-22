@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1552</width>
-    <height>884</height>
+    <width>1652</width>
+    <height>1025</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -226,16 +226,16 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButtonText">
-         <property name="text">
-          <string>Текстовые</string>
+        <widget class="Line" name="line_11">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="Line" name="line_11">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
+        <widget class="QPushButton" name="pushButtonText">
+         <property name="text">
+          <string>Текстовые</string>
          </property>
         </widget>
        </item>
