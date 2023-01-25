@@ -1,10 +1,4 @@
 #include "qrDialog.h"
-#include "help.h"
-#include "qscreen.h"
-#include "textfiles.h"
-#include "ui_qrDialog.h"
-#include "QFileDialog"
-#include "QCheckBox"
 
 qrDialog::qrDialog(QWidget *parent) :
     QDialog(parent),
@@ -621,23 +615,21 @@ void qrDialog::on_pushButtonTabUpQR_clicked()
         {
             for(int i = 0; i < selectedQrCols[currentTabQr].size(); i++)
             {
-                QString itemText;
-                QTextStream textStream(&itemText);
+                QString itemText = QString::fromUtf16( u"Колонка : ") + QString::fromStdString(toSymbol(selectedQrCols[currentTabQr][i]))
+                        + " (" + QString::fromStdString(converter.qrXls[currentTabQr][1][selectedQrCols[currentTabQr][i]]) + ")";
 
-                textStream << "Колонка : " << QString::fromStdString(toSymbol(selectedQrCols[currentTabQr][i]))
-                           << " (" << QString::fromStdString(converter.qrXls[currentTabQr][1][selectedQrCols[currentTabQr][i]]) << ")";
                 ui->listWidget->addItem(itemText);
             }
+        }        
+
+        ui->labelColQR->setText(QString::fromStdString(toSymbol(converter.qrSheetSettings[currentTabQr].qrCol)));
+
+        if(ui->checkBoxLogs->isChecked())
+        {
+            file.open("log.txt", std::ios::app);
+            file << "\nQR Tab is changed UP. Current tab: " << currentTabQr << "\n";
+            file.close();
         }
-    }
-
-    ui->labelColQR->setText(QString::fromStdString(toSymbol(converter.qrSheetSettings[currentTabQr].qrCol)));
-
-    if(ui->checkBoxLogs->isChecked())
-    {
-        file.open("log.txt", std::ios::app);
-        file << "\nQR Tab is changed UP. Current tab: " << currentTabQr << "\n";
-        file.close();
     }
 }
 
@@ -649,29 +641,26 @@ void qrDialog::on_pushButtonTabDownQR_clicked()
         showQr = true;
         showTabQr(converter.qrXls[currentTabQr]);
         ui->pushButtonShowQR->setText("Показать выбранные");
-    }
 
-    ui->listWidget->clear();
-    if(!selectedQrCols[currentTabQr].empty())
-    {
-        for(int i = 0; i < selectedQrCols[currentTabQr].size(); i++)
+        ui->listWidget->clear();
+        if(!selectedQrCols[currentTabQr].empty())
         {
-            QString itemText;
-            QTextStream textStream(&itemText);
-
-            textStream << "Колонка : " << QString::fromStdString(toSymbol(selectedQrCols[currentTabQr][i]))
-                       << " (" << QString::fromStdString(converter.qrXls[currentTabQr][1][selectedQrCols[currentTabQr][i]]) << ")";
-            ui->listWidget->addItem(itemText);
+            for(int i = 0; i < selectedQrCols[currentTabQr].size(); i++)
+            {
+                QString itemText = QString::fromUtf16( u"Колонка : ") + QString::fromStdString(toSymbol(selectedQrCols[currentTabQr][i]))
+                        + " (" + QString::fromStdString(converter.qrXls[currentTabQr][1][selectedQrCols[currentTabQr][i]]) + ")";
+                ui->listWidget->addItem(itemText);
+            }
         }
-    }
 
-    ui->labelColQR->setText(QString::fromStdString(toSymbol(converter.qrSheetSettings[currentTabQr].qrCol)));
+        ui->labelColQR->setText(QString::fromStdString(toSymbol(converter.qrSheetSettings[currentTabQr].qrCol)));
 
-    if(ui->checkBoxLogs->isChecked())
-    {
-        file.open("log.txt", std::ios::app);
-        file << "\nQR Tab is changed Down. Current tab: " << currentTabQr << "\n";
-        file.close();
+        if(ui->checkBoxLogs->isChecked())
+        {
+            file.open("log.txt", std::ios::app);
+            file << "\nQR Tab is changed Down. Current tab: " << currentTabQr << "\n";
+            file.close();
+        }
     }
 }
 
@@ -855,11 +844,8 @@ void qrDialog::on_pushButtonAddColsQR_clicked()
         {
 //            QMessageBox::information(this, "!?", "Колонка уже есть");
             selectedQrCols[currentTabQr].push_back(col);
-            QString itemText;
-            QTextStream textStream(&itemText);
-
-            textStream << "Колонка : " << QString::fromStdString(toSymbol(col))
-                       << " (" << QString::fromStdString(converter.qrXls[currentTabQr][row][col]) << ")";
+            QString itemText = QString::fromUtf16( u"Колонка : ") + QString::fromStdString(toSymbol(col))
+                    + " (" + QString::fromStdString(converter.qrXls[currentTabQr][row][col]) + ")";
             ui->listWidget->addItem(itemText);
         }
     }

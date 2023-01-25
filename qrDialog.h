@@ -5,8 +5,16 @@
 #include <QApplication>
 #include <QMessageBox>
 #include <QDateTime>
+#include <QTextStream>
 #include <iostream>
 #include <fstream>
+
+#include "help.h"
+#include "qscreen.h"
+#include "textfiles.h"
+#include "ui_qrDialog.h"
+#include "QFileDialog"
+#include "QCheckBox"
 
 #include "qdir.h"
 #include "xlsConverter.h"
