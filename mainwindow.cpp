@@ -25,3 +25,11 @@ void MainWindow::on_pushButtonExit_clicked()
     QCoreApplication::quit();
 }
 
+
+void MainWindow::on_pushButton_clicked()
+{
+    hide();
+    txtFiles* textFiles = new txtFiles;
+    textFiles->show();
+}
+

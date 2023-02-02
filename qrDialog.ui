@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1652</width>
-    <height>1025</height>
+    <width>1289</width>
+    <height>824</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -186,13 +186,25 @@
        </item>
        <item>
         <widget class="QPushButton" name="pushButtonColQR">
+         <property name="maximumSize">
+          <size>
+           <width>60</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="text">
-          <string>Колонка QR</string>
+          <string>Кол. QR</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="pushButtonAddColsQR">
+         <property name="maximumSize">
+          <size>
+           <width>60</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="text">
           <string>Добавить</string>
          </property>
@@ -207,37 +219,48 @@
        </item>
        <item>
         <widget class="QPushButton" name="pushButtonAddToQrResult">
+         <property name="maximumSize">
+          <size>
+           <width>60</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="text">
-          <string>Добавить в коды</string>
+          <string>В коды</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="pushButtonShowQR">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="maximumSize">
+          <size>
+           <width>60</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="text">
-          <string>QR/Выбранные</string>
+          <string>QR/Рез.</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="Line" name="line_11">
+        <spacer name="horizontalSpacer_3">
          <property name="orientation">
-          <enum>Qt::Vertical</enum>
+          <enum>Qt::Horizontal</enum>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButtonText">
-         <property name="text">
-          <string>Текстовые</string>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
          </property>
-        </widget>
+        </spacer>
        </item>
       </layout>
      </item>
@@ -415,23 +438,74 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButtonFirstQty">
+        <widget class="QLabel" name="label_17">
+         <property name="maximumSize">
+          <size>
+           <width>40</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="text">
-          <string>Первая кол-ва</string>
+          <string>Кол-во:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButtonFirstQty">
+         <property name="maximumSize">
+          <size>
+           <width>60</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Первая</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButtonLastQty">
+         <property name="maximumSize">
+          <size>
+           <width>60</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Посл.</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="Line" name="line_18">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="pushButtonAnalyzeInvoice">
+         <property name="maximumSize">
+          <size>
+           <width>60</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="text">
-          <string>Анализировать</string>
+          <string>Анализ.</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="pushButton">
+         <property name="maximumSize">
+          <size>
+           <width>60</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="text">
-          <string>Убрать лишнее</string>
+          <string>Лишнее</string>
          </property>
         </widget>
        </item>
@@ -479,10 +553,29 @@
        </item>
        <item>
         <widget class="QPushButton" name="pushButtonShowInvoice">
+         <property name="maximumSize">
+          <size>
+           <width>60</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="text">
-          <string>инвойс/товары</string>
+          <string>инв./тов.</string>
          </property>
         </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </item>
@@ -549,6 +642,36 @@
       </widget>
      </item>
      <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_15">
+       <item>
+        <widget class="QLabel" name="labelColQtyLab">
+         <property name="text">
+          <string>Кол. кол-во</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelColQty">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>40</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
       <layout class="QHBoxLayout" name="horizontalLayout_13">
        <item>
         <widget class="QLabel" name="label">
@@ -579,22 +702,16 @@
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_15">
+      <layout class="QHBoxLayout" name="horizontalLayout_17">
        <item>
-        <widget class="QLabel" name="labelColQtyLab">
+        <widget class="QLabel" name="label_18">
          <property name="text">
-          <string>Кол. кол-во</string>
+          <string>Посл. кол-во</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="labelColQty">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
+        <widget class="QLabel" name="labelLastQty">
          <property name="maximumSize">
           <size>
            <width>40</width>
@@ -662,7 +779,7 @@
        <property name="maximumSize">
         <size>
          <width>170</width>
-         <height>80</height>
+         <height>60</height>
         </size>
        </property>
        <property name="font">
@@ -1125,24 +1242,40 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButtonHelp">
-       <property name="text">
-        <string>Помощь</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="checkBoxLogs">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>Записывать логи</string>
-       </property>
-      </widget>
+      <layout class="QHBoxLayout" name="horizontalLayout_18">
+       <item>
+        <widget class="QCheckBox" name="checkBoxLogs">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>120</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Записывать логи</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButtonHelp">
+         <property name="maximumSize">
+          <size>
+           <width>20</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>?</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item>
       <widget class="Line" name="line_13">
@@ -1155,19 +1288,6 @@
       <widget class="QPushButton" name="pushButtonNew">
        <property name="text">
         <string>Новый</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButtonCancel">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>Отмена</string>
        </property>
       </widget>
      </item>

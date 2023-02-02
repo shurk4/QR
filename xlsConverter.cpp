@@ -95,8 +95,6 @@ void xlsConverter::clearInvoiceData()
     invoiceResult.clear();
     invoiceSheetSettings.clear();
     invoiceXls.clear();
-    result.clear();
-    resultInfo.clear();
 }
 
 void xlsConverter::clearQrData()
@@ -104,8 +102,20 @@ void xlsConverter::clearQrData()
     qrSheetSettings.clear();
     qrResult.clear();
     qrXls.clear();
+}
+
+void xlsConverter::clearResult()
+{
     result.clear();
     resultInfo.clear();
+}
+
+void xlsConverter::clear()
+{
+    clearInvoiceData();
+    clearQrData();
+    clearArt();
+    clearResult();
 }
 
 bool xlsConverter::emptyCell(std::string &str)

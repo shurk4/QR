@@ -7,6 +7,10 @@ help::help(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    this->setWindowFlags(windowFlags() | Qt::WindowMinimizeButtonHint
+                         | Qt::WindowMaximizeButtonHint
+                         | Qt::WindowSystemMenuHint);
+
     ui->listWidget->addItem("Простая выборка");
 
     ui->listWidget->addItem("Сопоставление по нескольким столбцам");

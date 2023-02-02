@@ -41,9 +41,13 @@ add_executable(QR WIN32 main.cpp
     qrDialog.cpp
     qrDialog.ui
 
-    textfiles.h
-    textfiles.cpp
-    textfiles.ui
+#    textfiles.h
+#    textfiles.cpp
+#    textfiles.ui
+
+    txtfiles.h
+    txtfiles.cpp
+    txtfiles.ui
 
     help.h
     help.cpp

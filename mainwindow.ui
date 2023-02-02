@@ -82,7 +82,25 @@ color:  rgb(0, 0, 255)</string>
          <string notr="true">font: 20pt &quot;Segoe UI&quot;</string>
         </property>
         <property name="text">
-         <string>Поехали!</string>
+         <string>Стандарт</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>20</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Текстовые</string>
         </property>
        </widget>
       </item>

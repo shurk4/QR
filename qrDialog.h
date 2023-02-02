@@ -6,12 +6,12 @@
 #include <QMessageBox>
 #include <QDateTime>
 #include <QTextStream>
+#include <QScrollBar>
 #include <iostream>
 #include <fstream>
 
 #include "help.h"
 #include "qscreen.h"
-#include "textfiles.h"
 #include "ui_qrDialog.h"
 #include "QFileDialog"
 #include "QCheckBox"
@@ -136,7 +136,7 @@ private slots:
 
     void on_pushButtonHelp_clicked();
 
-    void on_pushButtonText_clicked();
+    void on_pushButtonLastQty_clicked();
 
 private:
     Ui::qrDialog *ui;

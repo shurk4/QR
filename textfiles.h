@@ -8,6 +8,7 @@
 
 #include "qmessagebox.h"
 #include "ui_textfiles.h"
+#include "xlsConverter.h"
 
 enum FileStatus
 {
@@ -33,6 +34,8 @@ class textFiles : public QDialog
 public:
     explicit textFiles(QWidget *parent = nullptr);
     ~textFiles();
+
+    xlsConverter converter;
 
     void showTable(std::vector<std::vector<std::string>> &table);
 

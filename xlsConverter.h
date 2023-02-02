@@ -57,7 +57,8 @@ public:
 
     void clearInvoiceData();
     void clearQrData();
-
+    void clearResult();
+    void clear();
 
     void saveResult(std::wstring path);
 

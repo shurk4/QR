@@ -80,6 +80,21 @@ void qrDialog::on_pushButtonFirstQty_clicked()
 }
 //Выбор первой ячейки количества
 
+//Выбор последней ячейки количества
+void qrDialog::on_pushButtonLastQty_clicked()
+{
+    if(converter.invoiceXls.size() > 0)
+    {
+        // Взять данные из выбранной ячейки
+        int row = ui->tableWidget->selectionModel()->currentIndex().row();
+        // Взять данные из выбранной ячейки
+
+        converter.invoiceSheetSettings[currentTab].stopRow = row;
+        ui->labelLastQty->setText(QString::number(row + 1));
+    }
+}
+//Выбор последней ячейки количества
+
 // Открыть файл
 void qrDialog::on_pushButtonOpenFile_clicked()
 {
@@ -147,7 +162,7 @@ void qrDialog::on_pushButtonTabUp_clicked()
     {
         currentTab++;
         showInvoice = true;
-        ui->pushButtonShowInvoice->setText("Показать товары");
+        ui->pushButtonShowInvoice->setText("Товары");
         showTab(converter.invoiceXls[currentTab]);
     }
 }
@@ -158,7 +173,7 @@ void qrDialog::on_pushButtonTabDown_clicked()
     {
         currentTab--;
         showInvoice = true;
-        ui->pushButtonShowInvoice->setText("Показать товары");
+        ui->pushButtonShowInvoice->setText("Товары");
         showTab(converter.invoiceXls[currentTab]);
     }
 }
@@ -279,6 +294,7 @@ void qrDialog::on_pushButtonResetInvoice_clicked()
     ui->labelColQty->setText("");
     ui->labelItemsQty->setText("");
     ui->labelPositions->setText("");
+    ui->labelLastQty->setText("-");
     compares.clear();
     converter.clearInvoiceData();
     converter.clearArt();
@@ -298,13 +314,13 @@ void qrDialog::on_pushButtonShowInvoice_clicked()
         {
             showInvoice = false;
             showTab(converter.invoiceResult);
-            ui->pushButtonShowInvoice->setText("Показать инвойс");
+            ui->pushButtonShowInvoice->setText("Инвойс");
         }
         else
         {
             showInvoice = true;
             showTab(converter.invoiceXls[currentTab]);
-            ui->pushButtonShowInvoice->setText("Показать товары");
+            ui->pushButtonShowInvoice->setText("Товары");
         }
     }
 }
@@ -327,6 +343,13 @@ void qrDialog::on_pushButtonAnalyzeInvoice_clicked()
         int CellSize;
         int itemsQty = 0;
         int colsNum;
+        int stopRow = converter.invoiceXls[currentTab].size();
+
+        if(converter.invoiceSheetSettings[currentTab].stopRow > -1
+                &&converter.invoiceSheetSettings[currentTab].stopRow > converter.invoiceSheetSettings[currentTab].startRow)
+        {
+            stopRow = converter.invoiceSheetSettings[currentTab].stopRow + 1;
+        }
         std::vector<int> notEmptyCells;
 
         // поиск строк товаров
@@ -337,7 +360,7 @@ void qrDialog::on_pushButtonAnalyzeInvoice_clicked()
             file.close();
         }
 
-        for(int row = converter.invoiceSheetSettings[currentTab].startRow; row < converter.invoiceXls[currentTab].size(); row++)
+        for(int row = converter.invoiceSheetSettings[currentTab].startRow; row < stopRow; row++)
         {
             if(ui->checkBoxLogs->isChecked())
             {
@@ -475,7 +498,7 @@ void qrDialog::on_pushButtonAnalyzeInvoice_clicked()
 
         ui->labelPositions->setText(QString::number(converter.invoiceResult.size()));
         ui->labelItemsQty->setText(QString::number(itemsQty));
-        ui->pushButtonShowInvoice->setText("Показать инвойс");
+        ui->pushButtonShowInvoice->setText("Инвойс");
         showTab(converter.invoiceResult);
         analyzed = true;
     }
@@ -531,7 +554,7 @@ void qrDialog::on_pushButton_clicked()
             }
         }
         ui->labelPositions->setText(QString::number(converter.invoiceResult.size()));
-        ui->pushButtonShowInvoice->setText("Показать инвойс");
+        ui->pushButtonShowInvoice->setText("Инвойс");
         showTab(converter.invoiceResult);
         analyzed = true;
         //удаление не нужных столбцов // ПРОВЕРИТЬ ФАЙЛ C:\Users\User\Desktop\test\F22ST11GX035CIPL_UPD.xlsx,_Spec14
@@ -679,73 +702,65 @@ void qrDialog::showTabQr(std::vector<std::vector<std::string>> &inTab)
     ui->labelTabQR->setText(labelTabString);
     ui->labelTabsQR->setText(labelTabsString);
 
-        int rows;
-        if(inTab.size() > 10000)
-        {
-             rows = 10000;
-        }
-        else
-        {
-            rows = inTab.size();
-        }
+    int rows;
+    if(inTab.size() > 10000)
+    {
+         rows = 10000;
+    }
+    else
+    {
+        rows = inTab.size();
+    }
 
-        int cols = inTab[0].size();
+    int cols = inTab[0].size();
 
+    if(ui->checkBoxLogs->isChecked())
+    {
+        file.open("log.txt", std::ios::app);
+        file << "Array size: " << inTab.size() << "/" << inTab[0].size() << "\n";
+        file.close();
+    }
+
+    ui->tableWidget_2->setRowCount(rows);
+    ui->tableWidget_2->setColumnCount(cols);
+
+    if(ui->checkBoxLogs->isChecked())
+    {
+        file.open("log.txt", std::ios::app);
+        file << "Table size installed: " << rows << "/" << cols << "\n";
+        file.close();
+    }
+
+    ui->tableWidget_2->setHorizontalHeaderLabels(QStringList() << "A" << "B" << "C"
+                                               << "D" << "E" << "F" << "G" << "H"
+                                               << "I" << "J" << "K" << "L" << "M"); // Имена столбцов вместо цифр
+
+    if(ui->checkBoxLogs->isChecked())
+    {
+        file.open("log.txt", std::ios::app);
+        file << "\n-----Show Table\n";
+        file.close();
+    }
+
+    for(int row = 0; row < inTab.size(); row++)
+    {
         if(ui->checkBoxLogs->isChecked())
         {
             file.open("log.txt", std::ios::app);
-            file << "Array size: " << inTab.size() << "/" << inTab[0].size() << "\n";
+            file << "row: " << row << " | ";
             file.close();
         }
 
-        ui->tableWidget_2->setRowCount(rows);
-        ui->tableWidget_2->setColumnCount(cols);
-
-        if(ui->checkBoxLogs->isChecked())
+        for(int col = 0; col < inTab[row].size(); col++)
         {
-            file.open("log.txt", std::ios::app);
-            file << "Table size installed: " << rows << "/" << cols << "\n";
-            file.close();
-        }
-
-        ui->tableWidget_2->setHorizontalHeaderLabels(QStringList() << "A" << "B" << "C"
-                                                   << "D" << "E" << "F" << "G" << "H"
-                                                   << "I" << "J" << "K" << "L" << "M"); // Имена столбцов вместо цифр
-
-        if(ui->checkBoxLogs->isChecked())
-        {
-            file.open("log.txt", std::ios::app);
-            file << "\n-----Show Table\n";
-            file.close();
-        }
-
-        for(int row = 0; row < inTab.size(); row++)
-        {
-            if(ui->checkBoxLogs->isChecked())
-            {
-                file.open("log.txt", std::ios::app);
-                file << "row: " << row << " | ";
-                file.close();
-            }
-
-            for(int col = 0; col < inTab[row].size(); col++)
-            {
-                if(inTab[row].size() > cols) cols = inTab[row].size();
-                QTableWidgetItem *tbl = new QTableWidgetItem(QString::fromStdString(inTab[row][col]));
-                ui->tableWidget_2->setItem(row, col, tbl);
-
-                if(ui->checkBoxLogs->isChecked())
-                {
-                    file.open("log.txt", std::ios::app);
-                    file << inTab[row][col] << " | ";
-                    file.close();
-                }
-            }
+            if(inTab[row].size() > cols) cols = inTab[row].size();
+            QTableWidgetItem *tbl = new QTableWidgetItem(QString::fromStdString(inTab[row][col]));
+            ui->tableWidget_2->setItem(row, col, tbl);
 
             if(ui->checkBoxLogs->isChecked())
             {
                 file.open("log.txt", std::ios::app);
-                file << "\n";
+                file << inTab[row][col] << " | ";
                 file.close();
             }
         }
@@ -753,21 +768,31 @@ void qrDialog::showTabQr(std::vector<std::vector<std::string>> &inTab)
         if(ui->checkBoxLogs->isChecked())
         {
             file.open("log.txt", std::ios::app);
-            file << "----- complited!\n";
-            file << "resize table cells\n";
+            file << "\n";
             file.close();
         }
+    }
 
-        // Размеры
-        ui->tableWidget_2->resizeRowsToContents();
-        ui->tableWidget_2->resizeColumnsToContents();
+    if(ui->checkBoxLogs->isChecked())
+    {
+        file.open("log.txt", std::ios::app);
+        file << "----- complited!\n";
+        file << "resize table cells\n";
+        file.close();
+    }
 
-        if(ui->checkBoxLogs->isChecked())
-        {
-            file.open("log.txt", std::ios::app);
-            file << "\nshowTabQR complited!\n\n";
-            file.close();
-        }
+    // Размеры
+    ui->tableWidget_2->resizeRowsToContents();
+    ui->tableWidget_2->resizeColumnsToContents();
+
+    if(ui->checkBoxLogs->isChecked())
+    {
+        file.open("log.txt", std::ios::app);
+        file << "\nshowTabQR complited!\n\n";
+        file.close();
+    }
+
+    ui->tableWidget_2->horizontalScrollBar()->setValue(0);
 }
 
 std::string qrDialog::toSymbol(int in)
@@ -1177,10 +1202,11 @@ void qrDialog::on_pushButtonShowResult_clicked()
                         tempResultRow.push_back(std::to_string(numGroup));
 
                         // добавление QR "Идентификатор"
-                        std::string qrCut;
+                        std::string qrCut;                        
+                        std::string qr = tempQr[qrRow][0];
+
                         for(int k = 0; k < ui->lineEditQrLenght->text().toInt(); k++)
                         {
-                            std::string qr = tempQr[qrRow][0];
                             qrCut += qr[k];
                         }
                         tempResultRow.push_back(qrCut);
@@ -1379,7 +1405,6 @@ void qrDialog::on_pushButtonAddToInv_clicked()
     showTab(converter.invoiceResult);
 }
 
-
 void qrDialog::on_pushButtonHelp_clicked()
 {
     if(!helpWindow->isVisible())
@@ -1388,22 +1413,8 @@ void qrDialog::on_pushButtonHelp_clicked()
     }
 }
 
-
-void qrDialog::on_pushButtonText_clicked()
-{
-    textFiles *txtWindow = new textFiles;
-    txtWindow->setModal(true);
-    txtWindow->show();
-
-    connect(this, &qrDialog::toTextFiles, txtWindow, &textFiles::toTextFiles); // Отправка данных из первого окна во второе
-    emit toTextFiles(converter.invoiceResult);
-
-    connect(txtWindow, &textFiles::fromTextFiles, this, &qrDialog::fromTextFiles); // Получение данных из второго окна
-}
-
 void qrDialog::fromTextFiles(std::vector<std::vector<std::string> > data)
 {
     converter.qrResult = data;
     showTabQr(converter.qrResult);
 }
-
