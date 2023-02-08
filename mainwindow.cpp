@@ -33,3 +33,11 @@ void MainWindow::on_pushButton_clicked()
     textFiles->show();
 }
 
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    hide();
+    containers* ctnWindow = new containers;
+    ctnWindow->show();
+}
+
