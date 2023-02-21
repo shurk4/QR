@@ -51,7 +51,14 @@ add_executable(QR WIN32 main.cpp
 
     help.h
     help.cpp
-    help.ui)
+    help.ui
+
+    config.h
+    config.cpp
+
+    version.h
+    version.cpp
+)
 
 target_link_libraries(QR
         Qt5::Core

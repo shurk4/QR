@@ -3,10 +3,13 @@
 #pragma once
 
 #include <QMainWindow>
+#include <QProcess>
 #include <iostream>
 #include "qrDialog.h"
 #include "txtfiles.h"
 #include "containers.h"
+#include "config.h"
+#include "version.h"
 
 namespace Ui {
 class MainWindow;
@@ -30,8 +33,14 @@ private slots:
 
     void on_pushButton_2_clicked();
 
+    void on_pushButton_3_clicked();
+
 private:
     Ui::MainWindow *ui;
+
+    Config config;
+    QString currentVer;
+    QString sourseVer;
 };
 
 #endif // MAINWINDOW_H

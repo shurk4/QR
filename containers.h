@@ -61,6 +61,10 @@ private slots:
 
     void on_pushButtonResult_clicked();
 
+    void on_pushButtonSave_clicked();
+
+    void on_pushButton_clicked();
+
 private:
     Ui::containers *ui;
 

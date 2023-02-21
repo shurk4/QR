@@ -990,7 +990,7 @@ void qrDialog::on_pushButtonAddToQrResult_clicked()
             {
                 showQr = false;
                 showTabQr(converter.qrResult);
-                ui->pushButtonShowQR->setText("Показать Файл");
+                ui->pushButtonShowQR->setText("Файл");
             }
 
             if(ui->checkBoxLogs->isChecked())
@@ -1024,13 +1024,13 @@ void qrDialog::on_pushButtonShowQR_clicked()
         {
             showQr = false;
             showTabQr(converter.qrResult);
-            ui->pushButtonShowQR->setText("Показать Файл");
+            ui->pushButtonShowQR->setText("Файл");
         }
         else
         {
             showQr = true;
             showTabQr(converter.qrXls[currentTabQr]);
-            ui->pushButtonShowQR->setText("Показать выбранные");
+            ui->pushButtonShowQR->setText("Коды");
         }
     }
 }

@@ -315,6 +315,8 @@ void containers::on_pushButtonSpecAnalyze_clicked()
 {
     int startRow = converter.qrSheetSettings[currentTab_1].startRow;
     int itemCol = converter.qrSheetSettings[currentTab_1].itemCol;
+
+    int ctnCounter = 0;
 //    bool ctnNumberFirst = false;
 
     std::string currentCtnNumber; // текущий номер контейнера
@@ -328,7 +330,7 @@ void containers::on_pushButtonSpecAnalyze_clicked()
         // если выбрана пустая ячейка итем кода ищем в строке номер контейнера
         if(emptyCell(converter.qrXls[currentTab_1][startRow][itemCol]))
         {
-//            QMessageBox::information(this, "!", "Выбрана неправильная ячейка с item кодом!");
+            QMessageBox::information(this, "!", "Выбрана неправильная ячейка с item кодом!");
 //            for(int col = 0; col < converter.qrXls[currentTab_1][startRow].size(); col++)
 //            {
 //                if(isCntNum(converter.qrXls[currentTab_1][startRow][col]))
@@ -385,9 +387,10 @@ void containers::on_pushButtonSpecAnalyze_clicked()
 
                     if(isCntNum(converter.qrXls[currentTab_1][row][ctnCol]))
                     {
+                        ctnCounter++;
                         ctnColFound = true;
                         currentCtnNumber = converter.qrXls[currentTab_1][row][ctnCol];
-                        QString message = "Текущий номер контейнера: " + QString::fromStdString(converter.qrXls[currentTab_1][row][ctnCol]);
+                        // QString message = "Текущий номер контейнера: " + QString::fromStdString(converter.qrXls[currentTab_1][row][ctnCol]);
 //                        QMessageBox::information(this, "!", message);
                     }
                     else
@@ -444,6 +447,8 @@ void containers::on_pushButtonSpecAnalyze_clicked()
 
             //вывод таблицы с результатом
             showTable_1(converter.qrResult);
+            ui->labelPositionNum->setText(QString::number(itemCtn.size()));
+            ui->labelCtnNum->setText(QString::number(ctnCounter));
         }
     }
     else
@@ -452,6 +457,7 @@ void containers::on_pushButtonSpecAnalyze_clicked()
     }
 }
 
+// подготовка результата
 void containers::on_pushButtonResult_clicked()
 {
     int itemCol = -1;
@@ -467,14 +473,14 @@ void containers::on_pushButtonResult_clicked()
                 for(int col = 0; col < converter.invoiceXls[currentTab_2][row].size(); col++)
                 {
 //                    QString message = "converter.invoiceXls[currentTab_2][row][col]: " + QString::fromStdString(converter.invoiceXls[currentTab_2][row][col]);
-//                    QMessageBox::critical(this, "!", message);
+//                    // QMessageBox::critical(this, "!", message);
 
                     auto it = itemCtn.find(converter.invoiceXls[currentTab_2][row][col]);
 
                     if(it != itemCtn.end())
                     {
-                        QString message = "It: " + QString::fromStdString(it->first);
-                        QMessageBox::critical(this, "!", message);
+                        // QString message = "It: " + QString::fromStdString(it->first);
+                        // QMessageBox::critical(this, "!", message);
                         itemCol = col;
                         firstRow = row;
                         break;
@@ -494,20 +500,20 @@ void containers::on_pushButtonResult_clicked()
         // если колонка найдена
         if(itemCol > -1)
         {            
-            QMessageBox::critical(this, "!", "itemCtn.size(): " + QString::number(itemCtn.size()));
+            // QMessageBox::critical(this, "!", "itemCtn.size(): " + QString::number(itemCtn.size()));
             for(int row = firstRow; row < converter.invoiceXls[currentTab_2].size(); row++)
             {
-                QMessageBox::critical(this, "!", "Row: " + QString::number(row));
-                QMessageBox::critical(this, "!",
-                                      "Item: " + QString::fromStdString(converter.invoiceXls[currentTab_2][row][itemCol]));
+                // QMessageBox::critical(this, "!", "Row: " + QString::number(row));
+                // QMessageBox::critical(this, "!",
+//                                      "Item: " + QString::fromStdString(converter.invoiceXls[currentTab_2][row][itemCol]));
                 auto range = itemCtn.equal_range(converter.invoiceXls[currentTab_2][row][itemCol]);
                 if(range.first != itemCtn.end() && range.second != itemCtn.end())
                 {
                     itemNum++;
                     for(auto i = range.first; i != range.second; i++)
                     {
-                        QString message = "i.first: " + QString::fromStdString(i->first);
-                        QMessageBox::critical(this, "!", message);
+                        // QString message = "i.first: " + QString::fromStdString(i->first);
+                        // QMessageBox::critical(this, "!", message);
 
                         std::vector<std::string> tempRow;
                         tempRow.push_back(std::to_string(itemNum));
@@ -526,9 +532,35 @@ void containers::on_pushButtonResult_clicked()
                 }
                 else
                 {
-                    QMessageBox::critical(this, "!", "Больше кодов нет. Товаров: " + QString::number(converter.result.size()));
-                    break;
+                    auto it = itemCtn.find(converter.invoiceXls[currentTab_2][row][itemCol]);
+                    if(it != itemCtn.end())
+                    {
+                        itemNum++;
+                        // QString message = "it.first: " + QString::fromStdString(it->first);
+//                        QMessageBox::critical(this, "!", message);
+
+                        std::vector<std::string> tempRow;
+                        tempRow.push_back(std::to_string(itemNum));
+                        tempRow.push_back(it->second.ctnNumber);
+                        tempRow.push_back("CN");
+                        if(it->second.fullLoad)
+                        {
+                            tempRow.push_back(std::to_string(2));
+                        }
+                        else
+                        {
+                            tempRow.push_back(std::to_string(1));
+                        }
+                        converter.result.push_back(tempRow);
+                    }
+                    else
+                    {
+//                        QMessageBox::critical(this, "!", "Больше кодов нет. Товаров: " + QString::number(converter.result.size()));
+                        break;
+                    }
                 }
+
+                if(emptyCell(converter.invoiceXls[currentTab_2][row][itemCol])) break;
             }
         }
 
@@ -538,5 +570,56 @@ void containers::on_pushButtonResult_clicked()
     {
         QMessageBox::information(this, "!", "Сначала нужно открыть файл инвойса!");
     }
+}
+
+// Сохранить результат
+void containers::on_pushButtonSave_clicked()
+{
+    if(converter.result.size() > 0)
+    {
+        lastPath = QFileInfo(lastPath.path()).absolutePath() + "/containers.xls";
+
+        QString fileName = QFileDialog::getSaveFileName(this, tr("Сохранить результат"), lastPath.absolutePath(), tr("Таблица xls (*.xls)"));
+        if (fileName != "")
+        {
+            try
+            {
+                std::wstring path = fileName.toStdWString();
+                converter.saveContainers(path);
+                QMessageBox::information(this, "!", "Файл сохранён!");
+            }
+            catch (...)
+            {
+                QMessageBox::critical(this, "!", "Не удалось сохранить файл!");
+            }
+        }
+    }
+    else
+    {
+        QMessageBox::information(this, "!", "Нечего сохранять!");
+    }
+}
+
+// Новый
+void containers::on_pushButton_clicked()
+{
+    ui->tableWidget_1->clear();
+    ui->tableWidget_2->clear();
+    ui->labelCtnNum->clear();
+    ui->labelInv->clear();
+    ui->labelItemCol->clear();
+    ui->labelItemRow->clear();
+    ui->labelPositionNum->clear();
+    ui->labelSpec->clear();
+    ui->labelTab->setText(QString::number(0));
+    ui->labelTab_2->setText(QString::number(0));
+    ui->labelTabs->setText(QString::number(0));
+    ui->labelTabs_2->setText(QString::number(0));
+
+    currentTab_1 = 0;
+    currentTab_2 = 0;
+    itemNum = 0;
+    itemCtn.clear();
+    converter.clear();
 }
 

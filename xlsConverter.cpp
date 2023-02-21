@@ -246,6 +246,76 @@ void xlsConverter::saveResult(std::wstring path)
     xls.SaveAs(&(path[0]));
 }
 
+void xlsConverter::saveContainers(std::wstring patch)
+{
+    BasicExcel xls; // объявление переменной эксель
+
+    // create sheet 1 and get the associated BasicExcelWorksheet pointer
+    xls.New(1); // создание одной страницы
+    BasicExcelWorksheet* sheet = xls.GetWorksheet(0); // получаем текущую рабочую страницу по индексу из созданной переменной эксель
+
+    XLSFormatManager fmt_mgr(xls);
+    CellFormat fmt(fmt_mgr);
+    BasicExcelCell* cell;
+
+    // HEADER
+    fmt.set_format_string(XLS_FORMAT_TEXT);
+    cell = sheet->Cell(0, 0);
+    wchar_t* numItem = L"Номер товара";
+    cell->Set(numItem);
+    cell->SetFormat(fmt);
+
+    fmt.set_format_string(XLS_FORMAT_TEXT);
+    cell = sheet->Cell(0, 1);
+    wchar_t* numGroup = L"Текст1";
+    cell->Set(numGroup);
+    cell->SetFormat(fmt);
+
+    fmt.set_format_string(XLS_FORMAT_TEXT);
+    cell = sheet->Cell(0, 2);
+    wchar_t* id = L"Идентификатор текста";
+    cell->Set(id);
+    cell->SetFormat(fmt);
+
+    fmt.set_format_string(XLS_FORMAT_TEXT);
+    cell = sheet->Cell(0, 3);
+    wchar_t* codeType = L"Тип измерения";
+    cell->Set(codeType);
+    cell->SetFormat(fmt);
+    // HEADER
+
+    for(int i = 0; i < result.size(); i++)
+    {
+        int row = i + 1;
+
+        fmt.set_format_string(XLS_FORMAT_TEXT);
+        cell = sheet->Cell(row, 0);
+//        wchar_t* numItem = L"Номер товара";
+        cell->Set(&(result[i][0][0]));
+        cell->SetFormat(fmt);
+
+        fmt.set_format_string(XLS_FORMAT_TEXT);
+        cell = sheet->Cell(row, 1);
+//        wchar_t* numGroup = L"Текст1";
+        cell->Set(&(result[i][1][0]));
+        cell->SetFormat(fmt);
+
+        fmt.set_format_string(XLS_FORMAT_TEXT);
+        cell = sheet->Cell(row, 2);
+//        wchar_t* id = L"Идентификатор текста";
+        cell->Set(&(result[i][2][0]));
+        cell->SetFormat(fmt);
+
+        fmt.set_format_string(XLS_FORMAT_TEXT);
+        cell = sheet->Cell(row, 3);
+//        wchar_t* codeType = L"Тип измерения";
+        cell->Set(&(result[i][3][0]));
+        cell->SetFormat(fmt);
+    }
+
+    xls.SaveAs(&(patch[0]));
+}
+
 xlsConverter::xlsConverter()
 {
 

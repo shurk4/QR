@@ -61,6 +61,7 @@ public:
     void clear();
 
     void saveResult(std::wstring path);
+    void saveContainers(std::wstring patch);
 
     xlsConverter();
 };
