@@ -10,12 +10,28 @@ Config::Config() : data(new ConfigData)
 {
     QFile inputFile("config.cfg");
 
-        if (inputFile.open(QIODevice::ReadOnly))
-        {
-           QDataStream in(&inputFile);
-           in >> config;
-           inputFile.close();
-        }
+    if (inputFile.open(QIODevice::ReadOnly))
+    {
+       QString currentData;
+       QTextStream in(&inputFile);
+       while (!in.atEnd())
+       {
+          if(currentData == "source:")
+          {
+              sourcePath = in.readLine();
+          }
+          if(currentData == "dest:")
+          {
+              destPath = in.readLine();
+          }
+          if(currentData == "version:")
+          {
+              versionPath = in.readLine();
+          }
+          currentData = in.readLine();
+       }
+       inputFile.close();
+    }
 }
 
 Config::Config(const Config &rhs)
@@ -33,29 +49,58 @@ Config &Config::operator=(const Config &rhs)
 
 Config::~Config(){}
 
-bool Config::contains(QString key)
+QString Config::getSourcePath()
 {
-    return config.contains(key);
+    return sourcePath;
 }
 
-QString Config::getValue(QString key)
+QString Config::getDestPath()
 {
-    return config[key];
+    return destPath;
 }
 
-void Config::setValue(QString key, QString value)
+QString Config::getVersionPath()
 {
-    config[key] = value;
+    return versionPath;
+}
+
+void Config::setSourcePath(QString str)
+{
+    sourcePath = str;
+}
+
+void Config::setDestPath(QString str)
+{
+    destPath = str;
+}
+
+void Config::setVersionPath(QString str)
+{
+    versionPath = str;
 }
 
 void Config::saveConfig()
 {
-    QFile file("config.cfg");
+    save(sourcePath);
+    save(destPath);
+}
+
+void Config::save(QString path)
+{
+    path += "/config.cfg";
+    QFile file(path);
 
      if (file.open(QIODevice::WriteOnly))
      {
-        QDataStream in(&file);
-        in << config;
+        QTextStream in(&file);
+
+        in << "source:\n" << sourcePath << "\n"
+           << "dest:\n" << destPath << "\n"
+           << "version:\n" << versionPath;
         file.close();
+     }
+     else
+     {
+
      }
 }

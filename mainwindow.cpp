@@ -7,23 +7,17 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-//    config.setValue("destPath", "E:/QRtoTKS_2_0");
-//    config.setValue("sourcePath", "Y:/QRtoTKS_2_0");
+    Version versionCurrent(config.getDestPath() + "/.ver");
+    Version versionSource(config.getSourcePath() + "/.ver");
 
-    Version versionCurrent(config.getValue("destPath") + "/.ver");
-    Version versionSource(config.getValue("sourcePath") + "/.ver");
-
-    if(config.contains("sourcePath"))
+    if(versionCurrent.getVersion() < versionSource.getVersion())
     {
-        currentVer = versionCurrent.getVersion();
+         ui->labelVersion->setText("Текущая версия: " + versionCurrent.getVersion() + "\n Доступна версия: " + versionSource.getVersion());
     }
-    if(config.contains("destPath"))
+    else
     {
-        sourseVer = versionSource.getVersion();
+        ui->labelVersion->hide();
     }
-
-    ui->labelVersion->setText("Текущая версия: " + currentVer + "\n Доступна версия: " + sourseVer);
-
 }
 
 MainWindow::~MainWindow()
@@ -44,14 +38,12 @@ void MainWindow::on_pushButtonExit_clicked()
     QCoreApplication::quit();
 }
 
-
 void MainWindow::on_pushButton_clicked()
 {
     hide();
     txtFiles* textFiles = new txtFiles;
     textFiles->show();
 }
-
 
 void MainWindow::on_pushButton_2_clicked()
 {
@@ -65,5 +57,6 @@ void MainWindow::on_pushButton_3_clicked()
 {
     QString updater = "./updater/updater.exe"; // Путь к программе
         QProcess::startDetached(updater);
+        this->close();
 }
 

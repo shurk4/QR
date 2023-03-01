@@ -7,6 +7,8 @@
 #include <QFile>
 #include <QTextStream>
 #include <QDir>
+#include <QFileDialog>
+#include <QMessageBox>
 
 class ConfigData;
 
@@ -19,15 +21,25 @@ public:
     Config &operator=(const Config &);
     ~Config();
 
-    bool contains(QString key);
-    QString getValue(QString key);
-    void setValue(QString key, QString value);
+    QString getSourcePath();
+    QString getDestPath();
+    QString getVersionPath();
+
+    void setSourcePath(QString str);
+    void setDestPath(QString str);
+    void setVersionPath(QString str);
 
     void saveConfig();
+    void save(QString path);
 
 private:
     QSharedDataPointer<ConfigData> data;
-    QMap<QString, QString> config;
+
+    QVector<QString> settingsData;
+
+    QString sourcePath = "empty";
+    QString destPath = "empty";
+    QString versionPath = "empty";
 };
 
 #endif // CONFIG_H
