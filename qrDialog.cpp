@@ -268,7 +268,7 @@ void qrDialog::showTab(std::vector<std::vector<std::string>> &inTab)
         }
 
         // Размеры
-        ui->tableWidget->resizeRowsToContents();
+//        ui->tableWidget->resizeRowsToContents();
         ui->tableWidget->resizeColumnsToContents();
 
         if(ui->checkBoxLogs->isChecked())

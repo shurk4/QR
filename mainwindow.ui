@@ -33,9 +33,17 @@
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QLabel" name="labelVersion">
+          <property name="font">
+           <font>
+            <family>XeniaC</family>
+            <pointsize>15</pointsize>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="styleSheet">
            <string notr="true">background-color: rgb(255, 255, 255);
-font: 30pt &quot;XeniaC&quot;; 
+font: 15pt &quot;XeniaC&quot;; 
 color:  rgb(0, 0, 255)</string>
           </property>
           <property name="text">
@@ -67,6 +75,14 @@ color:  rgb(255, 0, 0)</string>
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <family>Segoe UI</family>
+          <pointsize>20</pointsize>
+          <italic>false</italic>
+          <bold>false</bold>
+         </font>
         </property>
         <property name="styleSheet">
          <string notr="true">font: 20pt &quot;Segoe UI&quot;</string>

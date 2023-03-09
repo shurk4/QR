@@ -17,12 +17,12 @@ MainWindow::MainWindow(QWidget *parent) :
     else
     {
         ui->labelVersion->hide();
+        ui->pushButton_3->hide();
     }
 }
 
 MainWindow::~MainWindow()
 {
-    config.saveConfig();
     delete ui;
 }
 
