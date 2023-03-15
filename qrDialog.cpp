@@ -6,8 +6,6 @@ qrDialog::qrDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    QSizeF screenSize = QGuiApplication::primaryScreen()->availableSize();
-
     this->resize(1280, 720);
     this->setWindowFlags(windowFlags() | Qt::WindowMinimizeButtonHint
                          | Qt::WindowMaximizeButtonHint
@@ -58,6 +56,21 @@ bool qrDialog::tabAlreadyAdded(int tab)
     }
     return false;
 }
+
+void qrDialog::qrNewFileClear()
+{
+    addedQrTabs.clear();
+    selectedQrCols.clear();
+    compares.clear();
+
+    ui->labelColQR->clear();
+    ui->listWidget->clear();
+}
+
+void qrDialog::qrClear()
+{
+    qrNewFileClear();
+}
 // БУЛКИ
 
 // ЛЕВАЯ ТАБЛИЦА
@@ -74,7 +87,7 @@ void qrDialog::on_pushButtonFirstQty_clicked()
         converter.invoiceSheetSettings[currentTab].qtyCol = col;
         converter.invoiceSheetSettings[currentTab].startRow = row;
 
-        ui->labelColQty->setText(QString::fromStdString(toSymbol(col)));
+        ui->labelColQty->setText(QString::fromStdString(Extras::IntToSymbol(col)));
         ui->labelFirstQty->setText(QString::number(row + 1));
     }
 }
@@ -143,7 +156,7 @@ void qrDialog::on_pushButtonOpenFile_clicked()
             converter.readXls(path, converter.invoiceXls);
         }
 
-        ui->labelPath->setText(invPathTemp);
+        ui->labelPath->setText(QFileInfo(invPathTemp).fileName());
 
         QFile::remove(invoiceFileName);
 
@@ -188,95 +201,8 @@ void qrDialog::showTab(std::vector<std::vector<std::string>> &inTab)
     ui->labelTab->setText(labelTabString);
     ui->labelTabs->setText(labelTabsString);
 
-        int rows;
-        if(inTab.size() > 10000)
-        {
-             rows = 10000;
-        }
-        else
-        {
-            rows = inTab.size();
-        }
-
-        int cols = inTab[0].size();
-
-        if(ui->checkBoxLogs->isChecked())
-        {
-            file.open("log.txt", std::ios::app);
-            file << "Array size: " << inTab.size() << "/" << inTab[0].size() << "\n";
-            file.close();
-        }
-
-        ui->tableWidget->setRowCount(rows);
-        ui->tableWidget->setColumnCount(cols);
-
-        if(ui->checkBoxLogs->isChecked())
-        {
-            file.open("log.txt", std::ios::app);
-            file << "Table size installed: " << rows << "/" << cols << "\n";
-            file.close();
-        }
-
-        ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "A" << "B" << "C"
-                                                   << "D" << "E" << "F" << "G" << "H"
-                                                   << "I" << "J" << "K" << "L" << "M"); // Имена столбцов вместо цифр
-
-        if(ui->checkBoxLogs->isChecked())
-        {
-            file.open("log.txt", std::ios::app);
-            file << "\n-----Show Table\n";
-            file.close();
-        }
-
-        for(int row = 0; row < inTab.size(); row++)
-        {
-            if(ui->checkBoxLogs->isChecked())
-            {
-                file.open("log.txt", std::ios::app);
-                file << "row: " << row << " | ";
-                file.close();
-            }
-
-            for(int col = 0; col < inTab[row].size(); col++)
-            {
-                if(inTab[row].size() > cols) cols = inTab[row].size();
-                QTableWidgetItem *tbl = new QTableWidgetItem(QString::fromStdString(inTab[row][col]));
-                ui->tableWidget->setItem(row, col, tbl);
-
-                if(ui->checkBoxLogs->isChecked())
-                {
-                    file.open("log.txt", std::ios::app);
-                    file << inTab[row][col] << " | ";
-                    file.close();
-                }
-            }
-
-            if(ui->checkBoxLogs->isChecked())
-            {
-                file.open("log.txt", std::ios::app);
-                file << "\n";
-                file.close();
-            }
-        }
-
-        if(ui->checkBoxLogs->isChecked())
-        {
-            file.open("log.txt", std::ios::app);
-            file << "----- complited!\n";
-            file << "resize table cells\n";
-            file.close();
-        }
-
-        // Размеры
-//        ui->tableWidget->resizeRowsToContents();
-        ui->tableWidget->resizeColumnsToContents();
-
-        if(ui->checkBoxLogs->isChecked())
-        {
-            file.open("log.txt", std::ios::app);
-            file << "\nshowTabQR complited!\n\n";
-            file.close();
-        }
+    QVector<QVector<QString>> temp(Extras::toQvecConvert(inTab));
+    Extras::showTable(temp, ui->tableWidget);
 }
 // Вывести данные в таблицу
 
@@ -329,12 +255,6 @@ void qrDialog::on_pushButtonShowInvoice_clicked()
 // Анализируем данные в инвойс по заданным параметрам
 void qrDialog::on_pushButtonAnalyzeInvoice_clicked()
 {
-    if(ui->checkBoxLogs->isChecked())
-    {
-        file.open("log.txt", std::ios::app);
-        file << "\nInvoice analize is started\n\n";
-        file.close();
-    }
     if(!converter.invoiceSheetSettings.empty()
             && (converter.invoiceSheetSettings[currentTab].qtyCol > 0
             || converter.invoiceSheetSettings[currentTab].qtyCol < converter.invoiceXls[currentTab][0].size()))
@@ -353,61 +273,24 @@ void qrDialog::on_pushButtonAnalyzeInvoice_clicked()
         std::vector<int> notEmptyCells;
 
         // поиск строк товаров
-        if(ui->checkBoxLogs->isChecked())
-        {
-            file.open("log.txt", std::ios::app);
-            file << "\nItems Find started!\n";
-            file.close();
-        }
 
         for(int row = converter.invoiceSheetSettings[currentTab].startRow; row < stopRow; row++)
         {
-            if(ui->checkBoxLogs->isChecked())
-            {
-                file.open("log.txt", std::ios::app);
-                file << "\nRow: " << row << "\n";
-                file.close();
-            }
         std::vector<std::string> tempRow;
         bool notEmpty = true;
 
             if(row == converter.invoiceSheetSettings[currentTab].startRow)
             {
-                if(ui->checkBoxLogs->isChecked())
-                {
-                    file.open("log.txt", std::ios::app);
-                    file << "\nWrite start row\n";
-                    file.close();
-                }
                 for(int col = 0; col < converter.invoiceXls[currentTab][row].size(); col++)
                 {
-                    if(ui->checkBoxLogs->isChecked())
-                    {
-                        file.open("log.txt", std::ios::app);
-                        file << "col: " << col << "\n";
-                        file.close();
-                    }
                     if(!emptyCell(converter.invoiceXls[currentTab][row][col]))
                     {
-                        if(ui->checkBoxLogs->isChecked())
-                        {
-                            file.open("log.txt", std::ios::app);
-                            file << "\nNot empty cell: " << converter.invoiceXls[currentTab][row][col] << "\n";
-                            file.close();
-                        }
                         std::string cellData = converter.invoiceXls[currentTab][row][col];
                         notEmptyCells.push_back(col);
                         tempRow.push_back(cellData);
                         if(col == converter.invoiceSheetSettings[currentTab].qtyCol)
                         {
                             swap(tempRow[tempRow.size() - 1], tempRow[0]);
-
-                            if(ui->checkBoxLogs->isChecked())
-                            {
-                                file.open("log.txt", std::ios::app);
-                                file << "\nColumns is swapped\n";
-                                file.close();
-                            }
                         }
                     }
                 }
@@ -418,30 +301,11 @@ void qrDialog::on_pushButtonAnalyzeInvoice_clicked()
                 int emptyRowsCounter = 0;
                 for(int i = 0; i < notEmptyCells.size(); i++)
                 {
-                    if(ui->checkBoxLogs->isChecked())
-                    {
-                        file.open("log.txt", std::ios::app);
-                        file << "col: " << notEmptyCells[i] << "\n";
-                        file.close();
-                    }
                     tempRow.resize(colsNum);
                     std::string cellData = converter.invoiceXls[currentTab][row][notEmptyCells[i]];
 
-                    if(ui->checkBoxLogs->isChecked())
-                    {
-                        file.open("log.txt", std::ios::app);
-                        file << "Cell data: (" << converter.invoiceXls[currentTab][row][notEmptyCells[i]] << ")\n";
-                        file.close();
-                    }
-
                     if(emptyCell(cellData))
                     {
-                        if(ui->checkBoxLogs->isChecked())
-                        {
-                            file.open("log.txt", std::ios::app);
-                            file << "cell is empty: (" << cellData << ")\n";
-                            file.close();
-                        }
                         emptyRowsCounter++;
                     }
 
@@ -459,30 +323,8 @@ void qrDialog::on_pushButtonAnalyzeInvoice_clicked()
 
             if(notEmpty)
             {
-                if(ui->checkBoxLogs->isChecked())
-                {
-                    file.open("log.txt", std::ios::app);
-                    file << "Row is added\n";
-                    file.close();
-                }
                 converter.invoiceResult.push_back(tempRow);
             }
-            else
-            {
-                if(ui->checkBoxLogs->isChecked())
-                {
-                    file.open("log.txt", std::ios::app);
-                    file << "Row ignored\n";
-                    file.close();
-                }
-            }
-        }
-
-        if(ui->checkBoxLogs->isChecked())
-        {
-            file.open("log.txt", std::ios::app);
-            file << "\nItems Find complited!\n\n";
-            file.close();
         }
         //поиск строк товаров
 
@@ -566,6 +408,7 @@ void qrDialog::on_pushButton_clicked()
 void qrDialog::on_pushButtonOpenQR_clicked()
 {
     converter.qrXls.clear();
+    qrNewFileClear();
 
     QString qrPathTemp = QFileDialog::getOpenFileName(this, "Выберите файл QR", lastPath.absolutePath(), "*.xls *.xlsx");
     if(qrPathTemp.isEmpty())
@@ -610,7 +453,7 @@ void qrDialog::on_pushButtonOpenQR_clicked()
             converter.readXls(path, converter.qrXls);
         }
 
-        ui->labelPathQR->setText(qrPathTemp);
+        ui->labelPathQR->setText(QFileInfo(qrPathTemp).fileName());
 
         QFile::remove(qrFileName);
 
@@ -638,21 +481,14 @@ void qrDialog::on_pushButtonTabUpQR_clicked()
         {
             for(int i = 0; i < selectedQrCols[currentTabQr].size(); i++)
             {
-                QString itemText = QString::fromUtf16( u"Колонка : ") + QString::fromStdString(toSymbol(selectedQrCols[currentTabQr][i]))
+                QString itemText = QString::fromUtf16( u"Колонка : ") + QString::fromStdString(Extras::IntToSymbol(selectedQrCols[currentTabQr][i]))
                         + " (" + QString::fromStdString(converter.qrXls[currentTabQr][1][selectedQrCols[currentTabQr][i]]) + ")";
 
                 ui->listWidget->addItem(itemText);
             }
         }        
 
-        ui->labelColQR->setText(QString::fromStdString(toSymbol(converter.qrSheetSettings[currentTabQr].qrCol)));
-
-        if(ui->checkBoxLogs->isChecked())
-        {
-            file.open("log.txt", std::ios::app);
-            file << "\nQR Tab is changed UP. Current tab: " << currentTabQr << "\n";
-            file.close();
-        }
+        ui->labelColQR->setText(QString::fromStdString(Extras::IntToSymbol(converter.qrSheetSettings[currentTabQr].qrCol)));
     }
 }
 
@@ -670,137 +506,36 @@ void qrDialog::on_pushButtonTabDownQR_clicked()
         {
             for(int i = 0; i < selectedQrCols[currentTabQr].size(); i++)
             {
-                QString itemText = QString::fromUtf16( u"Колонка : ") + QString::fromStdString(toSymbol(selectedQrCols[currentTabQr][i]))
+                QString itemText = QString::fromUtf16( u"Колонка : ") + QString::fromStdString(Extras::IntToSymbol(selectedQrCols[currentTabQr][i]))
                         + " (" + QString::fromStdString(converter.qrXls[currentTabQr][1][selectedQrCols[currentTabQr][i]]) + ")";
                 ui->listWidget->addItem(itemText);
             }
         }
 
-        ui->labelColQR->setText(QString::fromStdString(toSymbol(converter.qrSheetSettings[currentTabQr].qrCol)));
-
-        if(ui->checkBoxLogs->isChecked())
-        {
-            file.open("log.txt", std::ios::app);
-            file << "\nQR Tab is changed Down. Current tab: " << currentTabQr << "\n";
-            file.close();
-        }
+        ui->labelColQR->setText(QString::fromStdString(Extras::IntToSymbol(converter.qrSheetSettings[currentTabQr].qrCol)));
     }
 }
 
 void qrDialog::showTabQr(std::vector<std::vector<std::string>> &inTab)
 {
-    if(ui->checkBoxLogs->isChecked())
-    {
-        file.open("log.txt", std::ios::app);
-        file << "\nshowTabQR is started! Current tab: " << currentTabQr << "\n";
-        file.close();
-    }
-
     QString labelTabString = QString::number(currentTabQr + 1);
     QString labelTabsString = QString::number(converter.qrXls.size());
 
     ui->labelTabQR->setText(labelTabString);
     ui->labelTabsQR->setText(labelTabsString);
 
-    int rows;
-    if(inTab.size() > 10000)
-    {
-         rows = 10000;
-    }
-    else
-    {
-        rows = inTab.size();
-    }
-
-    int cols = inTab[0].size();
-
-    if(ui->checkBoxLogs->isChecked())
-    {
-        file.open("log.txt", std::ios::app);
-        file << "Array size: " << inTab.size() << "/" << inTab[0].size() << "\n";
-        file.close();
-    }
-
-    ui->tableWidget_2->setRowCount(rows);
-    ui->tableWidget_2->setColumnCount(cols);
-
-    if(ui->checkBoxLogs->isChecked())
-    {
-        file.open("log.txt", std::ios::app);
-        file << "Table size installed: " << rows << "/" << cols << "\n";
-        file.close();
-    }
-
-    ui->tableWidget_2->setHorizontalHeaderLabels(QStringList() << "A" << "B" << "C"
-                                               << "D" << "E" << "F" << "G" << "H"
-                                               << "I" << "J" << "K" << "L" << "M"); // Имена столбцов вместо цифр
-
-    if(ui->checkBoxLogs->isChecked())
-    {
-        file.open("log.txt", std::ios::app);
-        file << "\n-----Show Table\n";
-        file.close();
-    }
-
-    for(int row = 0; row < inTab.size(); row++)
-    {
-        if(ui->checkBoxLogs->isChecked())
-        {
-            file.open("log.txt", std::ios::app);
-            file << "row: " << row << " | ";
-            file.close();
-        }
-
-        for(int col = 0; col < inTab[row].size(); col++)
-        {
-            if(inTab[row].size() > cols) cols = inTab[row].size();
-            QTableWidgetItem *tbl = new QTableWidgetItem(QString::fromStdString(inTab[row][col]));
-            ui->tableWidget_2->setItem(row, col, tbl);
-
-            if(ui->checkBoxLogs->isChecked())
-            {
-                file.open("log.txt", std::ios::app);
-                file << inTab[row][col] << " | ";
-                file.close();
-            }
-        }
-
-        if(ui->checkBoxLogs->isChecked())
-        {
-            file.open("log.txt", std::ios::app);
-            file << "\n";
-            file.close();
-        }
-    }
-
-    if(ui->checkBoxLogs->isChecked())
-    {
-        file.open("log.txt", std::ios::app);
-        file << "----- complited!\n";
-        file << "resize table cells\n";
-        file.close();
-    }
-
-    // Размеры
-    ui->tableWidget_2->resizeRowsToContents();
-    ui->tableWidget_2->resizeColumnsToContents();
-
-    if(ui->checkBoxLogs->isChecked())
-    {
-        file.open("log.txt", std::ios::app);
-        file << "\nshowTabQR complited!\n\n";
-        file.close();
-    }
+    QVector<QVector<QString>> temp(Extras::toQvecConvert(inTab));
+    Extras::showTable(temp, ui->tableWidget_2);
 
     ui->tableWidget_2->horizontalScrollBar()->setValue(0);
 }
 
-std::string qrDialog::toSymbol(int in)
-{
-    std::string str;
-        str += ('A' + in);
-        return str;
-}
+//std::string qrDialog::toSymbol(int in)
+//{
+//    std::string str;
+//        str += ('A' + in);
+//        return str;
+//}
 
 void qrDialog::on_pushButtonColQR_clicked()
 {
@@ -811,19 +546,10 @@ void qrDialog::on_pushButtonColQR_clicked()
         int row = ui->tableWidget_2->selectionModel()->currentIndex().row();
         // Взять данные из выбранной ячейки
 
-        if(ui->checkBoxLogs->isChecked())
-        {
-            file.open("log.txt", std::ios::app);
-            file << "\nGetting QR col position from table:\n"
-                 << "Row: " << ui->tableWidget_2->selectionModel()->currentIndex().row()
-                 << " Col: " << ui->tableWidget_2->selectionModel()->currentIndex().column() << "\n";
-            file.close();
-        }
-
         converter.qrSheetSettings[currentTabQr].qrCol = col;
         converter.qrSheetSettings[currentTabQr].startRow = row;
 
-        ui->labelColQR->setText(QString::fromStdString(toSymbol(converter.qrSheetSettings[currentTabQr].qrCol)));
+        ui->labelColQR->setText(QString::fromStdString(Extras::IntToSymbol(converter.qrSheetSettings[currentTabQr].qrCol)));
     }
     else
     {
@@ -869,7 +595,7 @@ void qrDialog::on_pushButtonAddColsQR_clicked()
         {
 //            QMessageBox::information(this, "!?", "Колонка уже есть");
             selectedQrCols[currentTabQr].push_back(col);
-            QString itemText = QString::fromUtf16( u"Колонка : ") + QString::fromStdString(toSymbol(col))
+            QString itemText = QString::fromUtf16( u"Колонка : ") + QString::fromStdString(Extras::IntToSymbol(col))
                     + " (" + QString::fromStdString(converter.qrXls[currentTabQr][row][col]) + ")";
             ui->listWidget->addItem(itemText);
         }
@@ -898,46 +624,19 @@ void qrDialog::on_pushButtonAddToQrResult_clicked()
 
             QString message = "Данные установлены\n Текущий размер массива: ";
 
-            if(ui->checkBoxLogs->isChecked())
-            {
-                file.open("log.txt", std::ios::app);
-                file << "\n--ADD QR CODES!--\n";
-                file.close();
-            }
-
             for(int row = 0; row < converter.qrXls[currentTabQr].size(); row++)
             {
 
                 std::vector<std::string> newRow;
 
-                if(ui->checkBoxLogs->isChecked())
-                {
-                    file.open("log.txt", std::ios::app);
-                    file << "\nrow: " << row << " | col: " << converter.qrSheetSettings[currentTabQr].qrCol << "\n";
-                    file.close();
-                }
-
                 if(emptyCell(converter.qrXls[currentTabQr][row][converter.qrSheetSettings[currentTabQr].qrCol])
                              || converter.qrXls[currentTabQr][row][converter.qrSheetSettings[currentTabQr].qrCol].size() < ui->lineEditQrLenght->text().toInt())
                 {
-                    if(ui->checkBoxLogs->isChecked())
-                    {
-                       file.open("log.txt", std::ios::app);
-                       file << "cell: " << row << "/" << converter.qrSheetSettings[currentTabQr].qrCol << " Is empty! row ignored\n";
-                       file.close();
-                    }
                    continue;
                 }
                 else
                 {
                     newRow.push_back(converter.qrXls[currentTabQr][row][converter.qrSheetSettings[currentTabQr].qrCol]);
-
-                    if(ui->checkBoxLogs->isChecked())
-                    {
-                        file.open("log.txt", std::ios::app);
-                        file << "cell: " << row << "/" << converter.qrSheetSettings[currentTabQr].qrCol << " Added!\n";
-                        file.close();
-                    }
                 }
 
 
@@ -947,44 +646,15 @@ void qrDialog::on_pushButtonAddToQrResult_clicked()
 
                     if(emptyCell(converter.qrXls[currentTabQr][row][selectedCol]))
                     {
-                        if(ui->checkBoxLogs->isChecked())
-                        {
-                            file.open("log.txt", std::ios::app);
-                            file << "cell: " << row << "/" << selectedCol << " Is empty!\n";
-                            file.close();
-                        }
                         newRow.push_back("NO DATA");
                     }
                     else
                     {
                         newRow.push_back(converter.qrXls[currentTabQr][row][selectedCol]);
-
-                        if(ui->checkBoxLogs->isChecked())
-                        {
-                            file.open("log.txt", std::ios::app);
-                            file << "cell: " << row << "/" << selectedCol << " Added!\n";
-                            file.close();
-                        }
                     }
-                }
-
-                if(ui->checkBoxLogs->isChecked())
-                {
-                    file.open("log.txt", std::ios::app);
-                    file << "Row is not emtpy! Added to qrResult\n";
-                    file.close();
                 }
                     converter.qrResult.push_back(newRow);
             }
-
-            if(ui->checkBoxLogs->isChecked())
-            {
-                file.open("log.txt", std::ios::app);
-                file << "Work with current tab array colplited\n";
-                file << "Trying show result data. qrResult size: " << converter.qrResult.size() << "\n";
-                file.close();
-            }
-
 
             if(showQr)
             {
@@ -993,22 +663,7 @@ void qrDialog::on_pushButtonAddToQrResult_clicked()
                 ui->pushButtonShowQR->setText("Файл");
             }
 
-            if(ui->checkBoxLogs->isChecked())
-            {
-                file.open("log.txt", std::ios::app);
-                file << "Table is showed\n";
-                file.close();
-            }
-
-
             addedQrTabs.push_back(currentTabQr);
-
-            if(ui->checkBoxLogs->isChecked())
-            {
-                file.open("log.txt", std::ios::app);
-                file << "Tab is marked as processed\n";
-                file.close();
-            }
 
             ui->labelQrQty->setText(QString::number(converter.qrResult.size()));
             showTabQr(converter.qrResult);
@@ -1093,7 +748,7 @@ void qrDialog::on_pushButtonDelete_clicked()
             QString itemText;
             QTextStream textStream(&itemText);
 
-            textStream << "Колонка : " << QString::fromStdString(toSymbol(selectedQrCols[currentTabQr][i]))
+            textStream << "Колонка : " << QString::fromStdString(Extras::IntToSymbol(selectedQrCols[currentTabQr][i]))
                        << " (" << QString::fromStdString(converter.qrXls[currentTabQr][1][selectedQrCols[currentTabQr][i]]) << ")";
             ui->listWidget->addItem(itemText);
         }
@@ -1103,13 +758,6 @@ void qrDialog::on_pushButtonDelete_clicked()
 // Показать результат, если надо - заполнить
 void qrDialog::on_pushButtonShowResult_clicked()
 {
-    if(ui->checkBoxLogs->isChecked())
-    {
-        file.open("log.txt", std::ios::app);
-        file << "\n--- ShowResult is started!\n";
-        file.close();
-    }
-
     if(converter.invoiceResult.size() > 0 && converter.qrResult.size() > 0)
     {
         tempInvoice = converter.invoiceResult;
@@ -1252,15 +900,6 @@ void qrDialog::on_pushButtonShowResult_clicked()
     else
     {
         QMessageBox::information(this, "Внимание!", "Не подготовлены промежуточные данные!");
-
-        if(ui->checkBoxLogs->isChecked())
-        {
-            file.open("log.txt", std::ios::app);
-            file << "\n--- ShowResult aborted! No data!\n"
-                 << "converter.invoiceResult.size(): " << converter.invoiceResult.size()
-                 << "converter.qrResult.size(): " << converter.qrResult.size() << "\n\n";
-            file.close();
-        }
     }
 }
 
@@ -1345,6 +984,8 @@ void qrDialog::on_pushButtonNew_clicked()
     ui->labelPositions->setText("");
     compares.clear();
     converter.clearInvoiceData();
+
+    qrClear();
 
     converter.clearQrData();
     selectedQrCols.clear();

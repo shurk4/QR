@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1289</width>
+    <width>1214</width>
     <height>824</height>
    </rect>
   </property>
@@ -43,10 +43,13 @@
    </property>
    <item row="0" column="2">
     <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="sizeConstraint">
+      <enum>QLayout::SetDefaultConstraint</enum>
+     </property>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QLabel" name="label_20">
+        <widget class="QLabel" name="labelTabName2">
          <property name="minimumSize">
           <size>
            <width>105</width>
@@ -276,7 +279,7 @@
           </size>
          </property>
          <property name="text">
-          <string>QR/Рез.</string>
+          <string>Показать</string>
          </property>
         </widget>
        </item>
@@ -296,7 +299,35 @@
       </layout>
      </item>
      <item>
-      <widget class="QTableWidget" name="tableWidget_2"/>
+      <widget class="QTableWidget" name="tableWidget_2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="tabletTracking">
+        <bool>false</bool>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::StrongFocus</enum>
+       </property>
+       <property name="lineWidth">
+        <number>1</number>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAsNeeded</enum>
+       </property>
+       <property name="sizeAdjustPolicy">
+        <enum>QAbstractScrollArea::AdjustIgnored</enum>
+       </property>
+       <property name="autoScroll">
+        <bool>true</bool>
+       </property>
+       <property name="autoScrollMargin">
+        <number>16</number>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="pushButtonResetQR">
@@ -315,7 +346,7 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_7">
        <item>
-        <widget class="QLabel" name="label_19">
+        <widget class="QLabel" name="labelTabName1">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
            <horstretch>0</horstretch>

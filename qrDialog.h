@@ -11,7 +11,6 @@
 #include <fstream>
 
 #include "help.h"
-#include "qscreen.h"
 #include "ui_qrDialog.h"
 #include "QFileDialog"
 #include "QCheckBox"
@@ -19,6 +18,7 @@
 #include "qdir.h"
 #include "xlsConverter.h"
 #include "help.h"
+#include "extras.h"
 
 struct Compare
 {
@@ -42,7 +42,7 @@ public:
     void showTab(std::vector<std::vector<std::string>> &inTab);
     void showTabQr(std::vector<std::vector<std::string>> &inTab);
 
-    std::string toSymbol(int in);
+//    std::string toSymbol(int in);
 
     std::ofstream file;
 
@@ -74,6 +74,9 @@ public:
     std::vector<std::vector<std::string>> tempInvoice;
     std::vector<std::vector<std::string>> tempQr;
     std::vector<std::vector<std::string>> notUsedQr;
+
+    void qrNewFileClear();
+    void qrClear();
 
 private slots:
     void on_pushButtonOpenFile_clicked();

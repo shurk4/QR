@@ -58,6 +58,9 @@ add_executable(QR WIN32 main.cpp
 
     version.h
     version.cpp
+
+    extras.h
+    extras.cpp
 )
 
 target_link_libraries(QR
