@@ -52,7 +52,7 @@
         <widget class="QLabel" name="labelTabName2">
          <property name="minimumSize">
           <size>
-           <width>105</width>
+           <width>107</width>
            <height>0</height>
           </size>
          </property>
@@ -355,7 +355,7 @@
          </property>
          <property name="minimumSize">
           <size>
-           <width>105</width>
+           <width>107</width>
            <height>0</height>
           </size>
          </property>

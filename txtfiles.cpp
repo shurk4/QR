@@ -130,12 +130,12 @@ void txtFiles::on_pushButtonInv_clicked()
         if(ext == ".xlsx")
         {
             std::string path = invoiceFileName.toStdString();
-            converter.readXlsX(path, converter.invoiceXls);
+            converter.readXlsX(path, converter.invoiceXls, converter.invoiceSheetNames);
         }
         else
         {
             std::wstring path = invoiceFileName.toStdWString();
-            converter.readXls(path, converter.invoiceXls);
+            converter.readXls(path, converter.invoiceXls, converter.invoiceSheetNames);
         }
 
         ui->labelInv->setText(invPathTemp);

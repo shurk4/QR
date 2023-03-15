@@ -182,12 +182,12 @@ void containers::on_pushButtonSpecOpen_clicked()
         if(ext == ".xlsx")
         {
             std::string path = fileName.toStdString();
-            converter.readXlsX(path, converter.qrXls);
+            converter.readXlsX(path, converter.qrXls, converter.qrSheetNames);
         }
         else
         {
             std::wstring path = fileName.toStdWString();
-            converter.readXls(path, converter.qrXls);
+            converter.readXls(path, converter.qrXls, converter.qrSheetNames);
         }
 
         ui->labelSpec->setText(pathTemp);
@@ -241,12 +241,12 @@ void containers::on_pushButtonInvOpen_clicked()
         if(ext == ".xlsx")
         {
             std::string path = fileName.toStdString();
-            converter.readXlsX(path, converter.invoiceXls);
+            converter.readXlsX(path, converter.invoiceXls, converter.invoiceSheetNames);
         }
         else
         {
             std::wstring path = fileName.toStdWString();
-            converter.readXls(path, converter.invoiceXls);
+            converter.readXls(path, converter.invoiceXls, converter.invoiceSheetNames);
         }
 
         ui->labelInv->setText(pathTemp);

@@ -2,13 +2,12 @@
 
 using namespace OpenXLSX;
 
-void xlsConverter::readXls(std::wstring path, std::vector<std::vector<std::vector<std::string>>> &tempXls)
+void xlsConverter::readXls(std::wstring path, std::vector<std::vector<std::vector<std::string>>> &tempXls, QVector<QString> &sheetNames)
 {
     std::cout << "readXls started\n";
     BasicExcel xls;
 
     xls.Load(&(path[0]));
-
 
     std::cout << "XLS xls.GetTotalWorkSheets()" << xls.GetTotalWorkSheets() << "\n";
 
@@ -16,6 +15,39 @@ void xlsConverter::readXls(std::wstring path, std::vector<std::vector<std::vecto
     for(int tab = 0; tab < xls.GetTotalWorkSheets(); tab++)
     {
         BasicExcelWorksheet* sheet = xls.GetWorksheet(tab); // получение нужной страницы из файла
+
+        wchar_t* wName;
+        std::wstring nameWS;
+
+        char* name;
+        std::string nameS;
+
+        std::cout << std::endl;
+
+        std::cout << "Print names:\n";
+
+        QString qTempName;
+
+        if(xls.GetUnicodeSheetName(tab) == NULL)
+        {
+             std::string tempName = xls.GetAnsiSheetName(tab);
+
+             qTempName = QString::fromStdString(tempName);
+             std::cout << "Ansi name: " << xls.GetAnsiSheetName(tab) << "\n";
+        }
+        else
+        {
+            std::wstring tempName = xls.GetUnicodeSheetName(tab);
+
+            qTempName = QString::fromStdWString(tempName);
+            std::cout << "Unicode name: " << xls.GetUnicodeSheetName(tab) << "\n";
+        }
+
+        std::cout << "QString: " << qTempName.toStdString() << "\n";
+
+        sheetNames.push_back(qTempName);
+
+        std::cout << "Sheet names size" << sheetNames.size() << "\n";
 
         tempXls[tab].resize(sheet->GetTotalRows());
         for(int row = 0; row < sheet->GetTotalRows(); row++)
@@ -32,7 +64,7 @@ void xlsConverter::readXls(std::wstring path, std::vector<std::vector<std::vecto
     }
 }
 
-void xlsConverter::readXlsX(std::string path, std::vector<std::vector<std::vector<std::string> > > &tempXls)
+void xlsConverter::readXlsX(std::string path, std::vector<std::vector<std::vector<std::string> > > &tempXls, QVector<QString> &sheetNames)
 {
     std::cout << "readXlsX started\n";
 
@@ -42,6 +74,8 @@ void xlsConverter::readXlsX(std::string path, std::vector<std::vector<std::vecto
     doc.open(path);
 
     auto sheets = doc.workbook().worksheetNames();
+    sheetNames.resize(sheets.size());
+
     std::cout << "sheets size: " << sheets.size() << "\n";
 
     for(auto it : sheets)

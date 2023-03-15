@@ -148,12 +148,12 @@ void qrDialog::on_pushButtonOpenFile_clicked()
         if(ext == ".xlsx")
         {
             std::string path = invoiceFileName.toStdString();
-            converter.readXlsX(path, converter.invoiceXls);
+            converter.readXlsX(path, converter.invoiceXls, converter.invoiceSheetNames);
         }
         else
         {
             std::wstring path = invoiceFileName.toStdWString();
-            converter.readXls(path, converter.invoiceXls);
+            converter.readXls(path, converter.invoiceXls, converter.invoiceSheetNames);
         }
 
         ui->labelPath->setText(QFileInfo(invPathTemp).fileName());
@@ -163,7 +163,9 @@ void qrDialog::on_pushButtonOpenFile_clicked()
         // !!! ТАБЛИЦА !!!
         currentTab = 0;
         converter.invoiceSheetSettings.resize(converter.invoiceXls.size());
+
         showTab(converter.invoiceXls[currentTab]);
+        ui->labelTabName1->setText(converter.invoiceSheetNames[currentTab]);
     }
 }
 // Открыть файл
@@ -176,7 +178,9 @@ void qrDialog::on_pushButtonTabUp_clicked()
         currentTab++;
         showInvoice = true;
         ui->pushButtonShowInvoice->setText("Товары");
-        showTab(converter.invoiceXls[currentTab]);
+
+        showTab(converter.invoiceXls[currentTab]);        
+        ui->labelTabName1->setText(converter.invoiceSheetNames[currentTab]);
     }
 }
 
@@ -187,7 +191,9 @@ void qrDialog::on_pushButtonTabDown_clicked()
         currentTab--;
         showInvoice = true;
         ui->pushButtonShowInvoice->setText("Товары");
+
         showTab(converter.invoiceXls[currentTab]);
+        ui->labelTabName1->setText(converter.invoiceSheetNames[currentTab]);
     }
 }
 // Переключение вкладок
@@ -445,12 +451,12 @@ void qrDialog::on_pushButtonOpenQR_clicked()
         if(ext == ".xlsx")
         {
             std::string path = qrFileName.toStdString();
-            converter.readXlsX(path, converter.qrXls);
+            converter.readXlsX(path, converter.qrXls, converter.qrSheetNames);
         }
         else
         {
             std::wstring path = qrFileName.toStdWString();
-            converter.readXls(path, converter.qrXls);
+            converter.readXls(path, converter.qrXls, converter.qrSheetNames);
         }
 
         ui->labelPathQR->setText(QFileInfo(qrPathTemp).fileName());
@@ -521,6 +527,8 @@ void qrDialog::showTabQr(std::vector<std::vector<std::string>> &inTab)
     QString labelTabString = QString::number(currentTabQr + 1);
     QString labelTabsString = QString::number(converter.qrXls.size());
 
+    ui->labelTabName2->setText(converter.qrSheetNames[currentTabQr]);
+
     ui->labelTabQR->setText(labelTabString);
     ui->labelTabsQR->setText(labelTabsString);
 
@@ -529,13 +537,6 @@ void qrDialog::showTabQr(std::vector<std::vector<std::string>> &inTab)
 
     ui->tableWidget_2->horizontalScrollBar()->setValue(0);
 }
-
-//std::string qrDialog::toSymbol(int in)
-//{
-//    std::string str;
-//        str += ('A' + in);
-//        return str;
-//}
 
 void qrDialog::on_pushButtonColQR_clicked()
 {
