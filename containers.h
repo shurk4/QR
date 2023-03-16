@@ -3,6 +3,8 @@
 
 #include "qdir.h"
 #include "xlsConverter.h"
+#include "extras.h"
+
 #include "qdatetime.h"
 #include <QDialog>
 #include <QFileDialog>
@@ -10,7 +12,7 @@
 
 struct ItemInfo
 {
-    std::string ctnNumber;
+    QString ctnNumber;
     bool fullLoad = false;
     bool used = false;
 };
@@ -29,15 +31,15 @@ public:
 
     xlsConverter converter;
 
-    void showTable_1(std::vector<std::vector<std::string>> &inTab);
+    void showTable_1(QVector<QVector<QString>> &inTab);
 
-    void showTable_2(std::vector<std::vector<std::string>> &inTab);
+    void showTable_2(QVector<QVector<QString>> &inTab);
 
-    void collectItemsCtn(std::string item, ItemInfo itemInfo);
+    void collectItemsCtn(QString item, ItemInfo itemInfo);
 
     std::string toSymbol(int in);
 
-    bool emptyCell(std::string &str);
+    bool emptyCell(QString &str);
 
     bool isCntNum(std::string str);
 
@@ -76,7 +78,7 @@ private:
 //    int serial = 0;
     int itemNum = 0;
 
-    std::multimap<std::string, ItemInfo> itemCtn;
+    std::multimap<QString, ItemInfo> itemCtn;
 };
 
 #endif // CONTAINERS_H

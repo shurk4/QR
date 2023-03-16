@@ -2,7 +2,6 @@
 #define XLSCONVERTER_H
 #pragma once
 
-#include "XlsFormat.h"
 #include <QString>
 #include <QVector>
 #include <QTextStream>
@@ -11,6 +10,8 @@
 #include <string>
 #include <locale>
 #include <iostream>
+
+#include "XlsFormat.h"
 #include "OpenXLSX/OpenXLSX.hpp"
 
 using namespace ExcelFormat;
@@ -36,33 +37,34 @@ struct StructQR : StructData
 class xlsConverter
 {
 public:    
-    bool emptyCell(std::string &str);
+    bool emptyCell(QString &str);
 
     std::vector<StructInvoice> invoiceSheetSettings;
-    std::vector<std::vector<std::vector<std::string>>> invoiceXls;
-    std::vector<std::vector<std::string>> invoiceResult;
+//    std::vector<std::vector<std::vector<std::string>>> invoiceXls;
+    QVector<QVector<QVector<QString>>>  invoiceXls;
+    QVector<QVector<QString>> invoiceResult;
 
     std::vector<StructQR> qrSheetSettings;
-    std::vector<std::vector<std::vector<std::string>>> qrXls;
-    std::vector<std::vector<std::string>> qrResult;
+    QVector<QVector<QVector<QString>>> qrXls;
+    QVector<QVector<QString>> qrResult;
 
     QVector<QString> invoiceSheetNames;
     QVector<QString> qrSheetNames;
 
     //Артикулы QR
-    std::map<std::string, int> qrArticules;
-    std::vector<std::vector<std::string>> qrArtuculesVec;
+    std::map<QString, int> qrArticules;
+    QVector<QVector<QString>> qrArtuculesVec;
     // Подготовка Артикулов
     void calculateQrArticules();
     // Получить подсчитанные Арт.
     bool qrArtCalculated = false;
     void clearArt();
 
-    std::vector<std::vector<std::string>> result;
-    std::vector<std::vector<std::string>> resultInfo;
+    QVector<QVector<QString>> result;
+    QVector<QVector<QString>> resultInfo;
 
-    void readXls(std::wstring path, std::vector<std::vector<std::vector<std::string>>> &tempXls, QVector<QString> &sheetNames);
-    void readXlsX(std::string path, std::vector<std::vector<std::vector<std::string>>> &tempXls, QVector<QString> &sheetNames);
+    void readXls(std::wstring path, QVector<QVector<QVector<QString>>> &tempXls, QVector<QString> &sheetNames);
+    void readXlsX(std::string path, QVector<QVector<QVector<QString>>> &tempXls, QVector<QString> &sheetNames);
 
     void clearInvoiceData();
     void clearQrData();

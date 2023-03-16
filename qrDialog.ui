@@ -327,6 +327,9 @@
        <property name="autoScrollMargin">
         <number>16</number>
        </property>
+       <property name="horizontalScrollMode">
+        <enum>QAbstractItemView::ScrollPerPixel</enum>
+       </property>
       </widget>
      </item>
      <item>
@@ -690,6 +693,9 @@
         <font>
          <pointsize>9</pointsize>
         </font>
+       </property>
+       <property name="horizontalScrollMode">
+        <enum>QAbstractItemView::ScrollPerPixel</enum>
        </property>
       </widget>
      </item>

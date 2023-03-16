@@ -2,7 +2,7 @@
 
 using namespace OpenXLSX;
 
-void xlsConverter::readXls(std::wstring path, std::vector<std::vector<std::vector<std::string>>> &tempXls, QVector<QString> &sheetNames)
+void xlsConverter::readXls(std::wstring path, QVector<QVector<QVector<QString>>> &tempXls, QVector<QString> &sheetNames)
 {
     std::cout << "readXls started\n";
     BasicExcel xls;
@@ -21,10 +21,6 @@ void xlsConverter::readXls(std::wstring path, std::vector<std::vector<std::vecto
 
         char* name;
         std::string nameS;
-
-        std::cout << std::endl;
-
-        std::cout << "Print names:\n";
 
         QString qTempName;
 
@@ -55,16 +51,47 @@ void xlsConverter::readXls(std::wstring path, std::vector<std::vector<std::vecto
             tempXls[tab][row].resize(sheet->GetTotalCols());
             for(int col = 0; col < sheet->GetTotalCols(); col++)
             {
-                std::stringstream tempStream;
-                std::string tempString;
-                tempStream << *(sheet->Cell(row, col));
-                tempStream >> tempXls[tab][row][col];
+//                QTextStream tempStream;
+//                std::string tempString;
+
+//                sheet->Cell(row, col).
+
+//                tempStream << sheet->Cell(row, col);
+//                tempStream >> tempXls[tab][row][col];
+
+//                std::cout << "WString: " << sheet->Cell(row, col)->GetWString() << " string: " << sheet->Cell(row, col)->GetString() << "\n";
+
+                if(sheet->Cell(row, col)->GetWString() != NULL)
+                {
+                    tempXls[tab][row][col] = QString::fromStdWString(sheet->Cell(row, col)->GetWString());
+                }
+                else if(sheet->Cell(row, col)->GetString() != NULL)
+                {
+                    tempXls[tab][row][col] = sheet->Cell(row, col)->GetString();
+                }
+                else if(sheet->Cell(row, col)->GetDouble() != NULL)
+                {
+                    tempXls[tab][row][col] = QString::number(sheet->Cell(row, col)->GetDouble());
+                }
+                else if(sheet->Cell(row, col)->GetInteger() != NULL)
+                {
+                    tempXls[tab][row][col] = QString::number(sheet->Cell(row, col)->GetInteger());
+                }
+                else
+                {
+                    std::stringstream tempStream;
+                    std::string tempString;
+
+                    tempStream << *(sheet->Cell(row, col));
+                    tempStream >> tempString;
+                    tempXls[tab][row][col] = QString::fromStdString(tempString);
+                }
             }
         }
     }
 }
 
-void xlsConverter::readXlsX(std::string path, std::vector<std::vector<std::vector<std::string> > > &tempXls, QVector<QString> &sheetNames)
+void xlsConverter::readXlsX(std::string path, QVector<QVector<QVector<QString>>> &tempXls, QVector<QString> &sheetNames)
 {
     std::cout << "readXlsX started\n";
 
@@ -80,7 +107,7 @@ void xlsConverter::readXlsX(std::string path, std::vector<std::vector<std::vecto
 
     for(auto it : sheets)
     {
-        std::vector<std::vector<std::string>> tempSheet;
+        QVector<QVector<QString>> tempSheet;
 
         auto wks = doc.workbook().worksheet(it);
         sheetNames.push_back(QString::fromStdString(wks.name()));
@@ -91,10 +118,10 @@ void xlsConverter::readXlsX(std::string path, std::vector<std::vector<std::vecto
         {
             if(row.cellCount() <= 0) continue;
 
-            std::vector<std::string> tempRow;
+            QVector<QString> tempRow;
             for (auto& value : std::vector<XLCellValue>(row.values()))
             {
-                std::string tempString;
+                QString tempString;
                 std::cout << value.typeAsString() << "(" << value << ") - ";
 
                 if(value.typeAsString() == "empty")
@@ -104,8 +131,10 @@ void xlsConverter::readXlsX(std::string path, std::vector<std::vector<std::vecto
                 else
                 {
                     std::stringstream tempStream;
+//                    QTextStream tempQStream;
                     tempStream << value;
-                    tempStream >> tempString;
+//                    tempQStream << tempStream;
+                    tempString = QString::fromStdString(tempStream.str());
                 }
 
                 tempRow.push_back(tempString);
@@ -155,7 +184,7 @@ void xlsConverter::clear()
     clearResult();
 }
 
-bool xlsConverter::emptyCell(std::string &str)
+bool xlsConverter::emptyCell(QString &str)
 {
     return str.size() == 0 || str[0] == '\0' || str == "NO DATA";
 }
@@ -166,8 +195,8 @@ void xlsConverter::calculateQrArticules()
     {
         for(int row = 0; row < qrResult.size(); row++)
         {
-            std::string tempQr = qrResult[row][0];
-            std::string tempArt;
+            QString tempQr = qrResult[row][0];
+            QString tempArt;
 
             // Создание артикула для сопоставления
             for(int col = 1; col < qrResult[row].size(); col++)
@@ -201,9 +230,9 @@ void xlsConverter::calculateQrArticules()
 
         for(auto it : qrArticules)
         {
-            std::vector<std::string> tempVec;
+            QVector<QString> tempVec;
             tempVec.push_back(it.first);
-            tempVec.push_back(std::to_string(it.second));
+            tempVec.push_back(QString::number(it.second));
 
             qrArtuculesVec.push_back(tempVec);
         }
@@ -275,7 +304,7 @@ void xlsConverter::saveResult(std::wstring path)
         {
             fmt.set_format_string(XLS_FORMAT_TEXT);
             cell = sheet->Cell(row, col);
-            cell->Set(&(result[i][col][0]));
+            cell->Set(&(result[i][col].toStdWString()[0])); // ПРОВЕРИТЬ запись файла!!!
             cell->SetFormat(fmt);
         }
     }
@@ -328,25 +357,25 @@ void xlsConverter::saveContainers(std::wstring patch)
         fmt.set_format_string(XLS_FORMAT_TEXT);
         cell = sheet->Cell(row, 0);
 //        wchar_t* numItem = L"Номер товара";
-        cell->Set(&(result[i][0][0]));
+        cell->Set(&(result[i][0].toStdWString()[0]));
         cell->SetFormat(fmt);
 
         fmt.set_format_string(XLS_FORMAT_TEXT);
         cell = sheet->Cell(row, 1);
 //        wchar_t* numGroup = L"Текст1";
-        cell->Set(&(result[i][1][0]));
+        cell->Set(&(result[i][1].toStdWString()[0]));
         cell->SetFormat(fmt);
 
         fmt.set_format_string(XLS_FORMAT_TEXT);
         cell = sheet->Cell(row, 2);
 //        wchar_t* id = L"Идентификатор текста";
-        cell->Set(&(result[i][2][0]));
+        cell->Set(&(result[i][2].toStdWString()[0]));
         cell->SetFormat(fmt);
 
         fmt.set_format_string(XLS_FORMAT_TEXT);
         cell = sheet->Cell(row, 3);
 //        wchar_t* codeType = L"Тип измерения";
-        cell->Set(&(result[i][3][0]));
+        cell->Set(&(result[i][3].toStdWString()[0]));
         cell->SetFormat(fmt);
     }
 

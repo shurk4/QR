@@ -37,7 +37,7 @@ bool qrDialog::emptyCell(std::string &str)
     return str.size() == 0 || str[0] == '\0';
 }
 
-bool qrDialog::itQty(std::string &str)
+bool qrDialog::itQty(std::string str)
 {
     if(emptyCell(str)) return false;
     for(int i = 0; i < str.size(); i++)
@@ -199,7 +199,7 @@ void qrDialog::on_pushButtonTabDown_clicked()
 // Переключение вкладок
 
 // Вывести данные в таблицу
-void qrDialog::showTab(std::vector<std::vector<std::string>> &inTab)
+void qrDialog::showTab(QVector<QVector<QString>> &inTab)
 {
     QString labelTabString = QString::number(currentTab + 1);
     QString labelTabsString = QString::number(converter.invoiceXls.size());
@@ -207,7 +207,7 @@ void qrDialog::showTab(std::vector<std::vector<std::string>> &inTab)
     ui->labelTab->setText(labelTabString);
     ui->labelTabs->setText(labelTabsString);
 
-    QVector<QVector<QString>> temp(Extras::toQvecConvert(inTab));
+    QVector<QVector<QString>> temp(inTab);
     Extras::showTable(temp, ui->tableWidget);
 }
 // Вывести данные в таблицу
@@ -282,16 +282,16 @@ void qrDialog::on_pushButtonAnalyzeInvoice_clicked()
 
         for(int row = converter.invoiceSheetSettings[currentTab].startRow; row < stopRow; row++)
         {
-        std::vector<std::string> tempRow;
+        QVector<QString> tempRow;
         bool notEmpty = true;
 
             if(row == converter.invoiceSheetSettings[currentTab].startRow)
             {
                 for(int col = 0; col < converter.invoiceXls[currentTab][row].size(); col++)
                 {
-                    if(!emptyCell(converter.invoiceXls[currentTab][row][col]))
+                    if(!Extras::emptyCell(converter.invoiceXls[currentTab][row][col]))
                     {
-                        std::string cellData = converter.invoiceXls[currentTab][row][col];
+                        QString cellData = converter.invoiceXls[currentTab][row][col];
                         notEmptyCells.push_back(col);
                         tempRow.push_back(cellData);
                         if(col == converter.invoiceSheetSettings[currentTab].qtyCol)
@@ -308,14 +308,14 @@ void qrDialog::on_pushButtonAnalyzeInvoice_clicked()
                 for(int i = 0; i < notEmptyCells.size(); i++)
                 {
                     tempRow.resize(colsNum);
-                    std::string cellData = converter.invoiceXls[currentTab][row][notEmptyCells[i]];
+                    QString cellData = converter.invoiceXls[currentTab][row][notEmptyCells[i]];
 
-                    if(emptyCell(cellData))
+                    if(Extras::emptyCell(cellData))
                     {
                         emptyRowsCounter++;
                     }
 
-                    if(notEmptyCells[i] == converter.invoiceSheetSettings[currentTab].qtyCol && !itQty(cellData)) notEmpty = false;
+                    if(notEmptyCells[i] == converter.invoiceSheetSettings[currentTab].qtyCol && !itQty(cellData.toStdString())) notEmpty = false;
 
                     tempRow[i] = cellData;
 
@@ -337,9 +337,9 @@ void qrDialog::on_pushButtonAnalyzeInvoice_clicked()
         // подсчёт товаров
         for(int i = 0; i < converter.invoiceResult.size(); i++)
         {
-            if(itQty(converter.invoiceResult[i][0]))
+            if(itQty(converter.invoiceResult[i][0].toStdString()))
             {
-                itemsQty += std::stoi(converter.invoiceResult[i][0]);
+                itemsQty += std::stoi(converter.invoiceResult[i][0].toStdString());
             }
         }
         // подсчёт товаров
@@ -359,7 +359,7 @@ void qrDialog::on_pushButton_clicked()
     {
         struct Match
         {
-            std::string data;
+            QString data;
             int count;
         };
 
@@ -490,7 +490,7 @@ void qrDialog::on_pushButtonTabUpQR_clicked()
             for(int i = 0; i < selectedQrCols[currentTabQr].size(); i++)
             {
                 QString itemText = QString::fromUtf16( u"Колонка : ") + QString::fromStdString(Extras::IntToSymbol(selectedQrCols[currentTabQr][i]))
-                        + " (" + QString::fromStdString(converter.qrXls[currentTabQr][1][selectedQrCols[currentTabQr][i]]) + ")";
+                        + " (" + converter.qrXls[currentTabQr][1][selectedQrCols[currentTabQr][i]] + ")";
 
                 ui->listWidget->addItem(itemText);
             }
@@ -515,7 +515,7 @@ void qrDialog::on_pushButtonTabDownQR_clicked()
             for(int i = 0; i < selectedQrCols[currentTabQr].size(); i++)
             {
                 QString itemText = QString::fromUtf16( u"Колонка : ") + QString::fromStdString(Extras::IntToSymbol(selectedQrCols[currentTabQr][i]))
-                        + " (" + QString::fromStdString(converter.qrXls[currentTabQr][1][selectedQrCols[currentTabQr][i]]) + ")";
+                        + " (" + converter.qrXls[currentTabQr][1][selectedQrCols[currentTabQr][i]] + ")";
                 ui->listWidget->addItem(itemText);
             }
         }
@@ -524,7 +524,7 @@ void qrDialog::on_pushButtonTabDownQR_clicked()
     }
 }
 
-void qrDialog::showTabQr(std::vector<std::vector<std::string>> &inTab)
+void qrDialog::showTabQr(QVector<QVector<QString>> &inTab)
 {
     QString labelTabString = QString::number(currentTabQr + 1);
     QString labelTabsString = QString::number(converter.qrXls.size());
@@ -534,7 +534,7 @@ void qrDialog::showTabQr(std::vector<std::vector<std::string>> &inTab)
     ui->labelTabQR->setText(labelTabString);
     ui->labelTabsQR->setText(labelTabsString);
 
-    QVector<QVector<QString>> temp(Extras::toQvecConvert(inTab));
+    QVector<QVector<QString>> temp(inTab);
     Extras::showTable(temp, ui->tableWidget_2);
 
     ui->tableWidget_2->horizontalScrollBar()->setValue(0);
@@ -599,7 +599,7 @@ void qrDialog::on_pushButtonAddColsQR_clicked()
 //            QMessageBox::information(this, "!?", "Колонка уже есть");
             selectedQrCols[currentTabQr].push_back(col);
             QString itemText = QString::fromUtf16( u"Колонка : ") + QString::fromStdString(Extras::IntToSymbol(col))
-                    + " (" + QString::fromStdString(converter.qrXls[currentTabQr][row][col]) + ")";
+                    + " (" + converter.qrXls[currentTabQr][row][col] + ")";
             ui->listWidget->addItem(itemText);
         }
     }
@@ -630,9 +630,9 @@ void qrDialog::on_pushButtonAddToQrResult_clicked()
             for(int row = 0; row < converter.qrXls[currentTabQr].size(); row++)
             {
 
-                std::vector<std::string> newRow;
+                QVector<QString> newRow;
 
-                if(emptyCell(converter.qrXls[currentTabQr][row][converter.qrSheetSettings[currentTabQr].qrCol])
+                if(Extras::emptyCell(converter.qrXls[currentTabQr][row][converter.qrSheetSettings[currentTabQr].qrCol])
                              || converter.qrXls[currentTabQr][row][converter.qrSheetSettings[currentTabQr].qrCol].size() < ui->lineEditQrLenght->text().toInt())
                 {
                    continue;
@@ -647,7 +647,7 @@ void qrDialog::on_pushButtonAddToQrResult_clicked()
                 {
                     int selectedCol = selectedQrCols[currentTabQr][col];
 
-                    if(emptyCell(converter.qrXls[currentTabQr][row][selectedCol]))
+                    if(Extras::emptyCell(converter.qrXls[currentTabQr][row][selectedCol]))
                     {
                         newRow.push_back("NO DATA");
                     }
@@ -752,7 +752,7 @@ void qrDialog::on_pushButtonDelete_clicked()
             QTextStream textStream(&itemText);
 
             textStream << "Колонка : " << QString::fromStdString(Extras::IntToSymbol(selectedQrCols[currentTabQr][i]))
-                       << " (" << QString::fromStdString(converter.qrXls[currentTabQr][1][selectedQrCols[currentTabQr][i]]) << ")";
+                       << " (" << converter.qrXls[currentTabQr][1][selectedQrCols[currentTabQr][i]] << ")";
             ui->listWidget->addItem(itemText);
         }
     }
@@ -814,7 +814,7 @@ void qrDialog::on_pushButtonShowResult_clicked()
             // проход по товарам
             for(int invoiceRow = 0; invoiceRow < tempInvoice.size(); invoiceRow++)
             {
-                int itemsQty = std::stoi(tempInvoice[invoiceRow][0]); // берём количество кодов к товару
+                int itemsQty = std::stoi(tempInvoice[invoiceRow][0].toStdString()); // берём количество кодов к товару
                 int numGroup = 0; // номер группы(столбец С)
 
                 // поиск товара в кодах
@@ -840,21 +840,21 @@ void qrDialog::on_pushButtonShowResult_clicked()
                         numGroup++;
                         itemsQty--;
 
-                        std::vector<std::string> tempResultRow;
+                        QVector<QString> tempResultRow;
 
                         // Добавление порядкового номера
-                        tempResultRow.push_back(std::to_string(counter));
+                        tempResultRow.push_back(QString::number(counter));
 
                         // Добавление "№товара"
-                        tempResultRow.push_back(std::to_string(invoiceRow + 1));
+                        tempResultRow.push_back(QString::number(invoiceRow + 1));
 
 
                         // Добавление "№группы"
-                        tempResultRow.push_back(std::to_string(numGroup));
+                        tempResultRow.push_back(QString::number(numGroup));
 
                         // добавление QR "Идентификатор"
-                        std::string qrCut;                        
-                        std::string qr = tempQr[qrRow][0];
+                        QString qrCut;
+                        QString qr = tempQr[qrRow][0];
 
                         for(int k = 0; k < ui->lineEditQrLenght->text().toInt(); k++)
                         {
@@ -864,13 +864,13 @@ void qrDialog::on_pushButtonShowResult_clicked()
                         tempQr[qrRow][1] = "used";
 
                         // добавление "Код вида"
-                        tempResultRow.push_back(std::to_string(301));
+                        tempResultRow.push_back(QString::number(301));
 
                         // добавление "Уровень маркировки"
-                        tempResultRow.push_back(std::to_string(0));
+                        tempResultRow.push_back(QString::number(0));
 
                         // добавление Item code
-                        std::string itemCode;
+                        QString itemCode;
                         for(int i = 0; i < compares.size(); i++)
                         {
                             itemCode += tempInvoice[invoiceRow][compares[i].invoiceCol];
@@ -885,11 +885,11 @@ void qrDialog::on_pushButtonShowResult_clicked()
 
                 // заполнение информационной таблицы
 
-                std::vector<std::string> tempInfoRow = tempInvoice[invoiceRow];
+                QVector<QString> tempInfoRow = tempInvoice[invoiceRow];
 
 
                 tempInfoRow.insert(tempInfoRow.begin(), "\0");
-                tempInfoRow.insert(tempInfoRow.begin(), std::to_string(numGroup));
+                tempInfoRow.insert(tempInfoRow.begin(), QString::number(numGroup));
 
                 converter.resultInfo.push_back(tempInfoRow);
 
@@ -1057,7 +1057,7 @@ void qrDialog::on_pushButtonHelp_clicked()
     }
 }
 
-void qrDialog::fromTextFiles(std::vector<std::vector<std::string> > data)
+void qrDialog::fromTextFiles(QVector<QVector<QString>> data)
 {
     converter.qrResult = data;
     showTabQr(converter.qrResult);

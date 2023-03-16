@@ -68,3 +68,8 @@ std::string Extras::IntToSymbol(int in)
         str += ('A' + in);
         return str;
 }
+
+bool Extras::emptyCell(QString &str)
+{
+    return str.size() == 0 || str[0] == '\0';
+}

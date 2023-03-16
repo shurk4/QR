@@ -39,8 +39,8 @@ public:
     ~qrDialog();
 
     xlsConverter converter;
-    void showTab(std::vector<std::vector<std::string>> &inTab);
-    void showTabQr(std::vector<std::vector<std::string>> &inTab);
+    void showTab(QVector<QVector<QString>> &inTab);
+    void showTabQr(QVector<QVector<QString>> &inTab);
 
 //    std::string toSymbol(int in);
 
@@ -64,16 +64,16 @@ public:
     bool filesOk();
     bool compared(std::string a, std::string b);
     bool emptyCell(std::string &str);
-    bool itQty(std::string &str);
+    bool itQty(std::string str);
     bool tabAlreadyAdded(int tab);
 
     std::vector<std::vector<int>> selectedQrCols;
     std::vector<Compare> compares;
     std::vector<int> addedQrTabs;
 
-    std::vector<std::vector<std::string>> tempInvoice;
-    std::vector<std::vector<std::string>> tempQr;
-    std::vector<std::vector<std::string>> notUsedQr;
+    QVector<QVector<QString>> tempInvoice;
+    QVector<QVector<QString>> tempQr;
+    QVector<QVector<QString>> notUsedQr;
 
     void qrNewFileClear();
     void qrClear();
@@ -150,7 +150,7 @@ signals: // отправка данных
     void toTextFiles(std::vector<std::vector<std::string>>);
 
 public slots: // Приём данных
-    void fromTextFiles(std::vector<std::vector<std::string>> data);
+    void fromTextFiles(QVector<QVector<QString>> data);
 };
 
 #endif // QRDIALOG_H

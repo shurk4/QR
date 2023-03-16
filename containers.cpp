@@ -18,7 +18,7 @@ containers::~containers()
     delete ui;
 }
 
-void containers::showTable_1(std::vector<std::vector<std::string> > &inTab)
+void containers::showTable_1(QVector<QVector<QString>> &inTab)
 {
     QString labelTab = QString::number(currentTab_1 + 1);
     QString labelTabs = QString::number(converter.qrXls.size());
@@ -26,42 +26,10 @@ void containers::showTable_1(std::vector<std::vector<std::string> > &inTab)
     ui->labelTab->setText(labelTab);
     ui->labelTabs->setText(labelTabs);
 
-        int rows;
-        if(inTab.size() > 10000)
-        {
-             rows = 10000;
-        }
-        else
-        {
-            rows = inTab.size();
-        }
-
-        int cols = inTab[0].size();
-
-        ui->tableWidget_1->setRowCount(rows);
-        ui->tableWidget_1->setColumnCount(cols);
-
-        ui->tableWidget_1->setHorizontalHeaderLabels(QStringList() << "A" << "B" << "C"
-                                                   << "D" << "E" << "F" << "G" << "H"
-                                                   << "I" << "J" << "K" << "L" << "M"); // Имена столбцов вместо цифр
-
-        for(int row = 0; row < inTab.size(); row++)
-        {
-            for(int col = 0; col < inTab[row].size(); col++)
-            {
-                if(inTab[row].size() > cols) cols = inTab[row].size();
-                QTableWidgetItem *tbl = new QTableWidgetItem(QString::fromStdString(inTab[row][col]));
-                ui->tableWidget_1->setItem(row, col, tbl);
-            }
-        }
-
-        // Размеры
-        ui->tableWidget_1->resizeRowsToContents();
-        ui->tableWidget_1->resizeColumnsToContents();
-        // Вывести данные в таблицу
+    Extras::showTable(inTab, ui->tableWidget_1);
 }
 
-void containers::showTable_2(std::vector<std::vector<std::string> > &inTab)
+void containers::showTable_2(QVector<QVector<QString>> &inTab)
 {
     QString labelTabString = QString::number(currentTab_2 + 1);
     QString labelTabsString = QString::number(converter.qrXls.size());
@@ -69,43 +37,11 @@ void containers::showTable_2(std::vector<std::vector<std::string> > &inTab)
     ui->labelTab_2->setText(labelTabString);
     ui->labelTabs_2->setText(labelTabsString);
 
-        int rows;
-        if(inTab.size() > 10000)
-        {
-             rows = 10000;
-        }
-        else
-        {
-            rows = inTab.size();
-        }
-
-        int cols = inTab[0].size();
-
-        ui->tableWidget_2->setRowCount(rows);
-        ui->tableWidget_2->setColumnCount(cols);
-
-        ui->tableWidget_2->setHorizontalHeaderLabels(QStringList() << "A" << "B" << "C"
-                                                   << "D" << "E" << "F" << "G" << "H"
-                                                   << "I" << "J" << "K" << "L" << "M"); // Имена столбцов вместо цифр
-
-        for(int row = 0; row < inTab.size(); row++)
-        {
-            for(int col = 0; col < inTab[row].size(); col++)
-            {
-                if(inTab[row].size() > cols) cols = inTab[row].size();
-                QTableWidgetItem *tbl = new QTableWidgetItem(QString::fromStdString(inTab[row][col]));
-                ui->tableWidget_2->setItem(row, col, tbl);
-            }
-        }
-
-        // Размеры
-        ui->tableWidget_2->resizeRowsToContents();
-        ui->tableWidget_2->resizeColumnsToContents();
-        // Вывести данные в таблицу
+    Extras::showTable(inTab, ui->tableWidget_2);
 }
 
 // добавление данных из спецификаци в карту: item код / номер контейнера / был ли использован в результате
-void containers::collectItemsCtn(std::string item, ItemInfo itemInfo)
+void containers::collectItemsCtn(QString item, ItemInfo itemInfo)
 {
     itemCtn.emplace(item, itemInfo);
 }
@@ -118,7 +54,7 @@ std::string containers::toSymbol(int in)
         return str;
 }
 
-bool containers::emptyCell(std::string &str)
+bool containers::emptyCell(QString &str)
 {
     return str.size() == 0 || str[0] == '\0';
 }
@@ -319,8 +255,8 @@ void containers::on_pushButtonSpecAnalyze_clicked()
     int ctnCounter = 0;
 //    bool ctnNumberFirst = false;
 
-    std::string currentCtnNumber; // текущий номер контейнера
-    std::vector<std::string> items; // временная выборка итем кодов
+    QString currentCtnNumber; // текущий номер контейнера
+    QVector<QString> items; // временная выборка итем кодов
     int ctnCol = -1;
     bool ctnColFound = false;
 
@@ -368,7 +304,7 @@ void containers::on_pushButtonSpecAnalyze_clicked()
                         // Ищем в текущей строке ячейку с номером
                         for(int col = 0; col < converter.qrXls[currentTab_1][row].size(); col++)
                         {
-                            if(isCntNum(converter.qrXls[currentTab_1][row][col]))
+                            if(isCntNum(converter.qrXls[currentTab_1][row][col].toStdString()))
                             {
                                 ctnColFound = true;
                                 ctnCol = col;
@@ -385,7 +321,7 @@ void containers::on_pushButtonSpecAnalyze_clicked()
                         return;
                     }
 
-                    if(isCntNum(converter.qrXls[currentTab_1][row][ctnCol]))
+                    if(isCntNum(converter.qrXls[currentTab_1][row][ctnCol].toStdString()))
                     {
                         ctnCounter++;
                         ctnColFound = true;
@@ -399,7 +335,7 @@ void containers::on_pushButtonSpecAnalyze_clicked()
                     }
 
                     // Если колонка с номером контейнера определена и текущая ячейка с номером содержит номер контейнера
-                    if(ctnColFound && isCntNum(converter.qrXls[currentTab_1][row][ctnCol]))
+                    if(ctnColFound && isCntNum(converter.qrXls[currentTab_1][row][ctnCol].toStdString()))
                     {
 //                        QMessageBox::information(this, "!", "Добавление данных в карту!");
                         for(int i = 0; i < items.size(); i++)
@@ -426,21 +362,21 @@ void containers::on_pushButtonSpecAnalyze_clicked()
 
             // заполнение результата выборки
 
-            std::vector<std::string> colNames {"Арт.", "Номер к-ра", "Тип измерения"};
+            QVector<QString> colNames {"Арт.", "Номер к-ра", "Тип измерения"};
             converter.qrResult.push_back(colNames);
 
             for(const auto &it : itemCtn)
             {
-                std::vector<std::string> tempRow;
+                QVector<QString> tempRow;
                 tempRow.push_back(it.first);
                 tempRow.push_back(it.second.ctnNumber);
                 if(it.second.fullLoad == 0)
                 {
-                    tempRow.push_back(std::to_string(1));
+                    tempRow.push_back(QString::number(1));
                 }
                 else
                 {
-                    tempRow.push_back(std::to_string(2));
+                    tempRow.push_back(QString::number(2));
                 }
                 converter.qrResult.push_back(tempRow);
             }
@@ -515,17 +451,17 @@ void containers::on_pushButtonResult_clicked()
                         // QString message = "i.first: " + QString::fromStdString(i->first);
                         // QMessageBox::critical(this, "!", message);
 
-                        std::vector<std::string> tempRow;
-                        tempRow.push_back(std::to_string(itemNum));
+                        QVector<QString> tempRow;
+                        tempRow.push_back(QString::number(itemNum));
                         tempRow.push_back(i->second.ctnNumber);
                         tempRow.push_back("CN");
                         if(i->second.fullLoad)
                         {
-                            tempRow.push_back(std::to_string(2));
+                            tempRow.push_back(QString::number(2));
                         }
                         else
                         {
-                            tempRow.push_back(std::to_string(1));
+                            tempRow.push_back(QString::number(1));
                         }
                         converter.result.push_back(tempRow);
                     }
@@ -539,17 +475,17 @@ void containers::on_pushButtonResult_clicked()
                         // QString message = "it.first: " + QString::fromStdString(it->first);
 //                        QMessageBox::critical(this, "!", message);
 
-                        std::vector<std::string> tempRow;
-                        tempRow.push_back(std::to_string(itemNum));
+                        QVector<QString> tempRow;
+                        tempRow.push_back(QString::number(itemNum));
                         tempRow.push_back(it->second.ctnNumber);
                         tempRow.push_back("CN");
                         if(it->second.fullLoad)
                         {
-                            tempRow.push_back(std::to_string(2));
+                            tempRow.push_back(QString::number(2));
                         }
                         else
                         {
-                            tempRow.push_back(std::to_string(1));
+                            tempRow.push_back(QString::number(1));
                         }
                         converter.result.push_back(tempRow);
                     }

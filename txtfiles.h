@@ -9,6 +9,7 @@
 #include <QDir>
 
 #include "xlsConverter.h"
+#include "extras.h"
 
 enum FileStatus
 {
@@ -37,9 +38,9 @@ public:
 
     xlsConverter converter;
 
-    void showTable_1(std::vector<std::vector<std::string>> &inTab);
+    void showTable_1(QVector<QVector<QString>> &inTab);
 
-    void showTable_2(std::vector<std::vector<std::string>> &table);
+    void showTable_2(QVector<QVector<QString>> &table);
 
 private slots:
     void on_pushButtonInv_clicked();
@@ -62,7 +63,8 @@ private:
     Ui::txtFiles *ui;
 
     std::vector<FileData> docsData;
-    std::vector<std::vector<std::vector<std::string>>> data;
+//    std::vector<std::vector<std::vector<std::string>>> data;
+    QVector<QVector<QVector<QString>>> data;
 
     QDir lastPath = QDir::homePath();
     QString invoiceFileName;

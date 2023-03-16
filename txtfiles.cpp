@@ -19,7 +19,7 @@ txtFiles::~txtFiles()
     delete ui;
 }
 
-void txtFiles::showTable_1(std::vector<std::vector<std::string>> &inTab)
+void txtFiles::showTable_1(QVector<QVector<QString>> &inTab)
 {
         QString labelTabString = QString::number(currentTab + 1);
         QString labelTabsString = QString::number(converter.invoiceXls.size());
@@ -27,69 +27,13 @@ void txtFiles::showTable_1(std::vector<std::vector<std::string>> &inTab)
         ui->labelTab->setText(labelTabString);
         ui->labelTabs->setText(labelTabsString);
 
-            int rows;
-            if(inTab.size() > 10000)
-            {
-                 rows = 10000;
-            }
-            else
-            {
-                rows = inTab.size();
-            }
-
-            int cols = inTab[0].size();
-
-            ui->tableWidget_1->setRowCount(rows);
-            ui->tableWidget_1->setColumnCount(cols);
-
-            ui->tableWidget_1->setHorizontalHeaderLabels(QStringList() << "A" << "B" << "C"
-                                                       << "D" << "E" << "F" << "G" << "H"
-                                                       << "I" << "J" << "K" << "L" << "M"); // Имена столбцов вместо цифр
-
-            for(int row = 0; row < inTab.size(); row++)
-            {
-                for(int col = 0; col < inTab[row].size(); col++)
-                {
-                    if(inTab[row].size() > cols) cols = inTab[row].size();
-                    QTableWidgetItem *tbl = new QTableWidgetItem(QString::fromStdString(inTab[row][col]));
-                    ui->tableWidget_1->setItem(row, col, tbl);
-                }
-            }
-
-            // Размеры
-            ui->tableWidget_1->resizeRowsToContents();
-            ui->tableWidget_1->resizeColumnsToContents();
-    // Вывести данные в таблицу
+        Extras::showTable(inTab, ui->tableWidget_1);
 }
 
-void txtFiles::showTable_2(std::vector<std::vector<std::string>> &table)
+void txtFiles::showTable_2(QVector<QVector<QString>> &table)
 {
     // Вывести данные в таблицу
-
-            int rows = table.size();
-            int cols = table[0].size();
-
-            ui->tableWidget_2->setRowCount(rows);
-            ui->tableWidget_2->setColumnCount(cols);
-
-            ui->tableWidget_2->setHorizontalHeaderLabels(QStringList() << "A" << "B" << "C"
-                                                       << "D" << "E" << "F" << "G" << "H"
-                                                       << "I" << "J" << "K" << "L" << "M"); // Имена столбцов вместо цифр
-
-            for(int row = 0; row < table.size(); row++)
-            {
-                for(int col = 0; col < table[row].size(); col++)
-                {
-                    if(table[row].size() > cols) cols = table[row].size();
-                    QTableWidgetItem *tbl = new QTableWidgetItem(QString::fromStdString(table[row][col]));
-                    ui->tableWidget_2->setItem(row, col, tbl);
-                }
-            }
-
-            // Размеры
-            ui->tableWidget_2->resizeRowsToContents();
-            ui->tableWidget_2->resizeColumnsToContents();
-            // Вывести данные в таблицу
+            Extras::showTable(table, ui->tableWidget_2);
 }
 
 void txtFiles::on_pushButtonInv_clicked()
@@ -202,12 +146,12 @@ void txtFiles::on_pushButtonTxt_clicked()
             QTextStream in(&file);
 
             // Обработка данных
-            std::vector<std::vector<std::string>> doc; // Данные из одного документа
+            QVector<QVector<QString>> doc; // Данные из одного документа
             while (!in.atEnd())
             {
-                std::vector<std::string> col;
+                QVector<QString> col;
                 QString line = in.readLine();
-                col.push_back(line.toStdString());
+                col.push_back(line);
                 doc.push_back(col);
             }
             data.push_back(doc);
@@ -254,21 +198,21 @@ void txtFiles::on_pushButtonAddQr_clicked()
             serial++;
             numGroup++;
 
-            std::vector<std::string> tempResultRow;
+            QVector<QString> tempResultRow;
 
             // Добавление порядкового номера
-            tempResultRow.push_back(std::to_string(serial));
+            tempResultRow.push_back(QString::number(serial));
 
             // Добавление "№товара"
-            tempResultRow.push_back(std::to_string(itemNum));
+            tempResultRow.push_back(QString::number(itemNum));
 
 
             // Добавление "№группы"
-            tempResultRow.push_back(std::to_string(numGroup));
+            tempResultRow.push_back(QString::number(numGroup));
 
             // добавление QR "Идентификатор"
-            std::string qrCut;
-            std::string qr = data[currentDoc][i][0];
+            QString qrCut;
+            QString qr = data[currentDoc][i][0];
             for(int k = 0; k < 31; k++)
             {
                 qrCut += qr[k];
@@ -276,10 +220,10 @@ void txtFiles::on_pushButtonAddQr_clicked()
             tempResultRow.push_back(qrCut);
 
             // добавление "Код вида"
-            tempResultRow.push_back(std::to_string(301));
+            tempResultRow.push_back(QString::number(301));
 
             // добавление "Уровень маркировки"
-            tempResultRow.push_back(std::to_string(0));
+            tempResultRow.push_back(QString::number(0));
 
             // добавление Item code
             QString itemCode;
@@ -295,7 +239,7 @@ void txtFiles::on_pushButtonAddQr_clicked()
                     itemCode.push_back(docsData[currentDoc].name[j]);
                 }
             }
-            tempResultRow.push_back(itemCode.toStdString());
+            tempResultRow.push_back(itemCode);
 
             // Добавление полученной строки в таблицу
             converter.result.push_back(tempResultRow);
