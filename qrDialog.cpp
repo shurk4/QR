@@ -414,6 +414,8 @@ void qrDialog::on_pushButton_clicked()
 void qrDialog::on_pushButtonOpenQR_clicked()
 {
     converter.qrXls.clear();
+    converter.qrSheetNames.clear();
+
     qrNewFileClear();
 
     QString qrPathTemp = QFileDialog::getOpenFileName(this, "Выберите файл QR", lastPath.absolutePath(), "*.xls *.xlsx");

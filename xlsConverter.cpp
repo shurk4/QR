@@ -74,7 +74,7 @@ void xlsConverter::readXlsX(std::string path, std::vector<std::vector<std::vecto
     doc.open(path);
 
     auto sheets = doc.workbook().worksheetNames();
-    sheetNames.resize(sheets.size());
+//    sheetNames.resize(sheets.size());
 
     std::cout << "sheets size: " << sheets.size() << "\n";
 
@@ -83,6 +83,8 @@ void xlsConverter::readXlsX(std::string path, std::vector<std::vector<std::vecto
         std::vector<std::vector<std::string>> tempSheet;
 
         auto wks = doc.workbook().worksheet(it);
+        sheetNames.push_back(QString::fromStdString(wks.name()));
+
         std::cout << "Rows: " << wks.rowCount() << "\n\n";
 
         for (auto& row : wks.rows())
@@ -129,6 +131,7 @@ void xlsConverter::clearInvoiceData()
     invoiceResult.clear();
     invoiceSheetSettings.clear();
     invoiceXls.clear();
+    invoiceSheetNames.clear();
 }
 
 void xlsConverter::clearQrData()
