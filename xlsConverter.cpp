@@ -9,8 +9,6 @@ void xlsConverter::readXls(std::wstring path, QVector<QVector<QVector<QString>>>
 
     xls.Load(&(path[0]));
 
-//    std::cout << "XLS xls.GetTotalWorkSheets()" << xls.GetTotalWorkSheets() << "\n";
-
     tempXls.resize(xls.GetTotalWorkSheets());
     for(int tab = 0; tab < xls.GetTotalWorkSheets(); tab++)
     {
@@ -29,21 +27,15 @@ void xlsConverter::readXls(std::wstring path, QVector<QVector<QVector<QString>>>
              std::string tempName = xls.GetAnsiSheetName(tab);
 
              qTempName = QString::fromStdString(tempName);
-//             std::cout << "Ansi name: " << xls.GetAnsiSheetName(tab) << "\n";
         }
         else
         {
             std::wstring tempName = xls.GetUnicodeSheetName(tab);
 
             qTempName = QString::fromStdWString(tempName);
-//            std::cout << "Unicode name: " << xls.GetUnicodeSheetName(tab) << "\n";
         }
 
-//        std::cout << "QString: " << qTempName.toStdString() << "\n";
-
         sheetNames.push_back(qTempName);
-
-//        std::cout << "Sheet names size" << sheetNames.size() << "\n";
 
         tempXls[tab].resize(sheet->GetTotalRows());
         for(int row = 0; row < sheet->GetTotalRows(); row++)
@@ -51,27 +43,13 @@ void xlsConverter::readXls(std::wstring path, QVector<QVector<QVector<QString>>>
             tempXls[tab][row].resize(sheet->GetTotalCols());
             for(int col = 0; col < sheet->GetTotalCols(); col++)
             {
-//                QTextStream tempStream;
-//                std::string tempString;
-
-//                sheet->Cell(row, col).
-
-//                tempStream << sheet->Cell(row, col);
-//                tempStream >> tempXls[tab][row][col];
-
-//                std::cout << "WString: " << sheet->Cell(row, col)->GetWString() << " string: " << sheet->Cell(row, col)->GetString() << "\n";
-
                 std::cout << "\nRow: " << row << " col: " << col << "\n";
                 if(sheet->Cell(row, col)->GetWString() != NULL)
                 {
-                    std::cout << "WString: " << sheet->Cell(row, col)->GetWString() << "\n";
-
                     tempXls[tab][row][col] = QString::fromStdWString(sheet->Cell(row, col)->GetWString());
                 }
                 else if(sheet->Cell(row, col)->GetString() != NULL)
                 {
-                    std::cout << "String: " << sheet->Cell(row, col)->GetString() << "\n";
-
                     tempXls[tab][row][col] = sheet->Cell(row, col)->GetString();
                 }
                 else if(sheet->Cell(row, col)->GetDouble() != NULL)
@@ -91,22 +69,16 @@ void xlsConverter::readXls(std::wstring path, QVector<QVector<QVector<QString>>>
                 }
                 else if(sheet->Cell(row, col)->GetInteger() != NULL)
                 {
-                    std::cout << "Int: " << sheet->Cell(row, col)->GetInteger() << "\n";
                     tempXls[tab][row][col] = QString::number(sheet->Cell(row, col)->GetInteger());
                 }
                 else
                 {
-                    std::cout << "ELSE\n";
                     std::stringstream tempStream;
-                    std::string tempString;
+//                    std::string tempString;
 
-                    tempStream << *(sheet->Cell(row, col));
-                    tempStream >> tempString;
-                    tempXls[tab][row][col] = QString::fromStdString(tempString);
-
-                    std::cout << "TempStream: " << tempStream.str() <<
-                                 "\nTempString: " << tempString <<
-                                 "QString::fromStdString: " << QString::fromStdString(tempString).toStdString() << "\n";
+//                    tempStream << *(sheet->Cell(row, col));
+//                    tempStream >> tempString;
+                    tempXls[tab][row][col] = QString::fromStdString(tempStream.str());
                 }
             }
         }

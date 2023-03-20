@@ -29,6 +29,7 @@ QVector<QVector<QString>> Extras::toQvecConvert(std::vector<std::vector<std::str
 void Extras::showTable(QVector<QVector<QString> > &data, QTableWidget *table)
 {
         table->clear();
+//        table->setStyleSheet("QTableView::item {padding-top : 2px}");
 
         int rows;
 
@@ -60,6 +61,7 @@ void Extras::showTable(QVector<QVector<QString> > &data, QTableWidget *table)
         }
 
         table->resizeColumnsToContents();
+        table->resizeRowsToContents();
 }
 
 std::string Extras::IntToSymbol(int in)
