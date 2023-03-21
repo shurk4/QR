@@ -64,6 +64,16 @@ void Extras::showTable(QVector<QVector<QString> > &data, QTableWidget *table)
         table->resizeRowsToContents();
 }
 
+void Extras::scaleTable(int size, QTableWidget *table)
+{
+    QFont font;
+    font.setPointSize(size);
+
+    table->setFont(font);
+    table->resizeColumnsToContents();
+    table->resizeRowsToContents();
+}
+
 std::string Extras::IntToSymbol(int in)
 {
     std::string str;

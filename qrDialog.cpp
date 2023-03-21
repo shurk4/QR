@@ -6,18 +6,44 @@ qrDialog::qrDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    this->setAttribute(Qt::WA_DeleteOnClose);
+
     this->resize(1280, 720);
     this->setWindowFlags(windowFlags() | Qt::WindowMinimizeButtonHint
                          | Qt::WindowMaximizeButtonHint
                          | Qt::WindowSystemMenuHint);
 
+    readConfig();
 
     helpWindow = new help(this); // Указатель создан в хедере для одновременного использования окон
 }
 
 qrDialog::~qrDialog()
 {
+    delete helpWindow;
+    delete config;
     delete ui;
+}
+
+void qrDialog::readConfig()
+{
+    //Последний путь к файлам
+    QString temp;
+    if(config->get("lastPath", temp))
+    {
+        lastPath.setPath(temp);
+    }
+
+    if(config->get("tableFontSize", temp))
+    {
+        tableFontSize = temp.toInt();
+        ui->labelScale->setText(QString::number(tableFontSize));
+
+        Extras::scaleTable(tableFontSize, ui->tableWidget);
+        Extras::scaleTable(tableFontSize, ui->tableWidget_2);
+    }
+
+
 }
 
 // БУЛКИ
@@ -121,6 +147,7 @@ void qrDialog::on_pushButtonOpenFile_clicked()
     else
     {
         lastPath = invPathTemp;
+        config->set("lastPath", lastPath.absolutePath());
 
         QDate date = QDate::currentDate();
         QTime time = QTime::currentTime();
@@ -418,6 +445,12 @@ void qrDialog::on_pushButtonOpenQR_clicked()
 
     qrNewFileClear();
 
+    QString path;
+    if(config->get("lastPath", path))
+    {
+        lastPath.setPath(path);
+    }
+
     QString qrPathTemp = QFileDialog::getOpenFileName(this, "Выберите файл QR", lastPath.absolutePath(), "*.xls *.xlsx");
     if(qrPathTemp.isEmpty())
     {
@@ -426,6 +459,7 @@ void qrDialog::on_pushButtonOpenQR_clicked()
     else
     {
         lastPath = qrPathTemp;
+        config->set("lastPath", lastPath.absolutePath());
 
         QDate date = QDate::currentDate();
         QTime time = QTime::currentTime();
@@ -1062,3 +1096,38 @@ void qrDialog::fromTextFiles(QVector<QVector<QString>> data)
     converter.qrResult = data;
     showTabQr(converter.qrResult);
 }
+
+void qrDialog::on_pushButtonScaleDown_clicked()
+{
+    if(tableFontSize > 3)
+    {
+        tableFontSize--;
+
+        QFont font;
+        font.setPointSize(tableFontSize);
+
+        config->set("tableFontSize", QString::number(tableFontSize));
+
+        ui->labelScale->setText(QString::number(tableFontSize));
+        Extras::scaleTable(tableFontSize, ui->tableWidget);
+        Extras::scaleTable(tableFontSize, ui->tableWidget_2);
+    }
+}
+
+void qrDialog::on_pushButtonScaleUp_clicked()
+{
+    if(tableFontSize < 15)
+    {
+        tableFontSize++;
+
+        QFont font;
+        font.setPointSize(tableFontSize);
+
+        config->set("tableFontSize", QString::number(tableFontSize));
+
+        ui->labelScale->setText(QString::number(tableFontSize));
+        Extras::scaleTable(tableFontSize, ui->tableWidget);
+        Extras::scaleTable(tableFontSize, ui->tableWidget_2);
+    }
+}
+

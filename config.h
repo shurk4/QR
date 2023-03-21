@@ -9,6 +9,7 @@
 #include <QDir>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QMap>
 
 class ConfigData;
 
@@ -40,6 +41,21 @@ private:
     QString sourcePath = "empty";
     QString destPath = "empty";
     QString versionPath = "empty";
+};
+
+class UserConfig
+{
+     QMap<QString,QString> config;
+
+public:
+     UserConfig();
+     ~UserConfig();
+
+     void write();
+     void read();
+
+     void set(QString name, QString value);
+     bool get(const QString name, QString &value);
 };
 
 #endif // CONFIG_H

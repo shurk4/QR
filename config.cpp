@@ -1,4 +1,5 @@
 #include "config.h"
+#include <iostream>
 
 class ConfigData : public QSharedData
 {
@@ -103,4 +104,67 @@ void Config::save(QString path)
      {
 
      }
+}
+
+UserConfig::UserConfig()
+{
+    read();
+}
+
+UserConfig::~UserConfig()
+{
+    this->write();
+}
+
+void UserConfig::write()
+{
+    std::cout << "Try write file!\n";
+    QFile file("user.cfg");
+    QMap<QString,QString>::iterator it = config.begin();
+    if (file.open(QIODevice::WriteOnly))
+    {
+       std::cout << "File is open!\n";
+       QDataStream in(&file);
+       in << config;
+       std::cout << "Write complited!\n";
+       file.close();
+    }
+    else
+    {
+        std::cout << "Can't write!\n";
+    }
+}
+
+void UserConfig::read()
+{
+    std::cout << "Try ReadFile!\n";
+    QFile file("user.cfg");
+    if (file.open(QIODevice::ReadOnly))
+    {
+       std::cout << "File is open!\n";
+       QDataStream in(&file);
+       in >> config;
+       std::cout << "Read complited!\n";
+       file.close();
+    }
+    else
+    {
+        std::cout << "No file\n";
+    }
+}
+
+void UserConfig::set(QString name, QString value)
+{
+    config[name] = value;
+}
+
+bool UserConfig::get(QString name, QString &value)
+{
+    if(config.contains(name))
+    {
+        value = config[name];
+        return true;
+    }
+
+    return false;
 }

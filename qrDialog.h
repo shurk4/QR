@@ -11,6 +11,7 @@
 #include <fstream>
 
 #include "help.h"
+#include "config.h"
 #include "ui_qrDialog.h"
 #include "QFileDialog"
 #include "QCheckBox"
@@ -39,6 +40,7 @@ public:
     ~qrDialog();
 
     xlsConverter converter;
+    void readConfig();
     void showTab(QVector<QVector<QString>> &inTab);
     void showTabQr(QVector<QVector<QString>> &inTab);
 
@@ -141,10 +143,18 @@ private slots:
 
     void on_pushButtonLastQty_clicked();
 
+    void on_pushButtonScaleDown_clicked();
+
+    void on_pushButtonScaleUp_clicked();
+
 private:
     Ui::qrDialog *ui;
 
     help *helpWindow;
+
+    UserConfig *config = new UserConfig;
+
+    int tableFontSize;
 
 signals: // отправка данных
     void toTextFiles(std::vector<std::vector<std::string>>);

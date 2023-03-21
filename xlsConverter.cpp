@@ -43,7 +43,6 @@ void xlsConverter::readXls(std::wstring path, QVector<QVector<QVector<QString>>>
             tempXls[tab][row].resize(sheet->GetTotalCols());
             for(int col = 0; col < sheet->GetTotalCols(); col++)
             {
-                std::cout << "\nRow: " << row << " col: " << col << "\n";
                 if(sheet->Cell(row, col)->GetWString() != NULL)
                 {
                     tempXls[tab][row][col] = QString::fromStdWString(sheet->Cell(row, col)->GetWString());
