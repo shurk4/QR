@@ -14,6 +14,9 @@ qrDialog::qrDialog(QWidget *parent) :
                          | Qt::WindowSystemMenuHint);
 
     readConfig();
+    ui->lonelyCodesWidget->hide(); // Скрыть виджет "Коды без привязок"
+    ui->notUsedCodes->hide(); // Скрыть виджет "Неиспользованные коды
+    ui->usedFilesListWidget->hide(); // Скрыть виджет "обработанных файлов"
 
     helpWindow = new help(this); // Указатель создан в хедере для одновременного использования окон
 }
@@ -25,17 +28,35 @@ qrDialog::~qrDialog()
     delete ui;
 }
 
-void qrDialog::readConfig()
+void qrDialog::readConfig() // ДОБАВИТЬ ПРОВЕРКУ ИСПОЛЬЗОВАНИЯ ПОСЛЕДНЕГО ПУТИ!!!
 {
-    //Последний путь к файлам
     QString temp;
-    if(config->get("lastPath", temp))
+    // Сохранять последний путь к файлам?
+    if(config->get("checkBoxFilePath", temp))
+    {
+        if(temp == "true")
+        {
+            ui->checkBoxFilesPath->setCheckState(Qt::Checked);
+        }
+        else
+        {
+            ui->checkBoxFilesPath->setCheckState(Qt::Unchecked);
+        }
+    }
+
+    //Последний путь к файлам
+    if(config->get("lastPath", temp) && ui->checkBoxFilesPath->checkState() == Qt::Checked)
     {
         QDir dir(temp);
 
         lastPath.setPath(temp);
     }
+    else
+    {
+        lastPath.setPath(QDir::homePath());
+    }
 
+    // Размер шрифта таблиц
     if(config->get("tableFontSize", temp))
     {
         tableFontSize = temp.toInt();
@@ -44,6 +65,8 @@ void qrDialog::readConfig()
         Extras::scaleTable(tableFontSize, ui->tableWidget);
         Extras::scaleTable(tableFontSize, ui->tableWidget_2);
     }
+
+    configLoaded = true;
 }
 
 // БУЛКИ
@@ -81,6 +104,13 @@ bool qrDialog::tabAlreadyAdded(int tab)
         if(addedQrTabs[i] == tab) return true;
     }
     return false;
+}
+
+bool qrDialog::fileIsUsed(QString path)
+{
+    QFileInfo(path).fileName();
+    QList<QListWidgetItem*> item = ui->listWidgetUsedFiles->findItems(QFileInfo(path).fileName(), Qt::MatchContains);
+    return !item.empty();
 }
 
 void qrDialog::qrNewFileClear()
@@ -393,7 +423,6 @@ void qrDialog::on_pushButton_clicked()
         std::vector<Match> matches;
         matches.resize(converter.invoiceResult[0].size());
         int maxMatches = ui->lineEditDept->text().toInt();
-//        std::cout << "Max matches = " << maxMatches << "\n";
 
         for(int col = 1; col < converter.invoiceResult[0].size(); col++)
         {
@@ -445,19 +474,21 @@ void qrDialog::on_pushButtonOpenQR_clicked()
 
     qrNewFileClear();
 
-    QString path;
-    if(config->get("lastPath", path))
-    {
-        lastPath.setPath(path);
-    }
-
     QString qrPathTemp = QFileDialog::getOpenFileName(this, "Выберите файл QR", lastPath.absolutePath(), "*.xls *.xlsx");
     if(qrPathTemp.isEmpty())
     {
         ui->labelPathQR->setText("Выберите файл!");
     }
+    else if(fileIsUsed(qrPathTemp))
+    {
+        QMessageBox::information(this, "!", "Данные из этого файла уже добавлены!");
+    }
     else
     {
+        if(ui->listWidgetUsedFiles->count() > 0)
+        {
+            ui->usedFilesListWidget->show();
+        }
         lastPath.setPath(QFileInfo(qrPathTemp).absolutePath());
         config->set("lastPath", lastPath.absolutePath());
 
@@ -598,14 +629,11 @@ void qrDialog::on_pushButtonAddColsQR_clicked()
 {
     if(!converter.qrXls.empty() && showQr)
     {
-//        QMessageBox::information(this, "!?", "AddColsQr clicked\n");
-//        std::cout << "AddColsQr clicked\n";
-
         // Взять данные из выбранной ячейки
         int col = ui->tableWidget_2->selectionModel()->currentIndex().column();
         int row = ui->tableWidget_2->selectionModel()->currentIndex().row();
 
-        if(converter.qrXls[currentTabQr][row][col].size() > ui->lineEditQrLenght->text().toInt())
+        if(converter.qrXls[currentTabQr][row][col].size() >= qrCodeLenght)
         {
             QMessageBox::information(this, "Внимание!",
                                      "Длина содержимого ячейки похожа на QR код.\n"
@@ -667,7 +695,7 @@ void qrDialog::on_pushButtonAddToQrResult_clicked()
                 QVector<QString> newRow;
 
                 if(Extras::emptyCell(converter.qrXls[currentTabQr][row][converter.qrSheetSettings[currentTabQr].qrCol])
-                             || converter.qrXls[currentTabQr][row][converter.qrSheetSettings[currentTabQr].qrCol].size() < ui->lineEditQrLenght->text().toInt())
+                             || converter.qrXls[currentTabQr][row][converter.qrSheetSettings[currentTabQr].qrCol].size() < qrCodeLenght)
                 {
                    continue;
                 }
@@ -704,6 +732,7 @@ void qrDialog::on_pushButtonAddToQrResult_clicked()
 
             ui->labelQrQty->setText(QString::number(converter.qrResult.size()));
             showTabQr(converter.qrResult);
+            ui->listWidgetUsedFiles->addItem(ui->labelPathQR->text());
         }
     }
 }
@@ -741,6 +770,7 @@ void qrDialog::on_pushButtonResetQR_clicked()
     ui->labelColQR->clear();
     ui->labelQrQty->clear();
     ui->listWidget->clear();
+    ui->listWidgetUsedFiles->clear();
     ui->labelCodesFounded->clear();
     ui->labelTabQR->setText("0");
     ui->labelTabsQR->setText("0");
@@ -891,7 +921,7 @@ void qrDialog::on_pushButtonShowResult_clicked()
                         QString qrCut;
                         QString qr = tempQr[qrRow][0];
 
-                        for(int k = 0; k < ui->lineEditQrLenght->text().toInt(); k++)
+                        for(int k = 0; k < qrCodeLenght; k++)
                         {
                             qrCut += qr[k];
                         }
@@ -1129,6 +1159,23 @@ void qrDialog::on_pushButtonScaleUp_clicked()
         ui->labelScale->setText(QString::number(tableFontSize));
         Extras::scaleTable(tableFontSize, ui->tableWidget);
         Extras::scaleTable(tableFontSize, ui->tableWidget_2);
+    }
+}
+
+void qrDialog::on_checkBoxFilesPath_stateChanged(int arg1)
+{
+    if(ui->checkBoxFilesPath->checkState() == Qt::Checked)
+    {
+        if(configLoaded)
+        {
+            QMessageBox::warning(this, "!!!", "Важно!!!\n"
+                                              "При недоступности последнего использованного пути к файлам возможно подвисание программы.");
+        }
+        config->set("checkBoxFilePath", "true");
+    }
+    else
+    {
+        config->set("checkBoxFilePath", "false");
     }
 }
 

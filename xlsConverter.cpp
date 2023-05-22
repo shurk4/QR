@@ -4,7 +4,6 @@ using namespace OpenXLSX;
 
 void xlsConverter::readXls(std::wstring path, QVector<QVector<QVector<QString>>> &tempXls, QVector<QString> &sheetNames)
 {
-    std::cout << "readXls started\n";
     BasicExcel xls;
 
     xls.Load(&(path[0]));
@@ -86,17 +85,12 @@ void xlsConverter::readXls(std::wstring path, QVector<QVector<QVector<QString>>>
 
 void xlsConverter::readXlsX(std::string path, QVector<QVector<QVector<QString>>> &tempXls, QVector<QString> &sheetNames)
 {
-    std::cout << "readXlsX started\n";
-
     int maxCols = 0;
 
     XLDocument doc;
     doc.open(path);
 
     auto sheets = doc.workbook().worksheetNames();
-//    sheetNames.resize(sheets.size());
-
-    std::cout << "sheets size: " << sheets.size() << "\n";
 
     for(auto it : sheets)
     {
@@ -104,8 +98,6 @@ void xlsConverter::readXlsX(std::string path, QVector<QVector<QVector<QString>>>
 
         auto wks = doc.workbook().worksheet(it);
         sheetNames.push_back(QString::fromStdString(wks.name()));
-
-        std::cout << "Rows: " << wks.rowCount() << "\n\n";
 
         for (auto& row : wks.rows())
         {
@@ -115,7 +107,6 @@ void xlsConverter::readXlsX(std::string path, QVector<QVector<QVector<QString>>>
             for (auto& value : std::vector<XLCellValue>(row.values()))
             {
                 QString tempString;
-                std::cout << value.typeAsString() << "(" << value << ") - ";
 
                 if(value.typeAsString() == "empty")
                 {
@@ -135,7 +126,6 @@ void xlsConverter::readXlsX(std::string path, QVector<QVector<QVector<QString>>>
             if(tempRow.size() > maxCols) maxCols = tempRow.size();
 
             tempSheet.push_back(tempRow);
-            std::cout << std::endl;
         }
         // Выравнивание количества столбцов
         for(int row = 0; row < tempSheet.size(); row++)

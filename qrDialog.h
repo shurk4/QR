@@ -56,6 +56,7 @@ public:
     QString qrFileName;
     QDir lastPath = QDir::homePath();
 
+    bool configLoaded = false;
     bool showInvoice = false;
     bool showQr = false;
     bool analyzed = false;
@@ -68,6 +69,7 @@ public:
     bool emptyCell(std::string &str);
     bool itQty(std::string str);
     bool tabAlreadyAdded(int tab);
+    bool fileIsUsed(QString path);
 
     std::vector<std::vector<int>> selectedQrCols;
     std::vector<Compare> compares;
@@ -147,6 +149,8 @@ private slots:
 
     void on_pushButtonScaleUp_clicked();
 
+    void on_checkBoxFilesPath_stateChanged(int arg1);
+
 private:
     Ui::qrDialog *ui;
 
@@ -154,6 +158,7 @@ private:
 
     UserConfig *config = new UserConfig;
 
+    int qrCodeLenght = 31;
     int tableFontSize;
 
 signals: // отправка данных
