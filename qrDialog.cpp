@@ -31,6 +31,8 @@ void qrDialog::readConfig()
     QString temp;
     if(config->get("lastPath", temp))
     {
+        QDir dir(temp);
+
         lastPath.setPath(temp);
     }
 
@@ -42,8 +44,6 @@ void qrDialog::readConfig()
         Extras::scaleTable(tableFontSize, ui->tableWidget);
         Extras::scaleTable(tableFontSize, ui->tableWidget_2);
     }
-
-
 }
 
 // БУЛКИ
@@ -146,7 +146,7 @@ void qrDialog::on_pushButtonOpenFile_clicked()
     }
     else
     {
-        lastPath = invPathTemp;
+        lastPath.setPath(QFileInfo(invPathTemp).absolutePath());
         config->set("lastPath", lastPath.absolutePath());
 
         QDate date = QDate::currentDate();
@@ -293,7 +293,7 @@ void qrDialog::on_pushButtonAnalyzeInvoice_clicked()
             || converter.invoiceSheetSettings[currentTab].qtyCol < converter.invoiceXls[currentTab][0].size()))
     {
         converter.invoiceResult.clear();
-        int CellSize;
+
         int itemsQty = 0;
         int colsNum;
         int stopRow = converter.invoiceXls[currentTab].size();
@@ -458,7 +458,7 @@ void qrDialog::on_pushButtonOpenQR_clicked()
     }
     else
     {
-        lastPath = qrPathTemp;
+        lastPath.setPath(QFileInfo(qrPathTemp).absolutePath());
         config->set("lastPath", lastPath.absolutePath());
 
         QDate date = QDate::currentDate();
@@ -599,7 +599,7 @@ void qrDialog::on_pushButtonAddColsQR_clicked()
     if(!converter.qrXls.empty() && showQr)
     {
 //        QMessageBox::information(this, "!?", "AddColsQr clicked\n");
-        std::cout << "AddColsQr clicked\n";
+//        std::cout << "AddColsQr clicked\n";
 
         // Взять данные из выбранной ячейки
         int col = ui->tableWidget_2->selectionModel()->currentIndex().column();
@@ -795,14 +795,15 @@ void qrDialog::on_pushButtonDelete_clicked()
 // Показать результат, если надо - заполнить
 void qrDialog::on_pushButtonShowResult_clicked()
 {
-    if(converter.invoiceResult.size() > 0 && converter.qrResult.size() > 0)
+    if(converter.invoiceResult.size() > 0 && converter.qrResult.size() > 0) // Если сделана выборка инвойс и qr
     {
         tempInvoice = converter.invoiceResult;
         tempQr = converter.qrResult;
 
-        if(converter.result.empty() && converter.resultInfo.empty())
+        if(converter.result.empty() && converter.resultInfo.empty()) //если таблица результата и таблица информации о выборке результата пустые
         {
-            // Сопоставление столбцов
+            // Сопоставление столбцов. Идём по колонкам первой строки выбоки инвойса и сравниваем данные в колонке с данными в выборке qr
+            // для поиска колонок по которым будут сопоставляться коды
             for(int itemCol = 1; itemCol < tempInvoice[0].size(); itemCol++)
             {
                 for(int qrRow = 0; qrRow < tempQr.size(); qrRow++)
@@ -811,14 +812,14 @@ void qrDialog::on_pushButtonShowResult_clicked()
 
                     for(int qrCol = 1; qrCol < tempQr[qrRow].size(); qrCol++)
                     {
-                        if(tempInvoice[0][itemCol] == tempQr[qrRow][qrCol])
+                        if(tempInvoice[0][itemCol] == tempQr[qrRow][qrCol]) // Если кололнка сопоставления найдена
                         {
-                            bool exist = false;
+                            bool exist = false; // проверяем что этой колонки нет в списке колонок для сопоставления
                             for(int i = 0; i < compares.size(); i++)
                             {
                                 if(compares[i].invoiceCol == itemCol || compares[i].qrCol == qrCol) exist = true;
                             }
-                            if(!exist)
+                            if(!exist) // если колонки не были добавлены, добавляем в список сопоставления
                             {
                                 Compare tempCompare;
                                 tempCompare.invoiceCol = itemCol;
@@ -830,7 +831,7 @@ void qrDialog::on_pushButtonShowResult_clicked()
                         }
                     }
 
-                    if(founded) break;
+                    if(founded) break;// и если колонка была сопоставлена, прерываем цикл по текущей колонки в выборке QR и переходим к следующей
                 }
             }
             // Сопоставление столбцов
