@@ -13,9 +13,9 @@ public:
 
     QString getVersion();
     QString getInfo();
-    void setVersion(QString ver);
-    void setInfo(QString inf);
-    void save(QString path);
+    void setVersion(const QString ver);
+    void setInfo(const QString inf);
+    void save(const QString path);
 };
 
 #endif // VERSION_H

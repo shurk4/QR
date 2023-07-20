@@ -19,7 +19,7 @@ txtFiles::~txtFiles()
     delete ui;
 }
 
-void txtFiles::showTable_1(QVector<QVector<QString>> &inTab)
+void txtFiles::showTable_1(const QVector<QVector<QString>> &inTab)
 {
         QString labelTabString = QString::number(currentTab + 1);
         QString labelTabsString = QString::number(converter.invoiceXls.size());
@@ -30,7 +30,7 @@ void txtFiles::showTable_1(QVector<QVector<QString>> &inTab)
         Extras::showTable(inTab, ui->tableWidget_1);
 }
 
-void txtFiles::showTable_2(QVector<QVector<QString>> &table)
+void txtFiles::showTable_2(const QVector<QVector<QString> > &table)
 {
     // Вывести данные в таблицу
             Extras::showTable(table, ui->tableWidget_2);

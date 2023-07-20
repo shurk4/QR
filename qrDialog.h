@@ -62,18 +62,9 @@ public:
     bool newCompare();
     bool filesOk();
     bool compared(const std::string a, const std::string b);
-    bool emptyCell(std::string &str);
-    bool itQty(std::string str);
-    bool tabAlreadyAdded(int tab);
-    bool fileIsUsed(QString path);
-
-    std::vector<std::vector<int>> selectedQrCols;
-    std::vector<Compare> compares;
-    std::vector<int> addedQrTabs;
-
-    QVector<QVector<QString>> tempInvoice;
-    QVector<QVector<QString>> tempQr;
-    QVector<QVector<QString>> notUsedQr;
+    bool itQty(const std::string str);
+    bool tabAlreadyAdded(const int tab);
+    bool fileIsUsed(const QString path);
 
     void qrNewFileClear();
     void qrClear();
@@ -91,11 +82,7 @@ private slots:
 
     void on_pushButtonTabUpQR_clicked();
 
-    void on_pushButtonCancel_clicked();
-
     void on_pushButtonFirstQty_clicked();
-
-    void on_pushButtonBasicSize_clicked();
 
     void on_pushButtonColQR_clicked();
 
@@ -137,8 +124,6 @@ private slots:
 
     void on_pushButtonAddToInv_clicked();
 
-    void on_pushButtonHelp_clicked();
-
     void on_pushButtonLastQty_clicked();
 
     void on_pushButtonScaleDown_clicked();
@@ -155,6 +140,14 @@ private:
     UserConfig *config = new UserConfig;
 
     std::ofstream file;
+
+    std::vector<std::vector<int>> selectedQrCols;
+    std::vector<Compare> compares;
+    std::vector<int> addedQrTabs;
+
+    QVector<QVector<QString>> tempInvoice;
+    QVector<QVector<QString>> tempQr;
+    QVector<QVector<QString>> notUsedQr;
 
     int qrCodeLenght = 31;
     int tableFontSize;

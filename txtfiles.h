@@ -38,9 +38,9 @@ public:
 
     xlsConverter converter;
 
-    void showTable_1(QVector<QVector<QString>> &inTab);
+    void showTable_1(const QVector<QVector<QString>> &inTab);
 
-    void showTable_2(QVector<QVector<QString>> &table);
+    void showTable_2(const QVector<QVector<QString>> &table);
 
 private slots:
     void on_pushButtonInv_clicked();
@@ -63,7 +63,6 @@ private:
     Ui::txtFiles *ui;
 
     std::vector<FileData> docsData;
-//    std::vector<std::vector<std::vector<std::string>>> data;
     QVector<QVector<QVector<QString>>> data;
 
     QDir lastPath = QDir::homePath();
@@ -73,7 +72,6 @@ private:
 
     int serial = 0;
     int itemNum = 0;
-//    std::vector<int> numGroup; // Если понадобится добавлять коды в уже добавленому товару
 
     bool invoiceShowed = false;
 };

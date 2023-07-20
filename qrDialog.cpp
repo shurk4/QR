@@ -81,14 +81,9 @@ bool qrDialog::compared(const std::string a, const std::string b)
     return a == b;
 }
 
-bool qrDialog::emptyCell(std::string &str)
+bool qrDialog::itQty(const std::string str)
 {
-    return str.size() == 0 || str[0] == '\0';
-}
-
-bool qrDialog::itQty(std::string str)
-{
-    if(emptyCell(str)) return false;
+    if(Extras::emptyCell(QString::fromStdString(str))) return false;
     for(int i = 0; i < str.size(); i++)
     {
         if(str[i] < '0' || str[i] > '9') return false;
@@ -96,7 +91,7 @@ bool qrDialog::itQty(std::string str)
     return true;
 }
 
-bool qrDialog::tabAlreadyAdded(int tab)
+bool qrDialog::tabAlreadyAdded(const int tab)
 {
     if(addedQrTabs.empty()) return false;
     for(int i = 0; i < addedQrTabs.size(); i++)
@@ -106,7 +101,7 @@ bool qrDialog::tabAlreadyAdded(int tab)
     return false;
 }
 
-bool qrDialog::fileIsUsed(QString path)
+bool qrDialog::fileIsUsed(const QString path)
 {
     QFileInfo(path).fileName();
     QList<QListWidgetItem*> item = ui->listWidgetUsedFiles->findItems(QFileInfo(path).fileName(), Qt::MatchContains);
@@ -783,16 +778,6 @@ void qrDialog::on_pushButtonResetQR_clicked()
 // ПРАВАЯ ТАБЛИЦА
 
 // ГЛАВНОЕ МЕНЮ
-void qrDialog::on_pushButtonCancel_clicked()
-{
-    this->close();
-}
-
-void qrDialog::on_pushButtonBasicSize_clicked()
-{
-    this->showMinimized();
-}
-
 void qrDialog::on_pushButtonClear_clicked()
 {
     ui->listWidget->clear();
@@ -1112,14 +1097,6 @@ void qrDialog::on_pushButtonAddToInv_clicked()
 //    converter.invoiceResult[rowItem].push_back(converter.qrArtuculesVec[rowDataToAdd][0]);
 
     showTab(converter.invoiceResult);
-}
-
-void qrDialog::on_pushButtonHelp_clicked()
-{
-    if(!helpWindow->isVisible())
-    {
-        helpWindow->show();
-    }
 }
 
 void qrDialog::fromTextFiles(QVector<QVector<QString>> data)

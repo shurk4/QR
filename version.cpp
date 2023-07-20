@@ -34,17 +34,17 @@ QString Version::getInfo()
     return info;
 }
 
-void Version::setVersion(QString ver)
+void Version::setVersion(const QString ver)
 {
     v = ver;
 }
 
-void Version::setInfo(QString inf)
+void Version::setInfo(const QString inf)
 {
     info = inf;
 }
 
-void Version::save(QString path)
+void Version::save(const QString path)
 {
     QFile file(path);
 

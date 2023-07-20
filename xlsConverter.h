@@ -40,7 +40,7 @@ public:
     bool emptyCell(QString &str);
 
     std::vector<StructInvoice> invoiceSheetSettings;
-//    std::vector<std::vector<std::vector<std::string>>> invoiceXls;
+
     QVector<QVector<QVector<QString>>>  invoiceXls;
     QVector<QVector<QString>> invoiceResult;
 
