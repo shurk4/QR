@@ -10,14 +10,14 @@ class Extras
 public:
     Extras();
 
-    static QVector<QVector<QString>> toQvecConvert(std::vector<std::vector<std::string>> &data);
+    static QVector<QVector<QString>> toQvecConvert(std::vector<std::vector<std::string>> const &data);
 
-    static void showTable(QVector<QVector<QString>> &data, QTableWidget *table);
-    static void scaleTable(int size, QTableWidget *table);
+    static void showTable(const QVector<QVector<QString>> &data, QTableWidget *table);
+    static void scaleTable(const int size, QTableWidget *table);
 
-    static std::string IntToSymbol(int in);
+    static std::string IntToSymbol(const int in);
 
-    static bool emptyCell(QString &str);
+    static bool emptyCell(const QString &str);
 };
 
 #endif // EXTRAS_H

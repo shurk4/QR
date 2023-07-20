@@ -5,14 +5,12 @@ Extras::Extras()
 
 }
 
-QVector<QVector<QString>> Extras::toQvecConvert(std::vector<std::vector<std::string>> &data)
+QVector<QVector<QString>> Extras::toQvecConvert(const std::vector<std::vector<std::string>> &data)
 {
-//    QVector<QVector<QString>> qData(data.size());
     QVector<QVector<QString>> qData;
 
     for(int row = 0; row < data.size(); row++)
     {
-//        QVector<QString> tempRow(data[row].size());
         QVector<QString> tempRow;
 
         for(int col = 0; col < data[row].size(); col++)
@@ -26,45 +24,45 @@ QVector<QVector<QString>> Extras::toQvecConvert(std::vector<std::vector<std::str
     return qData;
 }
 
-void Extras::showTable(QVector<QVector<QString> > &data, QTableWidget *table)
+void Extras::showTable(const QVector<QVector<QString>> &data, QTableWidget *table)
 {
-        table->clear();
-//        table->setStyleSheet("QTableView::item {padding-top : 2px}");
+    table->clear();
+    if(data.empty()) return;
 
-        int rows;
+    int rows;
 
-        if(data.size() > 10000)
+    if(data.size() > 10000)
+    {
+        rows = 10000;
+    }
+    else
+    {
+        rows = data.size();
+    }
+
+    table->setRowCount(rows);
+    table->setColumnCount(data[0].size());
+    table->setHorizontalHeaderLabels(QStringList() << "A" << "B" << "C" << "D" << "E" << "F" << "G"); // Имена столбцов вместо цифр
+
+    for(int row = 0; row < data.size(); row++)
+    {
+        if(data[row].size() > table->columnCount())
         {
-            rows = 10000;
+            table->setColumnCount(data[row].size());
         }
-        else
+        for(int col = 0; col < data[row].size(); col++)
         {
-            rows = data.size();
+            QTableWidgetItem *tbl = new QTableWidgetItem(data[row][col]);
+
+            table->setItem(row, col, tbl);
         }
+    }
 
-        table->setRowCount(rows);
-        table->setColumnCount(data[0].size());
-        table->setHorizontalHeaderLabels(QStringList() << "A" << "B" << "C" << "D" << "E" << "F" << "G"); // Имена столбцов вместо цифр
-
-        for(int row = 0; row < data.size(); row++)
-        {
-            if(data[row].size() > table->columnCount())
-            {
-                table->setColumnCount(data[row].size());
-            }
-            for(int col = 0; col < data[row].size(); col++)
-            {
-                QTableWidgetItem *tbl = new QTableWidgetItem(data[row][col]);
-
-                table->setItem(row, col, tbl);
-            }
-        }
-
-        table->resizeColumnsToContents();
-        table->resizeRowsToContents();
+    table->resizeColumnsToContents();
+    table->resizeRowsToContents();
 }
 
-void Extras::scaleTable(int size, QTableWidget *table)
+void Extras::scaleTable(const int size, QTableWidget *table)
 {
     QFont font;
     font.setPointSize(size);
@@ -74,14 +72,14 @@ void Extras::scaleTable(int size, QTableWidget *table)
     table->resizeRowsToContents();
 }
 
-std::string Extras::IntToSymbol(int in)
+std::string Extras::IntToSymbol(const int in)
 {
     std::string str;
         str += ('A' + in);
         return str;
 }
 
-bool Extras::emptyCell(QString &str)
+bool Extras::emptyCell(const QString &str)
 {
     return str.size() == 0 || str[0] == '\0';
 }

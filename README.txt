@@ -1,0 +1,2 @@
+CLION
+MINGW64

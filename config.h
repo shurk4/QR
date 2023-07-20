@@ -26,9 +26,9 @@ public:
     QString getDestPath();
     QString getVersionPath();
 
-    void setSourcePath(QString str);
-    void setDestPath(QString str);
-    void setVersionPath(QString str);
+    void setSourcePath(QString const str);
+    void setDestPath(QString const str);
+    void setVersionPath(QString const str);
 
     void saveConfig();
     void save(QString path);
@@ -54,8 +54,8 @@ public:
      void write();
      void read();
 
-     void set(QString name, QString value);
-     bool get(const QString name, QString &value);
+     void set(QString const name, QString const value);
+     bool get(QString const name, QString &value);
 };
 
 #endif // CONFIG_H

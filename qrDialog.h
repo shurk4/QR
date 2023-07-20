@@ -41,12 +41,8 @@ public:
 
     xlsConverter converter;
     void readConfig();
-    void showTab(QVector<QVector<QString>> &inTab);
-    void showTabQr(QVector<QVector<QString>> &inTab);
-
-//    std::string toSymbol(int in);
-
-    std::ofstream file;
+    void showTab(const QVector<QVector<QString>> &inTab);
+    void showTabQr(const QVector<QVector<QString>> &inTab);
 
     int currentTab = 0;
     int currentTabQr = 0;
@@ -65,7 +61,7 @@ public:
 
     bool newCompare();
     bool filesOk();
-    bool compared(std::string a, std::string b);
+    bool compared(const std::string a, const std::string b);
     bool emptyCell(std::string &str);
     bool itQty(std::string str);
     bool tabAlreadyAdded(int tab);
@@ -157,6 +153,8 @@ private:
     help *helpWindow;
 
     UserConfig *config = new UserConfig;
+
+    std::ofstream file;
 
     int qrCodeLenght = 31;
     int tableFontSize;

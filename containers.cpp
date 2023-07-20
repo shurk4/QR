@@ -47,20 +47,20 @@ void containers::collectItemsCtn(QString item, ItemInfo itemInfo)
 }
 
 // ковертер int в символ
-std::string containers::toSymbol(int in)
+std::string containers::toSymbol(const int in)
 {
     std::string str;
         str += ('A' + in);
         return str;
 }
 
-bool containers::emptyCell(QString &str)
+bool containers::emptyCell(const QString &str)
 {
     return str.size() == 0 || str[0] == '\0';
 }
 
 // проверка строки на номер контейнера
-bool containers::isCntNum(std::string str)
+bool containers::isCntNum(const std::string str)
 {
     if(str.size() != 11)
     {

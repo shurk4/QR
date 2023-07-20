@@ -37,11 +37,11 @@ public:
 
     void collectItemsCtn(QString item, ItemInfo itemInfo);
 
-    std::string toSymbol(int in);
+    std::string toSymbol(const int in);
 
-    bool emptyCell(QString &str);
+    bool emptyCell(const QString &str);
 
-    bool isCntNum(std::string str);
+    bool isCntNum(const std::string str);
 
 private slots:
 

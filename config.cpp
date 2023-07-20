@@ -65,17 +65,17 @@ QString Config::getVersionPath()
     return versionPath;
 }
 
-void Config::setSourcePath(QString str)
+void Config::setSourcePath(QString const str)
 {
     sourcePath = str;
 }
 
-void Config::setDestPath(QString str)
+void Config::setDestPath(QString const str)
 {
     destPath = str;
 }
 
-void Config::setVersionPath(QString str)
+void Config::setVersionPath(QString const str)
 {
     versionPath = str;
 }
@@ -139,7 +139,7 @@ void UserConfig::read()
     }
 }
 
-void UserConfig::set(QString name, QString value)
+void UserConfig::set(const QString name, const QString value)
 {
     config[name] = value;
 }

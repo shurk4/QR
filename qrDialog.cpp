@@ -76,7 +76,7 @@ bool qrDialog::filesOk()
     return converter.invoiceXls.size() > 0 && converter.qrXls.size() > 0;
 }
 
-bool qrDialog::compared(std::string a, std::string b)
+bool qrDialog::compared(const std::string a, const std::string b)
 {
     return a == b;
 }
@@ -256,7 +256,7 @@ void qrDialog::on_pushButtonTabDown_clicked()
 // Переключение вкладок
 
 // Вывести данные в таблицу
-void qrDialog::showTab(QVector<QVector<QString>> &inTab)
+void qrDialog::showTab(const QVector<QVector<QString> > &inTab)
 {
     QString labelTabString = QString::number(currentTab + 1);
     QString labelTabsString = QString::number(converter.invoiceXls.size());
@@ -589,7 +589,7 @@ void qrDialog::on_pushButtonTabDownQR_clicked()
     }
 }
 
-void qrDialog::showTabQr(QVector<QVector<QString>> &inTab)
+void qrDialog::showTabQr(const QVector<QVector<QString> > &inTab)
 {
     QString labelTabString = QString::number(currentTabQr + 1);
     QString labelTabsString = QString::number(converter.qrXls.size());
