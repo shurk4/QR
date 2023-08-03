@@ -17,6 +17,7 @@ qrDialog::qrDialog(QWidget *parent) :
     ui->lonelyCodesWidget->hide(); // Скрыть виджет "Коды без привязок"
     ui->notUsedCodes->hide(); // Скрыть виджет "Неиспользованные коды
     ui->usedFilesListWidget->hide(); // Скрыть виджет "обработанных файлов"
+    ui->lineEditQRLenght->setValidator(new QIntValidator(0, 10, this));
 
     helpWindow = new help(this); // Указатель создан в хедере для одновременного использования окон
 }
@@ -28,7 +29,7 @@ qrDialog::~qrDialog()
     delete ui;
 }
 
-void qrDialog::readConfig() // ДОБАВИТЬ ПРОВЕРКУ ИСПОЛЬЗОВАНИЯ ПОСЛЕДНЕГО ПУТИ!!!
+void qrDialog::readConfig()
 {
     QString temp;
     // Сохранять последний путь к файлам?
@@ -44,7 +45,7 @@ void qrDialog::readConfig() // ДОБАВИТЬ ПРОВЕРКУ ИСПОЛЬЗ�
         }
     }
 
-    //Последний путь к файлам
+    //Последний открытый путь к файлам
     if(config->get("lastPath", temp) && ui->checkBoxFilesPath->checkState() == Qt::Checked)
     {
         QDir dir(temp);
@@ -138,7 +139,7 @@ void qrDialog::on_pushButtonFirstQty_clicked()
         converter.invoiceSheetSettings[currentTab].qtyCol = col;
         converter.invoiceSheetSettings[currentTab].startRow = row;
 
-        ui->labelColQty->setText(QString::fromStdString(Extras::IntToSymbol(col)));
+        ui->labelColQty->setText(QString::number(col));
         ui->labelFirstQty->setText(QString::number(row + 1));
     }
 }
@@ -906,9 +907,16 @@ void qrDialog::on_pushButtonShowResult_clicked()
                         QString qrCut;
                         QString qr = tempQr[qrRow][0];
 
-                        for(int k = 0; k < qrCodeLenght; k++)
+                        if(qrCodeLenght > 0)
                         {
-                            qrCut += qr[k];
+                            for(int k = 0; k < qrCodeLenght; k++)
+                            {
+                                qrCut += qr[k];
+                            }
+                        }
+                        else
+                        {
+                            qrCut = qr;
                         }
                         tempResultRow.push_back(qrCut);
                         tempQr[qrRow][1] = "used";
@@ -1038,6 +1046,8 @@ void qrDialog::on_pushButtonNew_clicked()
     compares.clear();
     converter.clearInvoiceData();
 
+    ui->lineEditQRLenght->setText(QString::number(31));
+
     qrClear();
 
     converter.clearQrData();
@@ -1093,8 +1103,6 @@ void qrDialog::on_pushButtonAddToInv_clicked()
     }
 
     converter.invoiceResult[rowItem][converter.invoiceResult[rowItem].size() - 1] = converter.qrArtuculesVec[rowDataToAdd][0];
-
-//    converter.invoiceResult[rowItem].push_back(converter.qrArtuculesVec[rowDataToAdd][0]);
 
     showTab(converter.invoiceResult);
 }
@@ -1154,5 +1162,11 @@ void qrDialog::on_checkBoxFilesPath_stateChanged(int arg1)
     {
         config->set("checkBoxFilePath", "false");
     }
+}
+
+void qrDialog::on_lineEditQRLenght_textEdited(const QString &arg1)
+{
+    qrCodeLenght = ui->lineEditQRLenght->text().toInt();
+//    QMessageBox::information(this, "!", "Qr code lenght: " + QString::number(qrCodeLenght));
 }
 

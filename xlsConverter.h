@@ -4,6 +4,7 @@
 
 #include <QString>
 #include <QVector>
+#include <QDebug>
 #include <QTextStream>
 #include <windows.h>
 #include <sstream>
@@ -13,6 +14,7 @@
 
 #include "XlsFormat.h"
 #include "OpenXLSX/OpenXLSX.hpp"
+#include "extras.h"
 
 using namespace ExcelFormat;
 
@@ -27,6 +29,7 @@ struct StructData
 struct StructInvoice : StructData
 {    
     int qtyCol = -1;
+    int itemCol = -1;
 };
 
 struct StructQR : StructData
@@ -73,6 +76,9 @@ public:
 
     void saveResult(std::wstring path);
     void saveContainers(std::wstring patch);
+
+    bool invoiceEmpty();
+    QVector<QVector<QString>> getItems(int tab/*, int qtyCol, int qtyFirstCell, int qtyLastCell, int itemRow*/); // ctn - 0, item - 1, qty - 2
 
     xlsConverter();
 };

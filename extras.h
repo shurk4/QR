@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QWidget>
 #include <QTableWidget>
+#include <QRegExp>
 
 class Extras
 {
@@ -17,7 +18,10 @@ public:
 
     static std::string IntToSymbol(const int in);
 
+    static bool itQty(const std::string str);
+    static bool isCtnNumber(QString str);
     static bool emptyCell(const QString &str);
-};
 
+    void readConfig();
+};
 #endif // EXTRAS_H

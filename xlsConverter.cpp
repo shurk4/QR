@@ -2,6 +2,11 @@
 
 using namespace OpenXLSX;
 
+xlsConverter::xlsConverter()
+{
+
+}
+
 void xlsConverter::readXls(std::wstring path, QVector<QVector<QVector<QString>>> &tempXls, QVector<QString> &sheetNames)
 {
     BasicExcel xls;
@@ -365,7 +370,52 @@ void xlsConverter::saveContainers(std::wstring patch)
     xls.SaveAs(&(patch[0]));
 }
 
-xlsConverter::xlsConverter()
+bool xlsConverter::invoiceEmpty()
 {
+    return invoiceXls.empty();
+}
 
+QVector<QVector<QString> > xlsConverter::getItems(int tab)
+{
+    qDebug() << "Get items started! ";
+    int qtyCol = invoiceSheetSettings[tab].qtyCol;
+    int qtyFirstCell = invoiceSheetSettings[tab].startRow;
+    int qtyLastCell = invoiceSheetSettings[tab].stopRow;
+    int itemCol = invoiceSheetSettings[tab].itemCol;
+
+    QVector<QVector<QString>> result;
+
+    if(invoiceXls.empty() || invoiceXls[tab].empty()) return result;
+
+    for(size_t row = qtyFirstCell - 1; row <= qtyLastCell + 1; row++)
+    {
+        QVector<QString> rowVec;
+        rowVec.resize(3);
+        bool founded = false;
+
+        for(size_t col = 0; col < invoiceXls[tab][row].size(); col++)
+        {
+            QString temp = "-";
+            if(Extras::isCtnNumber(invoiceXls[tab][row][col]))
+            {
+                rowVec[0] = invoiceXls[tab][row][col];
+                founded = true;
+            }
+            else if(col == itemCol && invoiceXls[tab][row][col].size() > 0 && Extras::itQty(invoiceXls[tab][row][qtyCol].toStdString()))
+            {
+                rowVec[1] = invoiceXls[tab][row][col];
+                founded = true;
+            }
+            else if(col == qtyCol)
+            {
+                if(invoiceXls[tab][row][col].size() > 0 && Extras::itQty(invoiceXls[tab][row][col].toStdString()))
+                {
+                    rowVec[2] = invoiceXls[tab][row][col];
+                    founded = true;
+                }
+            }
+        }
+        if(founded) result.push_back(rowVec);
+    }
+    return result;
 }

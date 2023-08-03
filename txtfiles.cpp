@@ -12,11 +12,62 @@ txtFiles::txtFiles(QWidget *parent) :
     this->setWindowFlags(windowFlags() | Qt::WindowMinimizeButtonHint
                          | Qt::WindowMaximizeButtonHint
                          | Qt::WindowSystemMenuHint);
+    readConfig();
+
+    ui->widgetTabsPanel->hide();
+    ui->WidgetInvAnalyze->hide();
+    ui->tableWidgetItems->hide();
 }
 
 txtFiles::~txtFiles()
 {
     delete ui;
+}
+
+void txtFiles::readConfig()
+{
+    QString temp;
+    //Последний открытый путь к файлам
+    if(config.get("lastPath", temp))
+    {
+        QDir dir(temp);
+
+        lastPath.setPath(temp);
+    }
+    else
+    {
+        lastPath.setPath(QDir::homePath());
+    }
+}
+
+void txtFiles::setDisplayType(DisplayType type)
+{
+    switch (type)
+    {
+    case (INV):
+        ui->widgetTabsPanel->show();
+        ui->WidgetInvAnalyze->show();
+        break;
+
+    case (QR):
+        ui->WidgetInvAnalyze->hide();
+        ui->widgetTabsPanel->show();
+        break;
+
+    case (TXT):
+        ui->widgetTabsPanel->hide();
+        ui->WidgetInvAnalyze->hide();
+        break;
+
+    case (RESULT):
+        ui->WidgetInvAnalyze->hide();
+        ui->widgetTabsPanel->hide();
+        ui->tableWidget_1->scrollToBottom();
+        break;
+
+    default:
+        break;
+    }
 }
 
 void txtFiles::showTable_1(const QVector<QVector<QString>> &inTab)
@@ -28,12 +79,14 @@ void txtFiles::showTable_1(const QVector<QVector<QString>> &inTab)
         ui->labelTabs->setText(labelTabsString);
 
         Extras::showTable(inTab, ui->tableWidget_1);
+
+        if(!converter.invoiceSheetNames.empty()) ui->labelTabName->setText(converter.invoiceSheetNames[currentTab]);
 }
 
-void txtFiles::showTable_2(const QVector<QVector<QString> > &table)
+void txtFiles::showTable_2(const QVector<QVector<QString>> &table)
 {
     // Вывести данные в таблицу
-            Extras::showTable(table, ui->tableWidget_2);
+        Extras::showTable(table, ui->tableWidget_1);
 }
 
 void txtFiles::on_pushButtonInv_clicked()
@@ -46,7 +99,7 @@ void txtFiles::on_pushButtonInv_clicked()
     }
     else
     {
-        lastPath = invPathTemp;
+        lastPath.setPath(invPathTemp);
 
         QDate date = QDate::currentDate();
         QTime time = QTime::currentTime();
@@ -82,7 +135,7 @@ void txtFiles::on_pushButtonInv_clicked()
             converter.readXls(path, converter.invoiceXls, converter.invoiceSheetNames);
         }
 
-        ui->labelInv->setText(invPathTemp);
+        ui->labelInv->setText(lastPath.dirName());
 
         QFile::remove(invoiceFileName);
 
@@ -92,6 +145,7 @@ void txtFiles::on_pushButtonInv_clicked()
 
         invoiceShowed = true;
         ui->pushButtonShow->setText("Результат");
+        setDisplayType(INV);
     }
 }
 
@@ -119,16 +173,15 @@ void txtFiles::on_pushButtonTxt_clicked()
 
     docsData.clear();
     data.clear();
-    ui->tableWidget_2->clear();
+    ui->tableWidget_1->clear();
     ui->listWidget->clear();
 
     // Получение списка файлов
     fileNames = QFileDialog::getOpenFileNames(nullptr, "Выбрать текстовые файлы", lastPath.absolutePath() , "Текстовые файлы(*.txt)");
 
-    lastPath = fileNames[0];
-
     if(!fileNames.isEmpty())
     {
+        lastPath.setPath(fileNames[0]);
         // Получение данных из списка файлов
         for (auto xfile : fileNames)
         {
@@ -170,23 +223,78 @@ void txtFiles::on_pushButtonTxt_clicked()
         ui->listWidget->setCurrentRow(0);
 
         ui->labelFilesNum->setText(QString::number(fileNames.size()));
+        setDisplayType(TXT);
+    }
+}
+
+void txtFiles::on_pushButtonSave_clicked()
+{
+    if(converter.result.size() > 0)
+    {
+        lastPath = QFileInfo(lastPath.path()).absolutePath() + "/result.xls";
+
+        QString fileName = QFileDialog::getSaveFileName(this, tr("Сохранить результат"), lastPath.absolutePath(), tr("Таблица xls (*.xls)"));
+        if (fileName != "")
+        {
+            try
+            {
+                std::wstring path = fileName.toStdWString();
+                converter.saveResult(path);
+                QMessageBox::information(this, "!", "Файл сохранён!");
+            }
+            catch (...)
+            {
+                QMessageBox::critical(this, "!", "Не удалось сохранить файл!");
+            }
+            converter.clear();
+        }
+    }
+    else
+    {
+        QMessageBox::information(this, "!", "Нечего сохранять!");
+    }
+}
+
+void txtFiles::on_pushButtonShow_clicked()
+{
+    if(invoiceShowed && converter.result.size() > 0)
+    {
+        showTable_1(converter.result);
+        ui->pushButtonShow->setText("Инвойс");
+        invoiceShowed = false;
+    }
+    else if(!invoiceShowed && converter.invoiceXls.size() > 0)
+    {
+        showTable_1(converter.invoiceXls[currentTab]);
+        ui->pushButtonShow->setText("Результат");
+        invoiceShowed = true;
     }
 }
 
 void txtFiles::on_listWidget_itemClicked(QListWidgetItem *item)
 {
+    //Если итем добавлен - тест!!!
+//    if(ui->listWidget->currentItem()->flags() == Qt::ItemFlag::ItemIsEnabled)
+//    {
+//        QMessageBox::information(this, "", "is enabled!");
+//    }
     currentDoc = ui->listWidget->currentRow();
     showTable_2(data[currentDoc]);
     ui->labelCodesInDoc->setText(QString::number(data[currentDoc].size()));
+    setDisplayType(TXT);
 }
 
-
-void txtFiles::on_pushButtonAddQr_clicked()
+// Добавить коды из файла
+void txtFiles::toCodes()
 {
     if(docsData[currentDoc].status == ADDED)
     {
-        QMessageBox::information(this, "!?", "Этот документ уже добавлен!");
+        QMessageBox::information(this, "!?", "Этот файл уже добавлен!");
     }
+//    else if(converter.invoiceEmpty())
+//    {
+//        QMessageBox::information(this, "!?", "Не добавлен файл инвойса!");
+//    }
     else
     {
         itemNum++;
@@ -245,58 +353,98 @@ void txtFiles::on_pushButtonAddQr_clicked()
             converter.result.push_back(tempResultRow);
 
             ui->listWidget->currentItem()->setBackgroundColor("#a1ff9f");
+            ui->listWidget->currentItem()->setFlags(Qt::ItemFlag::ItemIsEnabled);
         }
-    }
 
-    showTable_1(converter.result);
-    ui->labelResultItems->setText(QString::number(itemNum));
-    ui->labelResultCodes->setText(QString::number(converter.result.size()));
-    ui->pushButtonShow->setText("Инвойс");
-    invoiceShowed = false;
-}
-
-void txtFiles::on_pushButtonSave_clicked()
-{
-    if(converter.result.size() > 0)
-    {
-        lastPath = QFileInfo(lastPath.path()).absolutePath() + "/result.xls";
-
-        QString fileName = QFileDialog::getSaveFileName(this, tr("Сохранить результат"), lastPath.absolutePath(), tr("Таблица xls (*.xls)"));
-        if (fileName != "")
-        {
-            try
-            {
-                std::wstring path = fileName.toStdWString();
-                converter.saveResult(path);
-                QMessageBox::information(this, "!", "Файл сохранён!");
-            }
-            catch (...)
-            {
-                QMessageBox::critical(this, "!", "Не удалось сохранить файл!");
-            }
-            converter.clear();
-        }
-    }
-    else
-    {
-        QMessageBox::information(this, "!", "Нечего сохранять!");
-    }
-}
-
-
-void txtFiles::on_pushButtonShow_clicked()
-{
-    if(invoiceShowed && converter.result.size() > 0)
-    {
         showTable_1(converter.result);
+        setDisplayType(RESULT);
+        ui->labelResultItems->setText(QString::number(itemNum));
+        ui->labelResultCodes->setText(QString::number(converter.result.size()));
         ui->pushButtonShow->setText("Инвойс");
         invoiceShowed = false;
     }
-    else if(!invoiceShowed && converter.invoiceXls.size() > 0)
+}
+
+void txtFiles::on_pushButtonAddQr_clicked()
+{
+    toCodes();
+}
+
+void txtFiles::on_listWidget_itemDoubleClicked(QListWidgetItem *item)
+{
+    toCodes();
+}
+
+
+void txtFiles::on_pushButtonOpenQr_clicked()
+{
+
+}
+
+
+void txtFiles::on_pushButtonFirstCell_clicked()
+{
+    if(converter.invoiceXls.size() > 0)
     {
-        showTable_1(converter.invoiceXls[currentTab]);
-        ui->pushButtonShow->setText("Результат");
-        invoiceShowed = true;
+        // Взять данные из выбранной ячейки
+        int col = ui->tableWidget_1->selectionModel()->currentIndex().column();
+        int row = ui->tableWidget_1->selectionModel()->currentIndex().row();
+        // Взять данные из выбранной ячейки
+
+        converter.invoiceSheetSettings[currentTab].qtyCol = col;
+        converter.invoiceSheetSettings[currentTab].startRow = row;
+
+        ui->labelInvCol->setText(QString::fromStdString(Extras::IntToSymbol(col)));
+        ui->labelRowFirst->setText(QString::number(row + 1));
     }
+}
+
+
+void txtFiles::on_pushButtonLastCell_clicked()
+{
+    if(converter.invoiceXls.size() > 0)
+    {
+        // Взять данные из выбранной ячейки
+        int row = ui->tableWidget_1->selectionModel()->currentIndex().row();
+        // Взять данные из выбранной ячейки
+
+        converter.invoiceSheetSettings[currentTab].stopRow = row;
+        ui->labelRowEnd->setText(QString::number(row + 1));
+    }
+}
+
+
+void txtFiles::on_pushButtonAnalyze_clicked()
+{
+    items = converter.getItems(currentTab);
+    if(items.empty()) QMessageBox::critical(this, "", "items empty");
+    else
+    {
+        Extras::showTable(items, ui->tableWidgetItems);
+        ui->tableWidgetItems->setHorizontalHeaderLabels(QStringList() << "Ctn num" << "Name" << "Qty");
+        ui->tableWidgetItems->verticalHeader()->setVisible(false);
+
+        for(size_t i = 0; i < items.size(); i++)
+        {
+            if(items[i][0].size() != 0)
+            {
+                for(size_t j = 0; j < items[i].size(); j++)
+                {
+                    QTableWidgetItem* item = ui->tableWidgetItems->item(i, j);
+                    item->setBackgroundColor(Qt::lightGray);
+                }
+            }
+        }
+        setDisplayType(TXT);
+        ui->tableWidgetItems->show();
+    }
+}
+
+void txtFiles::on_pushButtonItemCol_clicked()
+{
+    int col = ui->tableWidget_1->selectionModel()->currentIndex().column();
+
+    converter.invoiceSheetSettings[currentTab].itemCol = col;
+    ui->labelItemCol->setText(QString::number(col));
 }
 

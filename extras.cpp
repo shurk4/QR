@@ -76,10 +76,34 @@ std::string Extras::IntToSymbol(const int in)
 {
     std::string str;
         str += ('A' + in);
-        return str;
+    return str;
+}
+
+bool Extras::itQty(const std::string str)
+{
+    if(Extras::emptyCell(QString::fromStdString(str))) return false;
+    for(int i = 0; i < str.size(); i++)
+    {
+        if(str[i] < '0' || str[i] > '9') return false;
+    }
+    return true;
+}
+
+bool Extras::isCtnNumber(QString str)
+{
+    if(str.size() != 11) return false;
+
+    QRegExp regx("[A-Z]{4}[0-9]{7}");
+    if(regx.exactMatch(str)) return true;
+    return false;
 }
 
 bool Extras::emptyCell(const QString &str)
 {
-    return str.size() == 0 || str[0] == '\0';
+        return str.size() == 0 || str[0] == '\0';
+}
+
+void Extras::readConfig()
+{
+
 }

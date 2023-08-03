@@ -132,6 +132,8 @@ private slots:
 
     void on_checkBoxFilesPath_stateChanged(int arg1);
 
+    void on_lineEditQRLenght_textEdited(const QString &arg1);
+
 private:
     Ui::qrDialog *ui;
 

@@ -10,12 +10,21 @@
 
 #include "xlsConverter.h"
 #include "extras.h"
+#include "config.h"
 
 enum FileStatus
 {
     NEW,
     DELETED,
     ADDED
+};
+
+enum DisplayType
+{
+    TXT,
+    INV,
+    QR,
+    RESULT
 };
 
 struct FileData
@@ -36,7 +45,11 @@ public:
     explicit txtFiles(QWidget *parent = nullptr);
     ~txtFiles();
 
+    void readConfig();
+    void setDisplayType(DisplayType type);
+
     xlsConverter converter;
+    void toCodes();
 
     void showTable_1(const QVector<QVector<QString>> &inTab);
 
@@ -59,11 +72,26 @@ private slots:
 
     void on_pushButtonShow_clicked();
 
+    void on_listWidget_itemDoubleClicked(QListWidgetItem *item);
+
+    void on_pushButtonOpenQr_clicked();
+
+    void on_pushButtonFirstCell_clicked();
+
+    void on_pushButtonLastCell_clicked();
+
+    void on_pushButtonAnalyze_clicked();
+
+    void on_pushButtonItemCol_clicked();
+
 private:
     Ui::txtFiles *ui;
 
+    UserConfig config;
+
     std::vector<FileData> docsData;
     QVector<QVector<QVector<QString>>> data;
+    QVector<QVector<QString>> items;
 
     QDir lastPath = QDir::homePath();
     QString invoiceFileName;
