@@ -54,6 +54,7 @@ public:
     void showTable_1(const QVector<QVector<QString>> &inTab);
 
     void showTable_2(const QVector<QVector<QString>> &table);
+    void showDocs();
 
 private slots:
     void on_pushButtonInv_clicked();
@@ -84,18 +85,28 @@ private slots:
 
     void on_pushButtonItemCol_clicked();
 
+    void on_pushButtonQrCol_clicked();
+
+    void on_pushButtonQrItemCol_clicked();
+
+    void on_pushButtonQrAnalyze_clicked();
+
 private:
     Ui::txtFiles *ui;
 
     UserConfig config;
 
-    std::vector<FileData> docsData;
+    std::vector<FileData> docsInfo;
     QVector<QVector<QVector<QString>>> data;
     QVector<QVector<QString>> items;
 
     QDir lastPath = QDir::homePath();
-    QString invoiceFileName;
+    DisplayType displayType;
+    QString invoiceFileName;    
+    QStringList fileNames;
+
     int currentTab = 0;
+    int currentTabQr = 0;
     int currentDoc = 0;
 
     int serial = 0;

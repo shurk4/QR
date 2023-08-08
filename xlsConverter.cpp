@@ -77,10 +77,6 @@ void xlsConverter::readXls(std::wstring path, QVector<QVector<QVector<QString>>>
                 else
                 {
                     std::stringstream tempStream;
-//                    std::string tempString;
-
-//                    tempStream << *(sheet->Cell(row, col));
-//                    tempStream >> tempString;
                     tempXls[tab][row][col] = QString::fromStdString(tempStream.str());
                 }
             }
@@ -120,9 +116,7 @@ void xlsConverter::readXlsX(std::string path, QVector<QVector<QVector<QString>>>
                 else
                 {
                     std::stringstream tempStream;
-//                    QTextStream tempQStream;
                     tempStream << value;
-//                    tempQStream << tempStream;
                     tempString = QString::fromStdString(tempStream.str());
                 }
 
