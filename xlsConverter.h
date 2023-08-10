@@ -45,7 +45,6 @@ public:
     std::vector<StructInvoice> invoiceSheetSettings;
 
     QVector<QVector<QVector<QString>>>  invoiceXls;
-    QVector<QVector<QString>> invoiceResult;
 
     std::vector<StructQR> qrSheetSettings;
     QVector<QVector<QVector<QString>>> qrXls;
@@ -77,10 +76,33 @@ public:
     void saveResult(std::wstring path);
     void saveContainers(std::wstring patch);
 
+
+    // Новые методы, переделать класс в нормальный вид
+
+    int getItemsPosQty(); // Возвращает количество найденных ПОЗИЦИЙ ТОВАРОВ при выборке из инвойса/спец-ии
+    int getCtnsQty(); // Возвращает количество КОНТЕЙНЕРОВ найденных при выборке из инвойса/спец-ии
+    int getItemsQty(); // Возвращает общее количество ТОВАРОВ найденных при выборке из инвойса/спец-ии
+    QVector<QVector<QString>> *getInvoiceResult();
+
     bool invoiceEmpty();
-    QVector<QVector<QString>> getItems(int tab/*, int qtyCol, int qtyFirstCell, int qtyLastCell, int itemRow*/); // ctn - 0, item - 1, qty - 2
+    QVector<QVector<QString>> *getItemsBasic(int tab); // сделать выборку товаров для основного режима qrDialog
+    QVector<QVector<QString>> *getItemsForTxt(int tab); // сделать выборку товаров для текстового режима(txtfiles) (Порядок столбцов: ctn - 0, item - 1, qty - 2)
+
+    // Работа с invoiceResult
+    void clearInvoiceResult();
+    void addInvoiceResultRow(const QVector<QString> row);
 
     xlsConverter();
+
+    // подготовка к переносу в приват
+    QVector<QVector<QString>> invoiceResult; // Результат выборки данных из инвойса(структура различается в зависимости от режима(qrDialog / txtFiles)
+
+private:
+    // Новые переменные. Перенести все переменные в приват и сделать геттеры и сеттеры
+
+    // Данные полученные в процессе работы
+    int itemsQty = 0; // Количество позиций товаров
+    QVector<QString> ctnNumbers; // Список контейнеров в порядке указанном в инвойсе/спец-ии
 };
 
 #endif // XLSCONVERTER_H

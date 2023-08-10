@@ -364,24 +364,133 @@ void xlsConverter::saveContainers(std::wstring patch)
     xls.SaveAs(&(patch[0]));
 }
 
+int xlsConverter::getItemsPosQty()
+{
+    return invoiceResult.size();
+}
+
+int xlsConverter::getCtnsQty()
+{
+    return ctnNumbers.size();
+}
+
+int xlsConverter::getItemsQty()
+{
+    return itemsQty;
+}
+
+QVector<QVector<QString> > *xlsConverter::getInvoiceResult()
+{
+    return &invoiceResult;
+}
+
 bool xlsConverter::invoiceEmpty()
 {
     return invoiceXls.empty();
 }
 
-QVector<QVector<QString> > xlsConverter::getItems(int tab)
+QVector<QVector<QString> > *xlsConverter::getItemsBasic(int tab)
 {
-    qDebug() << "Get items started! ";
+    if(!invoiceSheetSettings.empty()
+        && (invoiceSheetSettings[tab].qtyCol > 0
+            || invoiceSheetSettings[tab].qtyCol < invoiceXls[tab][0].size()))
+    {
+        clearInvoiceResult();
+
+        int colsNum;
+        int stopRow = invoiceXls[tab].size();
+
+        if(invoiceSheetSettings[tab].stopRow > -1
+            &&invoiceSheetSettings[tab].stopRow > invoiceSheetSettings[tab].startRow)
+        {
+            stopRow = invoiceSheetSettings[tab].stopRow + 1;
+        }
+        std::vector<int> notEmptyCells;
+
+        // поиск строк товаров
+        for(int row = invoiceSheetSettings[tab].startRow; row < stopRow; row++)
+        {
+            QVector<QString> tempRow;
+            bool notEmpty = true;
+
+            if(row == invoiceSheetSettings[tab].startRow)
+            {
+                for(int col = 0; col < invoiceXls[tab][row].size(); col++)
+                {
+                    if(!Extras::emptyCell(invoiceXls[tab][row][col]))
+                    {
+                        QString cellData = invoiceXls[tab][row][col];
+                        notEmptyCells.push_back(col);
+                        tempRow.push_back(cellData);
+                        if(col == invoiceSheetSettings[tab].qtyCol)
+                        {
+                            itemsQty += cellData.toInt();
+                            swap(tempRow[tempRow.size() - 1], tempRow[0]);
+                        }
+                    }
+                }
+                colsNum = tempRow.size();
+            }
+            else
+            {
+                int emptyRowsCounter = 0;
+                for(int i = 0; i < notEmptyCells.size(); i++)
+                {
+                    tempRow.resize(colsNum);
+                    QString cellData = invoiceXls[tab][row][notEmptyCells[i]];
+
+                    if(Extras::emptyCell(cellData))
+                    {
+                        emptyRowsCounter++;
+                    }
+
+                    if(notEmptyCells[i] == invoiceSheetSettings[tab].qtyCol && !Extras::itQty(cellData.toStdString()))
+                    {
+                        notEmpty = false;
+                    }
+
+                    tempRow[i] = cellData;
+
+                    if(notEmptyCells[i] == invoiceSheetSettings[tab].qtyCol)
+                    {
+                        itemsQty += cellData.toInt();
+                        swap(tempRow[i], tempRow[0]);
+                    }
+                }
+                if(emptyRowsCounter > notEmptyCells.size() / 2) notEmpty = false;
+            }
+
+            if(notEmpty)
+            {
+                invoiceResult.push_back(tempRow);
+            }
+        }
+        return &invoiceResult;
+    }
+}
+
+QVector<QVector<QString>> *xlsConverter::getItemsForTxt(int tab)
+{
     int qtyCol = invoiceSheetSettings[tab].qtyCol;
     int qtyFirstCell = invoiceSheetSettings[tab].startRow;
     int qtyLastCell = invoiceSheetSettings[tab].stopRow;
     int itemCol = invoiceSheetSettings[tab].itemCol;
 
-    QVector<QVector<QString>> result;
-
-    if(invoiceXls.empty() || invoiceXls[tab].empty()) return result;
-
     for(size_t row = qtyFirstCell - 1; row <= qtyLastCell + 1; row++)
+    {
+        for(size_t col = 0; col < invoiceXls[tab][row].size(); col++)
+        {
+            if(Extras::isCtnNumber(invoiceXls[tab][row][col]))
+            {
+                ctnNumbers.push_back(invoiceXls[tab][row][col]);
+            }
+        }
+    }
+
+    if(invoiceXls.empty() || invoiceXls[tab].empty()) return &invoiceResult;
+
+    int currentCtn = 0;
+    for(size_t row = qtyFirstCell; row <= qtyLastCell; row++)
     {
         QVector<QString> rowVec;
         rowVec.resize(3);
@@ -389,13 +498,14 @@ QVector<QVector<QString> > xlsConverter::getItems(int tab)
 
         for(size_t col = 0; col < invoiceXls[tab][row].size(); col++)
         {
-            QString temp = "-";
             if(Extras::isCtnNumber(invoiceXls[tab][row][col]))
             {
-                rowVec[0] = invoiceXls[tab][row][col];
-                founded = true;
+                currentCtn++;
             }
-            else if(col == itemCol && invoiceXls[tab][row][col].size() > 0 && Extras::itQty(invoiceXls[tab][row][qtyCol].toStdString()))
+
+            rowVec[0] = ctnNumbers[currentCtn];
+
+            if(col == itemCol && invoiceXls[tab][row][col].size() > 0 && Extras::itQty(invoiceXls[tab][row][qtyCol].toStdString()))
             {
                 rowVec[1] = invoiceXls[tab][row][col];
                 founded = true;
@@ -405,11 +515,22 @@ QVector<QVector<QString> > xlsConverter::getItems(int tab)
                 if(invoiceXls[tab][row][col].size() > 0 && Extras::itQty(invoiceXls[tab][row][col].toStdString()))
                 {
                     rowVec[2] = invoiceXls[tab][row][col];
+                    itemsQty += invoiceXls[tab][row][col].toInt();
                     founded = true;
                 }
             }
         }
-        if(founded) result.push_back(rowVec);
+        if(founded) invoiceResult.push_back(rowVec);
     }
-    return result;
+    return &invoiceResult;
+}
+
+void xlsConverter::clearInvoiceResult()
+{
+    invoiceResult.clear();
+}
+
+void xlsConverter::addInvoiceResultRow(const QVector<QString> row)
+{
+    invoiceResult.push_back(row);
 }
