@@ -293,12 +293,12 @@ void qrDialog::on_pushButtonResetInvoice_clicked()
 //Показать Инвойс
 void qrDialog::on_pushButtonShowInvoice_clicked()
 {
-    if(converter.invoiceXls.size() > 0 && converter.invoiceResult.size() > 0)
+    if(converter.invoiceXls.size() > 0 && converter.getItemsPosQty() > 0)
     {
         if(showInvoice)
         {
             showInvoice = false;
-            showTab(converter.invoiceResult);
+            showTab(*converter.getInvoiceResult());
             ui->pushButtonShowInvoice->setText("Инвойс");
         }
         else
@@ -314,95 +314,13 @@ void qrDialog::on_pushButtonShowInvoice_clicked()
 // Анализируем данные в инвойс по заданным параметрам
 void qrDialog::on_pushButtonAnalyzeInvoice_clicked()
 {
-    if(!converter.invoiceSheetSettings.empty()
-            && (converter.invoiceSheetSettings[currentTab].qtyCol > 0
-            || converter.invoiceSheetSettings[currentTab].qtyCol < converter.invoiceXls[currentTab][0].size()))
-    {
-        converter.invoiceResult.clear();
+    converter.getItemsBasic(currentTab);
 
-        int itemsQty = 0;
-        int colsNum;
-        int stopRow = converter.invoiceXls[currentTab].size();
-
-        if(converter.invoiceSheetSettings[currentTab].stopRow > -1
-                &&converter.invoiceSheetSettings[currentTab].stopRow > converter.invoiceSheetSettings[currentTab].startRow)
-        {
-            stopRow = converter.invoiceSheetSettings[currentTab].stopRow + 1;
-        }
-        std::vector<int> notEmptyCells;
-
-        // поиск строк товаров
-
-        for(int row = converter.invoiceSheetSettings[currentTab].startRow; row < stopRow; row++)
-        {
-        QVector<QString> tempRow;
-        bool notEmpty = true;
-
-            if(row == converter.invoiceSheetSettings[currentTab].startRow)
-            {
-                for(int col = 0; col < converter.invoiceXls[currentTab][row].size(); col++)
-                {
-                    if(!Extras::emptyCell(converter.invoiceXls[currentTab][row][col]))
-                    {
-                        QString cellData = converter.invoiceXls[currentTab][row][col];
-                        notEmptyCells.push_back(col);
-                        tempRow.push_back(cellData);
-                        if(col == converter.invoiceSheetSettings[currentTab].qtyCol)
-                        {
-                            swap(tempRow[tempRow.size() - 1], tempRow[0]);
-                        }
-                    }
-                }
-                colsNum = tempRow.size();
-            }
-            else
-            {
-                int emptyRowsCounter = 0;
-                for(int i = 0; i < notEmptyCells.size(); i++)
-                {
-                    tempRow.resize(colsNum);
-                    QString cellData = converter.invoiceXls[currentTab][row][notEmptyCells[i]];
-
-                    if(Extras::emptyCell(cellData))
-                    {
-                        emptyRowsCounter++;
-                    }
-
-                    if(notEmptyCells[i] == converter.invoiceSheetSettings[currentTab].qtyCol && !itQty(cellData.toStdString())) notEmpty = false;
-
-                    tempRow[i] = cellData;
-
-                    if(notEmptyCells[i] == converter.invoiceSheetSettings[currentTab].qtyCol)
-                    {
-                        swap(tempRow[i], tempRow[0]);
-                    }
-                }
-                if(emptyRowsCounter > notEmptyCells.size() / 2) notEmpty = false;
-            }
-
-            if(notEmpty)
-            {
-                converter.invoiceResult.push_back(tempRow);
-            }
-        }
-        //поиск строк товаров
-
-        // подсчёт товаров
-        for(int i = 0; i < converter.invoiceResult.size(); i++)
-        {
-            if(itQty(converter.invoiceResult[i][0].toStdString()))
-            {
-                itemsQty += std::stoi(converter.invoiceResult[i][0].toStdString());
-            }
-        }
-        // подсчёт товаров
-
-        ui->labelPositions->setText(QString::number(converter.invoiceResult.size()));
-        ui->labelItemsQty->setText(QString::number(itemsQty));
-        ui->pushButtonShowInvoice->setText("Инвойс");
-        showTab(converter.invoiceResult);
-        analyzed = true;
-    }
+    ui->labelPositions->setText(QString::number(converter.getItemsPosQty()));
+    ui->labelItemsQty->setText(QString::number(converter.getItemsQty()));
+    ui->pushButtonShowInvoice->setText("Инвойс");
+    showTab(*converter.getInvoiceResult());
+    analyzed = true;
 }
 
 void qrDialog::on_pushButton_clicked()
