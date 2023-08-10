@@ -98,7 +98,7 @@ private:
 
     std::vector<FileData> docsInfo;
     QVector<QVector<QVector<QString>>> data;
-    QVector<QVector<QString>> items;
+    QVector<QVector<QString>> *items;
 
     QDir lastPath = QDir::homePath();
     DisplayType displayType;

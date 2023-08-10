@@ -16,8 +16,8 @@ txtFiles::txtFiles(QWidget *parent) :
 
     ui->widgetTabsPanel->hide();
     ui->WidgetInvAnalyze->hide();
-    ui->tableWidgetItems->hide();
     ui->widgetQrButtons->hide();
+    ui->widgetItemsInfo->hide();
 }
 
 txtFiles::~txtFiles()
@@ -516,19 +516,25 @@ void txtFiles::on_pushButtonLastCell_clicked()
 
 void txtFiles::on_pushButtonAnalyze_clicked()
 {
-    items = converter.getItems(currentTab);
-    if(items.empty()) QMessageBox::critical(this, "", "items empty");
+    items = converter.getItemsForTxt(currentTab);
+    if(items->empty()) QMessageBox::critical(this, "", "items empty");
     else
     {
-        Extras::showTable(items, ui->tableWidgetItems);
+        Extras::showTable(*items, ui->tableWidgetItems);
         ui->tableWidgetItems->setHorizontalHeaderLabels(QStringList() << "Ctn num" << "Name" << "Qty");
         ui->tableWidgetItems->verticalHeader()->setVisible(false);
+        bool setColor = false;
 
-        for(size_t i = 0; i < items.size(); i++)
+        for(size_t i = 0; i < items->size(); i++)
         {
-            if(items[i][0].size() != 0)
+            if(i != 0 && (*items)[i][0] != (*items)[i - 1][0])
             {
-                for(size_t j = 0; j < items[i].size(); j++)
+                setColor = !setColor;
+            }
+
+            if(setColor)
+            {
+                for(size_t j = 0; j < (*items)[i].size(); j++)
                 {
                     QTableWidgetItem* item = ui->tableWidgetItems->item(i, j);
                     item->setBackgroundColor(Qt::lightGray);
@@ -537,8 +543,12 @@ void txtFiles::on_pushButtonAnalyze_clicked()
         }
 
         setDisplayType(TXT);
-        ui->tableWidgetItems->show();
+        ui->widgetItemsInfo->show();
         ui->tableWidgetItems->horizontalHeader()->setStretchLastSection(true);
+
+        ui->labelItemsNum->setText(QString::number(converter.getItemsPosQty()));
+        ui->labelCtnsNum->setText(QString::number(converter.getCtnsQty()));
+        ui->labelOverallItems->setText(QString::number(converter.getItemsQty()));
     }
 }
 
