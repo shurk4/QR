@@ -55,13 +55,15 @@ struct StructQR : StructData
 class xlsConverter
 {
 public:
+    xlsConverter();
+
     // Новые методы
     bool emptyCell(QString &str);
 
     bool invoiceReady();
 
     void qrAnalyze(int tab);
-    void addQrTxt(QString name, QVector<QString> codes);
+    void addQrTxt(QString name, QVector<QVector<QString>> &codes);
 
     bool haveQrSettings(int tab);
     bool qrReady();
@@ -70,6 +72,7 @@ public:
     int getQrItemsQty();
     QString getQrItemName(int item);
     QrStatus getQrStatus(int item);
+    QVector<QVector<QString>> &getQrItem(int item);
 
     void addQrInfo(QrInfo info);
     void updateQrStatus(int item);
@@ -126,8 +129,6 @@ public:
     // Работа с invoiceResult
     void clearInvoiceResult();
     void addInvoiceResultRow(const QVector<QString> row);
-
-    xlsConverter();
     QVector<QVector<QString>> invoiceResult; // Результат выборки данных из инвойса(структура различается в зависимости от режима(qrDialog / txtFiles)
 
     // подготовка к переносу в приват

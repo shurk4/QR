@@ -116,7 +116,7 @@ void txtFiles::showDocs()
 
     ui->listWidget->clear();
 
-    for(int i = 0; i < converter.getQrQtyInItem(currentDoc); i++)
+    for(int i = 0; i < converter.getQrItemsQty(); i++)
     {
         ui->listWidget->addItem(converter.getQrItemName(i));
     }
@@ -252,11 +252,11 @@ void txtFiles::on_pushButtonTxt_clicked()
             QFile file (xfile);
             // Получение имени файла
             QFileInfo info(file.fileName());
-            QrInfo tempData;
-            tempData.name = info.fileName();
+//            QrInfo tempData;
+//            tempData.name = info.fileName();
 
-            tempData.status = NEW;
-            converter.addQrInfo(tempData);
+//            tempData.status = NEW;
+//            converter.addQrInfo(tempData);
 
             // Загрузка данных из файла в поток
             file.open(QIODevice::ReadOnly);
@@ -271,10 +271,11 @@ void txtFiles::on_pushButtonTxt_clicked()
                 col.push_back(line);
                 doc.push_back(col);
             }
-            data.push_back(doc);
+            converter.addQrTxt(info.fileName(), doc);
         }
 
-        showTable_2(data[currentDoc]);
+        currentDoc = 0;
+        showTable_2(converter.getQrItem(currentDoc));
 
         showDocs();
     }
@@ -332,8 +333,9 @@ void txtFiles::on_listWidget_itemClicked(QListWidgetItem *item)
 //        QMessageBox::information(this, "", "is enabled!");
 //    }
     currentDoc = ui->listWidget->currentRow();
-    showTable_2(data[currentDoc]);
-    ui->labelCodesInDoc->setText(QString::number(data[currentDoc].size()));
+    QVector<QVector<QString>> tempItem = converter.getQrItem(currentDoc);
+    showTable_2(tempItem);
+    ui->labelCodesInDoc->setText(QString::number(converter.getQrQtyInItem(currentDoc)));
     setDisplayType(TXT);
 }
 
@@ -349,8 +351,9 @@ void txtFiles::toCodes()
         itemNum++;
         int numGroup = 0;
         converter.setQrInfoStatus(currentDoc, ADDED);
+        QVector<QVector<QString>> &tempItem = converter.getQrItem(currentDoc);
 
-        for(int i = 0; i < data[currentDoc].size(); i++)
+        for(int i = 0; i < converter.getQrQtyInItem(currentDoc); i++)
         {
             serial++;
             numGroup++;
@@ -369,7 +372,7 @@ void txtFiles::toCodes()
 
             // добавление QR "Идентификатор"
             QString qrCut;
-            QString qr = data[currentDoc][i][0];
+            QString qr = tempItem[i][0];
             for(int k = 0; k < 31; k++)
             {
                 qrCut += qr[k];
@@ -589,7 +592,6 @@ void txtFiles::on_pushButtonQrCol_clicked()
     }
 }
 
-
 void txtFiles::on_pushButtonQrItemCol_clicked()
 {
     if(converter.qrXls.size() > 0)
@@ -607,7 +609,6 @@ void txtFiles::on_pushButtonQrItemCol_clicked()
     }
 }
 
-
 void txtFiles::on_pushButtonQrAnalyze_clicked()
 {
     if(converter.haveQrSettings(currentTab))
@@ -624,5 +625,13 @@ void txtFiles::on_pushButtonQrAnalyze_clicked()
         else
             QMessageBox::information(this, "!", "Не выбрана колонка QR");
     }
+}
+
+void txtFiles::on_pushButtonHelp_clicked()
+{
+    help *helpWindow = new help;
+    helpWindow->showTextfilesHelp();
+    helpWindow->setModal(false);
+    helpWindow->show();
 }
 

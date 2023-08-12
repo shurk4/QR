@@ -48,6 +48,22 @@
         <number>2</number>
        </property>
        <item>
+        <widget class="QPushButton" name="pushButtonHelp">
+         <property name="maximumSize">
+          <size>
+           <width>30</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: #92ff95;</string>
+         </property>
+         <property name="text">
+          <string>?</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QWidget" name="widgetTabsPanel" native="true">
          <property name="maximumSize">
           <size>

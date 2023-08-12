@@ -206,6 +206,15 @@ void xlsConverter::qrAnalyze(int tab)
     }
 }
 
+void xlsConverter::addQrTxt(QString name, QVector<QVector<QString>> &codes)
+{
+    QrInfo info;
+    info.name = name;
+    info.status = NEW;
+    qrInfo.push_back(info);
+    qrCodes.push_back(codes);
+}
+
 bool xlsConverter::haveQrSettings(int tab)
 {
     return qrSheetSettings[tab].itemCol > -1 && qrSheetSettings[tab].qrCol > -1;
@@ -237,6 +246,11 @@ QrStatus xlsConverter::getQrStatus(int item)
 {
     if(item < qrInfo.size()) return qrInfo[item].status;
     else return EMPTY;
+}
+
+QVector<QVector<QString> > &xlsConverter::getQrItem(int item)
+{
+    return qrCodes[item];
 }
 
 void xlsConverter::addQrInfo(QrInfo info)

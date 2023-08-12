@@ -11,6 +11,7 @@
 #include "xlsConverter.h"
 #include "extras.h"
 #include "config.h"
+#include "help.h"
 
 //enum FileStatus
 //{
@@ -91,6 +92,8 @@ private slots:
     void on_pushButtonQrItemCol_clicked();
 
     void on_pushButtonQrAnalyze_clicked();
+
+    void on_pushButtonHelp_clicked();
 
 private:
     Ui::txtFiles *ui;
