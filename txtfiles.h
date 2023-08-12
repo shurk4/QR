@@ -12,12 +12,12 @@
 #include "extras.h"
 #include "config.h"
 
-enum FileStatus
-{
-    NEW,
-    DELETED,
-    ADDED
-};
+//enum FileStatus
+//{
+//    NEW,
+//    DELETED,
+//    ADDED
+//};
 
 enum DisplayType
 {
@@ -27,11 +27,11 @@ enum DisplayType
     RESULT
 };
 
-struct FileData
-{
-    QString name;
-    FileStatus status;
-};
+//struct FileData
+//{
+//    QString name;
+//    FileStatus status;
+//};
 
 namespace Ui {
 class txtFiles;
@@ -52,9 +52,10 @@ public:
     void toCodes();
 
     void showTable_1(const QVector<QVector<QString>> &inTab);
-
     void showTable_2(const QVector<QVector<QString>> &table);
     void showDocs();
+
+    void showAutoButton();
 
 private slots:
     void on_pushButtonInv_clicked();
@@ -96,13 +97,12 @@ private:
 
     UserConfig config;
 
-    std::vector<FileData> docsInfo;
+//    std::vector<FileData> docsInfo;
     QVector<QVector<QVector<QString>>> data;
-    QVector<QVector<QString>> *items;
+    QVector<QVector<QString>> items;
 
     QDir lastPath = QDir::homePath();
     DisplayType displayType;
-    QString invoiceFileName;    
     QStringList fileNames;
 
     int currentTab = 0;

@@ -18,6 +18,7 @@ txtFiles::txtFiles(QWidget *parent) :
     ui->WidgetInvAnalyze->hide();
     ui->widgetQrButtons->hide();
     ui->widgetItemsInfo->hide();
+    ui->widgetAddItems->hide();
 }
 
 txtFiles::~txtFiles()
@@ -105,31 +106,37 @@ void txtFiles::showTable_2(const QVector<QVector<QString>> &table)
 
 void txtFiles::showDocs()
 {
-    if(data[currentDoc].empty())
+    if(!converter.qrReady())
     {
         QMessageBox::information(this, "!", "Не добавлено ни одного документа!");
         return;
     }
 
-    ui->labelCodesInDoc->setText(QString::number(data[currentDoc].size()));
+    ui->labelCodesInDoc->setText(QString::number(converter.getQrQtyInItem(currentDoc)));
 
     ui->listWidget->clear();
 
-    for(int i = 0; i < docsInfo.size(); i++)
+    for(int i = 0; i < converter.getQrQtyInItem(currentDoc); i++)
     {
-        ui->listWidget->addItem(docsInfo[i].name);
+        ui->listWidget->addItem(converter.getQrItemName(i));
     }
 
     ui->listWidget->setCurrentRow(0);
 
-    ui->labelFilesNum->setText(QString::number(fileNames.size()));
+    ui->labelFilesNum->setText(QString::number(converter.getQrItemsQty()));
     setDisplayType(TXT);
+}
+
+void txtFiles::showAutoButton()
+{
+//    if(converter.)
 }
 
 void txtFiles::on_pushButtonInv_clicked()
 {
     converter.clearInvoiceData();
     QString invPathTemp = QFileDialog::getOpenFileName(this, "Выберите файл инвойса", lastPath.absolutePath(), "*.xls *.xlsx");
+
     if(invPathTemp.isEmpty())
     {
         ui->labelInv->setText("Выберите файл!");
@@ -155,7 +162,8 @@ void txtFiles::on_pushButtonInv_clicked()
             ext = ".xls";
         }
 
-        invoiceFileName = "temp/inv" + date.toString("ddMMyy") + time.toString("hhmm") + ext; // Имя копии файла
+
+        QString invoiceFileName = "temp/inv" + date.toString("ddMMyy") + time.toString("hhmm") + ext; // Имя копии файла
 
         copySucces = QFile::copy(invPathTemp, invoiceFileName);
 
@@ -244,11 +252,11 @@ void txtFiles::on_pushButtonTxt_clicked()
             QFile file (xfile);
             // Получение имени файла
             QFileInfo info(file.fileName());
-            FileData tempData;
+            QrInfo tempData;
             tempData.name = info.fileName();
 
             tempData.status = NEW;
-            docsInfo.push_back(tempData);
+            converter.addQrInfo(tempData);
 
             // Загрузка данных из файла в поток
             file.open(QIODevice::ReadOnly);
@@ -332,7 +340,7 @@ void txtFiles::on_listWidget_itemClicked(QListWidgetItem *item)
 // Добавить коды из файла
 void txtFiles::toCodes()
 {
-    if(docsInfo[currentDoc].status == ADDED)
+    if(converter.getQrStatus(currentDoc) == ADDED)
     {
         QMessageBox::information(this, "!?", "Этот файл уже добавлен!");
     }
@@ -340,7 +348,7 @@ void txtFiles::toCodes()
     {
         itemNum++;
         int numGroup = 0;
-        docsInfo[currentDoc].status = ADDED;
+        converter.setQrInfoStatus(currentDoc, ADDED);
 
         for(int i = 0; i < data[currentDoc].size(); i++)
         {
@@ -376,16 +384,17 @@ void txtFiles::toCodes()
 
             // добавление Item code
             QString itemCode;
+            QString itemName = converter.getQrItemName(currentDoc);
 
-            for(int j = 0; j < docsInfo[currentDoc].name.size() - 4; j++)
+            for(int j = 0; j < itemName.size() - 4; j++)
             {
-                if(docsInfo[currentDoc].name[j] > 122)
+                if(itemName[j] > 122)
                 {
                     continue;
                 }
                 else
                 {
-                    itemCode.push_back(docsInfo[currentDoc].name[j]);
+                    itemCode.push_back(itemName[j]);
                 }
             }
             tempResultRow.push_back(itemCode);
@@ -403,6 +412,8 @@ void txtFiles::toCodes()
         ui->labelResultCodes->setText(QString::number(converter.result.size()));
         ui->pushButtonShow->setText("Инвойс");
         invoiceShowed = false;
+
+        ui->widgetAddItems->show();
     }
 }
 
@@ -517,24 +528,24 @@ void txtFiles::on_pushButtonLastCell_clicked()
 void txtFiles::on_pushButtonAnalyze_clicked()
 {
     items = converter.getItemsForTxt(currentTab);
-    if(items->empty()) QMessageBox::critical(this, "", "items empty");
+    if(items.empty()) QMessageBox::critical(this, "", "items empty");
     else
     {
-        Extras::showTable(*items, ui->tableWidgetItems);
+        Extras::showTable(items, ui->tableWidgetItems);
         ui->tableWidgetItems->setHorizontalHeaderLabels(QStringList() << "Ctn num" << "Name" << "Qty");
         ui->tableWidgetItems->verticalHeader()->setVisible(false);
         bool setColor = false;
 
-        for(size_t i = 0; i < items->size(); i++)
+        for(size_t i = 0; i < items.size(); i++)
         {
-            if(i != 0 && (*items)[i][0] != (*items)[i - 1][0])
+            if(i != 0 && items[i][0] != items[i - 1][0])
             {
                 setColor = !setColor;
             }
 
             if(setColor)
             {
-                for(size_t j = 0; j < (*items)[i].size(); j++)
+                for(size_t j = 0; j < items[i].size(); j++)
                 {
                     QTableWidgetItem* item = ui->tableWidgetItems->item(i, j);
                     item->setBackgroundColor(Qt::lightGray);
@@ -599,34 +610,9 @@ void txtFiles::on_pushButtonQrItemCol_clicked()
 
 void txtFiles::on_pushButtonQrAnalyze_clicked()
 {
-    if(converter.qrSheetSettings[currentTabQr].itemCol > -1 && converter.qrSheetSettings[currentTabQr].qrCol > -1)
+    if(converter.haveQrSettings(currentTab))
     {
-        int item = converter.qrSheetSettings[currentTabQr].itemCol;
-        int qr = converter.qrSheetSettings[currentTabQr].qrCol;
-        QVector<QVector<QString>> newRow;
-        QVector<QVector<QString>> &qrTab = converter.qrXls[currentTabQr];
-
-        for(int i = 0; i < qrTab.size(); i++)
-        {
-            if(qrTab[i][qr].size() < 31)
-                continue;
-
-            FileData tempInfo;
-            tempInfo.name = qrTab[i][item];
-            tempInfo.status = NEW;
-
-            QVector<QString> col;
-            QString line = qrTab[i][qr];
-            col.push_back(line);
-            newRow.push_back(col);
-
-            if(i == qrTab.size() - 1 || (i + 1 < qrTab.size() && tempInfo.name != qrTab[i + 1][item]))
-            {
-                docsInfo.push_back(tempInfo);
-                data.push_back(newRow);
-                newRow.clear();
-            }
-        }
+        converter.qrAnalyze(currentTab);
 
         showDocs();
         ui->widgetQrButtons->hide();

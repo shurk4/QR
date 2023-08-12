@@ -298,7 +298,7 @@ void qrDialog::on_pushButtonShowInvoice_clicked()
         if(showInvoice)
         {
             showInvoice = false;
-            showTab(*converter.getInvoiceResult());
+            showTab(converter.getInvoiceResult());
             ui->pushButtonShowInvoice->setText("Инвойс");
         }
         else
@@ -319,14 +319,15 @@ void qrDialog::on_pushButtonAnalyzeInvoice_clicked()
     ui->labelPositions->setText(QString::number(converter.getItemsPosQty()));
     ui->labelItemsQty->setText(QString::number(converter.getItemsQty()));
     ui->pushButtonShowInvoice->setText("Инвойс");
-    showTab(*converter.getInvoiceResult());
+    showTab(converter.getInvoiceResult());
     analyzed = true;
 }
 
 void qrDialog::on_pushButton_clicked()
 {
     //удаление не нужных столбцов
-    if(!converter.invoiceResult.empty())
+    auto invResult = converter.getInvoiceResult();
+    if(!invResult.empty())
     {
         struct Match
         {
@@ -335,28 +336,28 @@ void qrDialog::on_pushButton_clicked()
         };
 
         std::vector<Match> matches;
-        matches.resize(converter.invoiceResult[0].size());
+        matches.resize(invResult[0].size());
         int maxMatches = ui->lineEditDept->text().toInt();
 
-        for(int col = 1; col < converter.invoiceResult[0].size(); col++)
+        for(int col = 1; col < invResult.size(); col++)
         {
-            for(int row = 0; row < converter.invoiceResult.size(); row++)
+            for(int row = 0; row < invResult.size(); row++)
             {
                 if(matches.empty())
                 {
-                    matches[col].data = converter.invoiceResult[row][col];
+                    matches[col].data = invResult[row][col];
                     matches[col].count = 1;
                 }
                 else
                 {
-                    if(matches[col].data == converter.invoiceResult[row][col])
+                    if(matches[col].data == invResult[row][col])
                     {
                         matches[col].count++;
                         if(matches[col].count <= maxMatches)
                         {
-                            for(int i = 0; i < converter.invoiceResult.size(); i++)
+                            for(int i = 0; i < invResult.size(); i++)
                             {
-                                converter.invoiceResult[i].erase(converter.invoiceResult[i].begin() + col);
+                                invResult[i].erase(invResult[i].begin() + col);
                             }
                             matches.erase(matches.begin() + col);
                             col--;
@@ -365,15 +366,15 @@ void qrDialog::on_pushButton_clicked()
                     }
                     else
                     {
-                        matches[col].data = converter.invoiceResult[row][col];
+                        matches[col].data = invResult[row][col];
                         matches[col].count = 1;
                     }
                 }
             }
         }
-        ui->labelPositions->setText(QString::number(converter.invoiceResult.size()));
+        ui->labelPositions->setText(QString::number(converter.getItemsQty()));
         ui->pushButtonShowInvoice->setText("Инвойс");
-        showTab(converter.invoiceResult);
+        showTab(invResult);
         analyzed = true;
         //удаление не нужных столбцов // ПРОВЕРИТЬ ФАЙЛ C:\Users\User\Desktop\test\F22ST11GX035CIPL_UPD.xlsx,_Spec14
     }
@@ -729,7 +730,7 @@ void qrDialog::on_pushButtonDelete_clicked()
 // Показать результат, если надо - заполнить
 void qrDialog::on_pushButtonShowResult_clicked()
 {
-    if(converter.invoiceResult.size() > 0 && converter.qrResult.size() > 0) // Если сделана выборка инвойс и qr
+    if(converter.getItemsQty() > 0 && converter.qrResult.size() > 0) // Если сделана выборка инвойс и qr
     {
         tempInvoice = converter.invoiceResult;
         tempQr = converter.qrResult;

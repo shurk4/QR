@@ -18,6 +18,21 @@
 
 using namespace ExcelFormat;
 
+// Структуры для нового хранения найденных QR кодов используется для сопоставления данных векторов qrInfo и qrCodes
+enum QrStatus
+{
+    NEW,
+    ADDED,
+    EMPTY
+};
+
+struct QrInfo
+{
+    QString name;
+    QrStatus status;
+};
+
+// Структуры выборки кодов
 struct StructData
 {
     int itemCol = -1;
@@ -39,8 +54,28 @@ struct StructQR : StructData
 
 class xlsConverter
 {
-public:    
+public:
+    // Новые методы
     bool emptyCell(QString &str);
+
+    bool invoiceReady();
+
+    void qrAnalyze(int tab);
+    void addQrTxt(QString name, QVector<QString> codes);
+
+    bool haveQrSettings(int tab);
+    bool qrReady();
+
+    int getQrQtyInItem(int item);
+    int getQrItemsQty();
+    QString getQrItemName(int item);
+    QrStatus getQrStatus(int item);
+
+    void addQrInfo(QrInfo info);
+    void updateQrStatus(int item);
+    void setQrInfoStatus(int item, QrStatus status);
+
+    // Новые методы
 
     std::vector<StructInvoice> invoiceSheetSettings;
 
@@ -82,27 +117,30 @@ public:
     int getItemsPosQty(); // Возвращает количество найденных ПОЗИЦИЙ ТОВАРОВ при выборке из инвойса/спец-ии
     int getCtnsQty(); // Возвращает количество КОНТЕЙНЕРОВ найденных при выборке из инвойса/спец-ии
     int getItemsQty(); // Возвращает общее количество ТОВАРОВ найденных при выборке из инвойса/спец-ии
-    QVector<QVector<QString>> *getInvoiceResult();
+    QVector<QVector<QString>> getInvoiceResult();
 
     bool invoiceEmpty();
-    QVector<QVector<QString>> *getItemsBasic(int tab); // сделать выборку товаров для основного режима qrDialog
-    QVector<QVector<QString>> *getItemsForTxt(int tab); // сделать выборку товаров для текстового режима(txtfiles) (Порядок столбцов: ctn - 0, item - 1, qty - 2)
+    QVector<QVector<QString>> getItemsBasic(int tab); // сделать выборку товаров для основного режима qrDialog
+    QVector<QVector<QString>> getItemsForTxt(int tab); // сделать выборку товаров для текстового режима(txtfiles) (Порядок столбцов: ctn - 0, item - 1, qty - 2)
 
     // Работа с invoiceResult
     void clearInvoiceResult();
     void addInvoiceResultRow(const QVector<QString> row);
 
     xlsConverter();
-
-    // подготовка к переносу в приват
     QVector<QVector<QString>> invoiceResult; // Результат выборки данных из инвойса(структура различается в зависимости от режима(qrDialog / txtFiles)
 
+    // подготовка к переносу в приват
+
 private:
-    // Новые переменные. Перенести все переменные в приват и сделать геттеры и сеттеры
+    // Новые переменные. Перенести все переменные в приват и сделать для них методы
 
     // Данные полученные в процессе работы
     int itemsQty = 0; // Количество позиций товаров
     QVector<QString> ctnNumbers; // Список контейнеров в порядке указанном в инвойсе/спец-ии
+
+    QVector<QrInfo> qrInfo; // Содержит информацию по кодам найденным к указанному item коду QrInfo.name
+    QVector<QVector<QVector<QString>>> qrCodes; // Содержит qr коды отсортированные по итемам, порядок соответствует qrInfo
 };
 
 #endif // XLSCONVERTER_H
