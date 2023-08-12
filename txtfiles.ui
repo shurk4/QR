@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>917</width>
+    <width>949</width>
     <height>613</height>
    </rect>
   </property>
@@ -54,6 +54,9 @@
            <width>30</width>
            <height>16777215</height>
           </size>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Помощь&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="styleSheet">
           <string notr="true">background-color: #92ff95;</string>
@@ -103,6 +106,9 @@
               <pointsize>12</pointsize>
              </font>
             </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Имя текущей вкладки документа excel&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="styleSheet">
              <string notr="true">background-color: rgb(255, 255, 255);</string>
             </property>
@@ -122,6 +128,9 @@
               <height>16777215</height>
              </size>
             </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Предыдущая страница&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="text">
              <string>&lt;&lt;</string>
             </property>
@@ -139,6 +148,9 @@
              <font>
               <pointsize>13</pointsize>
              </font>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Текущая страница&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>0</string>
@@ -182,6 +194,9 @@
               <pointsize>13</pointsize>
              </font>
             </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Всего страниц&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="text">
              <string>0</string>
             </property>
@@ -197,6 +212,9 @@
               <width>30</width>
               <height>16777215</height>
              </size>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Следующая страница&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>&gt;&gt;</string>
@@ -240,6 +258,9 @@
            <height>0</height>
           </size>
          </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Имя файла&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="styleSheet">
           <string notr="true">background-color: rgb(255, 255, 255);</string>
          </property>
@@ -256,6 +277,9 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Открыть файл инвойса/спецификации&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>Открыть Инв.</string>
          </property>
@@ -268,6 +292,9 @@
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Открыть excel файл с qr кодами&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>Открыть Таблицу Qr</string>
@@ -345,6 +372,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="pushButtonFirstCell">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Выбрать первую ячейку количества&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Первая</string>
           </property>
@@ -368,6 +398,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="pushButtonLastCell">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Выбрать последнюю ячейку количества&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Последняя</string>
           </property>
@@ -391,6 +424,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="pushButtonItemCol">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Выбрать колонку с итем кодами или другую для сопоставления&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Колонка итем</string>
           </property>
@@ -414,6 +450,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="pushButtonAnalyze">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Анализировать выбранные колонки для составления списка позиций и их количества&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Анализ.</string>
           </property>
@@ -447,6 +486,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="pushButtonQrCol">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Выбрать колонку с qr кодами&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Колонка QR</string>
           </property>
@@ -476,6 +518,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="pushButtonQrItemCol">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Выбрать колонку с итем кодами&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Колонка Item</string>
           </property>
@@ -505,6 +550,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="pushButtonQrAnalyze">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Анализировать выбранные колонки для составления списка qr кодов&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Анализ.</string>
           </property>
@@ -575,6 +623,9 @@
       <layout class="QHBoxLayout" name="horizontalLayout_5">
        <item>
         <widget class="QPushButton" name="pushButtonShow">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Показать файл инвойса/спецификации или результат выборки&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>Показать</string>
          </property>
@@ -582,6 +633,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="pushButtonAddQr">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Добавить qr коды из выбранной позиции в результат, перед нажатием необходимо выбрать позицию в списке итемов. Так же можно дважды кликнуть по позиции в списке итемов.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>В коды</string>
          </property>
@@ -589,6 +643,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="pushButtonTxt">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Открыть тектовый файл/файлы. Можно выбрать несколько файлов или добавлять по одному.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>Открыть текстовые</string>
          </property>
@@ -619,6 +676,9 @@
            <bold>false</bold>
           </font>
          </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Открыто текстовых файлов&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>Открыто файлов:</string>
          </property>
@@ -630,6 +690,9 @@
           <font>
            <pointsize>13</pointsize>
           </font>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Открыто текстовых файлов&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>0</string>
@@ -646,8 +709,11 @@
            <pointsize>10</pointsize>
           </font>
          </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Количество кодов в выбранной позиции(item)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
-          <string>Кодов в файле:</string>
+          <string>Кодов в позиции:</string>
          </property>
         </widget>
        </item>
@@ -657,6 +723,9 @@
           <font>
            <pointsize>13</pointsize>
           </font>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Количество кодов в выбранной позиции(item)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>0</string>
@@ -672,6 +741,9 @@
       <layout class="QHBoxLayout" name="horizontalLayout_10">
        <item>
         <widget class="QPushButton" name="pushButtonShowResult">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Показать результат или таблицу инвойса/спецификации&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>Результат</string>
          </property>
@@ -679,6 +751,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="pushButtonSave">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Сохранить полученый результат&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>Сохранить</string>
          </property>
@@ -687,10 +762,17 @@
       </layout>
      </item>
      <item>
-      <widget class="QListWidget" name="listWidget"/>
+      <widget class="QListWidget" name="listWidget">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Список позиций/итемов. При выделении позиции отображается относящийся к ней список кодов. При двойном клике коды из этой позиции добавляются в результат.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="pushButtonAuto">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Попробовать составить результат из имеющихся данных в автоматическом режиме.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>Сопоставить автоматически</string>
        </property>
@@ -722,6 +804,9 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Отменить последнюю добавленную в результат позицию&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Отменить</string>
           </property>
@@ -735,13 +820,19 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Вернуть отменённое действие&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Вернуть</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_5">
+         <widget class="QPushButton" name="pushButton_2">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Очистить результат&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Очистить</string>
           </property>
@@ -768,6 +859,9 @@
            <font>
             <pointsize>8</pointsize>
            </font>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Список контейнеров и позиций товаров находящихся в них&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="editTriggers">
            <set>QAbstractItemView::NoEditTriggers</set>
@@ -798,6 +892,9 @@
               <pointsize>12</pointsize>
              </font>
             </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Количество контейнеров в данном инвойсе/спецификации&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="text">
              <string>Контейнеров:</string>
             </property>
@@ -822,6 +919,9 @@
               <pointsize>12</pointsize>
              </font>
             </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Количество контейнеров в данном инвойсе/спецификации&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="text">
              <string>0</string>
             </property>
@@ -842,6 +942,9 @@
              <font>
               <pointsize>12</pointsize>
              </font>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Количество позиций товаров в данном инвойсе/спецификации&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>Товаров:</string>
@@ -866,6 +969,9 @@
              <font>
               <pointsize>12</pointsize>
              </font>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Количество позиций товаров в данном инвойсе/спецификации&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>0</string>
@@ -917,6 +1023,9 @@
               <pointsize>12</pointsize>
              </font>
             </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Количество товаров в данном инвойсе/спецификации&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="text">
              <string>Всего товаров:</string>
             </property>
@@ -937,6 +1046,9 @@
              <font>
               <pointsize>12</pointsize>
              </font>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Количество товаров в данном инвойсе/спецификации&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>0</string>
@@ -979,6 +1091,9 @@
          <bold>true</bold>
         </font>
        </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Информация о результирующем файле&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>Результат:</string>
        </property>
@@ -998,6 +1113,9 @@
           <font>
            <pointsize>12</pointsize>
           </font>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Количество позиций товаров добавленных в результат.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>Товаров:</string>
@@ -1020,6 +1138,9 @@
            <pointsize>12</pointsize>
           </font>
          </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Общее количество позиций товаров добавленных в результат.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>0</string>
          </property>
@@ -1031,6 +1152,9 @@
           <font>
            <pointsize>12</pointsize>
           </font>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Общее количество кодов добавленных в результат. Должно совпадать с общим количеством товаров в инвойсе/спецификации&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>Кодов:</string>
@@ -1053,6 +1177,9 @@
            <pointsize>12</pointsize>
           </font>
          </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Общее количество кодов добавленных в результат. Должно совпадать с общим количеством товаров в инвойсе/спецификации&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>0</string>
          </property>
@@ -1070,14 +1197,10 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_11">
        <item>
-        <widget class="QPushButton" name="pushButton_2">
-         <property name="text">
-          <string>Очистить результат</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QPushButton" name="pushButton">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Очистить все введённые данные в т.ч. открытые ранее файлы и обработанную информацию&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>Очистить всё</string>
          </property>
