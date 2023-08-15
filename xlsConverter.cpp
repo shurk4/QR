@@ -149,6 +149,7 @@ void xlsConverter::clearQrData()
 {
     qrSheetSettings.clear();
     qrResult.clear();
+    qrInfo.clear();
     qrXls.clear();
 }
 
@@ -156,6 +157,18 @@ void xlsConverter::clearResult()
 {
     result.clear();
     resultInfo.clear();
+
+    addedItems.clear();
+    undoItems.clear();
+}
+
+void xlsConverter::clearTxt()
+{
+    itemsQty = 0;
+    ctnNumbers.clear();
+    qrInfo.clear();
+    qrCodes.clear();
+    clear();
 }
 
 void xlsConverter::clear()
@@ -206,13 +219,19 @@ void xlsConverter::qrAnalyze(int tab)
     }
 }
 
-void xlsConverter::addQrTxt(QString name, QVector<QVector<QString>> &codes)
+void xlsConverter::addQrTxt(const QString name, const QVector<QVector<QString>> &codes)
 {
     QrInfo info;
     info.name = name;
     info.status = NEW;
     qrInfo.push_back(info);
     qrCodes.push_back(codes);
+}
+
+void xlsConverter::clearQrTxt()
+{
+    qrInfo.clear();
+    qrCodes.clear();
 }
 
 bool xlsConverter::haveQrSettings(int tab)
@@ -223,6 +242,19 @@ bool xlsConverter::haveQrSettings(int tab)
 bool xlsConverter::qrReady()
 {
     return !qrCodes.empty();
+}
+
+bool xlsConverter::qrItemIndex(QString itemName, int &num)
+{
+    for(size_t i = 0; i < qrInfo.size(); ++i)
+    {
+        if(qrInfo[i].name.contains(itemName))
+        {
+            num = i;
+            return true;
+        }
+    }
+    return false;
 }
 
 // Получить количество кодов указанного итема(для поиска не по номеру использовать номер из qrInfo)
@@ -262,6 +294,12 @@ void xlsConverter::setQrInfoStatus(int item, QrStatus status)
 {
     if(qrInfo.size() < item) qrInfo.resize(item + 1);
     qrInfo[item].status = status;
+}
+
+void xlsConverter::addItem(int item)
+{
+    addedItems.push_back(item);
+    setQrInfoStatus(item, ADDED);
 }
 
 void xlsConverter::calculateQrArticules()
@@ -483,6 +521,11 @@ bool xlsConverter::invoiceEmpty()
     return invoiceXls.empty();
 }
 
+bool xlsConverter::resultEmpty()
+{
+    return result.empty();
+}
+
 QVector<QVector<QString> > xlsConverter::getItemsBasic(int tab)
 {
     if(!invoiceSheetSettings.empty()
@@ -631,7 +674,50 @@ void xlsConverter::clearInvoiceResult()
     invoiceResult.clear();
 }
 
+void xlsConverter::clearQrInfo()
+{
+    if(qrInfo.empty()) return;
+
+    for(auto &it : qrInfo)
+    {
+        it.status = EMPTY;
+    }
+}
+
 void xlsConverter::addInvoiceResultRow(const QVector<QString> row)
 {
     invoiceResult.push_back(row);
+}
+
+int xlsConverter::undoResult()
+{
+    if(addedItems.empty() || result.empty())
+    {
+        return -1;
+    }
+
+    int itemInvoiceNumber = addedItems.back();
+    addedItems.erase(addedItems.end() - 1);
+    undoItems.push_back(itemInvoiceNumber);
+
+    int itemResultNumber = result.back()[1].toInt();
+    while(!result.empty() && result.back()[1].toInt() == itemResultNumber)
+    {
+        result.pop_back();
+    }
+
+    setQrInfoStatus(itemInvoiceNumber, DELETED);
+    return itemInvoiceNumber;
+}
+
+int xlsConverter::redoResult()
+{
+    if(undoItems.empty())
+    {
+        return -1;
+    }
+
+    int undoItem = undoItems.back();
+    undoItems.pop_back();
+    return undoItem;
 }
