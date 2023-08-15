@@ -118,7 +118,13 @@ void txtFiles::showDocs()
 
     for(int i = 0; i < converter.getQrItemsQty(); i++)
     {
-        ui->listWidget->addItem(converter.getQrItemName(i));
+        QListWidgetItem *item = new QListWidgetItem(converter.getQrItemName(i));
+        if(converter.getQrStatus(i) == ADDED)
+        {
+            item->setBackgroundColor("#a1ff9f");
+        }
+
+        ui->listWidget->addItem(item);
     }
 
     ui->listWidget->setCurrentRow(0);
@@ -129,7 +135,10 @@ void txtFiles::showDocs()
 
 void txtFiles::showAutoButton()
 {
-//    if(converter.)
+    if(converter.qrReady() && converter.invoiceReady())
+    {
+
+    }
 }
 
 void txtFiles::on_pushButtonInv_clicked()
@@ -350,8 +359,12 @@ void txtFiles::toCodes()
     {
         itemNum++;
         int numGroup = 0;
-        converter.setQrInfoStatus(currentDoc, ADDED);
+//        converter.setQrInfoStatus(currentDoc, ADDED);
+        converter.addItem(currentDoc); // Добавляет выбранный итем в таблицу тобавленных итемов и устанавливает ему статус ADDED
+
         QVector<QVector<QString>> &tempItem = converter.getQrItem(currentDoc);
+
+        converter.result.reserve(converter.result.size() + converter.getQrQtyInItem(currentDoc));
 
         for(int i = 0; i < converter.getQrQtyInItem(currentDoc); i++)
         {
@@ -633,5 +646,103 @@ void txtFiles::on_pushButtonHelp_clicked()
     helpWindow->showTextfilesHelp();
     helpWindow->setModal(false);
     helpWindow->show();
+}
+
+void txtFiles::on_pushButtonAuto_clicked()
+{
+    for(int i = 0; i < items.size(); ++i)
+    {
+        int itemNumber;
+        for(int j = 0; j < items[i].size(); ++j)
+        {
+//            if(converter.getQrItemName(i).contains(items[j]))
+        }
+    }
+}
+
+void txtFiles::on_pushButtonClearAll_clicked()
+{
+    itemNum = 0;
+    items.clear();
+
+    converter.clearTxt();
+    ui->tableWidgetItems->clear();
+    ui->tableWidget_1->clear();
+    ui->listWidget->clear();
+    ui->labelInv->clear();
+    ui->labelCodesInDoc->clear();
+    ui->labelResultCodes->clear();
+    ui->labelResultItems->clear();
+    ui->labelItemsNum->clear();
+    ui->labelOverallItems->clear();
+    ui->labelCtnsNum->clear();
+    ui->labelFilesNum->clear();
+
+    ui->widgetTabsPanel->hide();
+    ui->WidgetInvAnalyze->hide();
+    ui->widgetQrButtons->hide();
+    ui->widgetItemsInfo->hide();
+    ui->widgetAddItems->hide();
+}
+
+void txtFiles::on_pushButtonShowResult_clicked()
+{
+    if(converter.resultEmpty()) QMessageBox::information(this, "", "Таблица результатов пуста!");
+    showTable_1(converter.result);
+}
+
+void txtFiles::on_pushButtonClearFiles_clicked()
+{
+    ui->listWidget->clear();
+    converter.clearResult();
+
+}
+
+void txtFiles::on_pushButtonClearItems_clicked()
+{
+    converter.clearInvoiceData();
+    items.clear();
+    ui->tableWidgetItems->clear();
+    ui->widgetItemsInfo->hide();
+
+}
+
+void txtFiles::on_pushButtonCancelUndoResult_clicked()
+{
+    if(converter.undoResult() == -1) QMessageBox::information(this, "", "Таблица результатов пуста!");
+    else
+    {
+        itemNum--;
+        ui->labelResultItems->setText(QString::number(ui->labelResultItems->text().toInt() - 1));
+        ui->labelResultCodes->setText(QString::number(ui->labelResultCodes->text().toInt() - converter.getQrQtyInItem(currentDoc)));
+        showDocs();
+        if(itemNum > 0) on_pushButtonShowResult_clicked();
+    }
+}
+
+void txtFiles::on_pushButtonUndoRedoResult_clicked()
+{
+    currentDoc = converter.redoResult();
+    if(currentDoc == -1)
+    {
+        currentDoc = 0;
+        QMessageBox::information(this, "", "Нет отменённых действий!");
+    }
+    else
+    {
+        toCodes();
+        showDocs();
+    }
+}
+
+void txtFiles::on_pushButtonClearResult_clicked()
+{
+    converter.clearResult();
+    converter.clearQrInfo();
+    ui->labelCodesInDoc->clear();
+    ui->labelResultCodes->clear();
+    ui->labelResultItems->clear();
+    showDocs();
+    on_pushButtonShowResult_clicked();
 }
 

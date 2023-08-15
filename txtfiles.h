@@ -95,6 +95,22 @@ private slots:
 
     void on_pushButtonHelp_clicked();
 
+    void on_pushButtonAuto_clicked();
+
+    void on_pushButtonClearAll_clicked();
+
+    void on_pushButtonShowResult_clicked();
+
+    void on_pushButtonClearFiles_clicked();
+
+    void on_pushButtonClearItems_clicked();
+
+    void on_pushButtonCancelUndoResult_clicked();
+
+    void on_pushButtonUndoRedoResult_clicked();
+
+    void on_pushButtonClearResult_clicked();
+
 private:
     Ui::txtFiles *ui;
 
