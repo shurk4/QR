@@ -12,6 +12,7 @@
 #include "extras.h"
 #include "config.h"
 #include "help.h"
+#include "dialog.h"
 
 //enum FileStatus
 //{
@@ -111,6 +112,12 @@ private slots:
 
     void on_pushButtonClearResult_clicked();
 
+    void on_pushButtonMergeFiles_clicked();
+
+public slots:
+    // Результат диалогового окна объединения итемов
+    void mergeItems(QString newName);
+
 private:
     Ui::txtFiles *ui;
 
@@ -119,6 +126,9 @@ private:
 //    std::vector<FileData> docsInfo;
     QVector<QVector<QVector<QString>>> data;
     QVector<QVector<QString>> items;
+
+    // Для объединения итемов mergeItems
+    QVector<int> selectedRows;
 
     QDir lastPath = QDir::homePath();
     DisplayType displayType;

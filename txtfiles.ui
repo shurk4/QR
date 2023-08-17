@@ -766,6 +766,9 @@
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Список позиций/итемов. При выделении позиции отображается относящийся к ней список кодов. При двойном клике коды из этой позиции добавляются в результат.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::ExtendedSelection</enum>
+       </property>
       </widget>
      </item>
      <item>
@@ -778,16 +781,26 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButtonAuto">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Попробовать составить результат из имеющихся данных в автоматическом режиме.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
+        <widget class="QPushButton" name="pushButtonMergeFiles">
          <property name="text">
-          <string>Сопоставить автоматически</string>
+          <string>Объединить</string>
          </property>
         </widget>
        </item>
       </layout>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonAuto">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Попробовать составить результат из имеющихся данных в автоматическом режиме.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>Сопоставить автоматически</string>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QWidget" name="widgetAddItems" native="true">

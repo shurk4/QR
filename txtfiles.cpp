@@ -336,11 +336,6 @@ void txtFiles::on_pushButtonShow_clicked()
 
 void txtFiles::on_listWidget_itemClicked(QListWidgetItem *item)
 {
-    //Если итем добавлен - тест!!!
-//    if(ui->listWidget->currentItem()->flags() == Qt::ItemFlag::ItemIsEnabled)
-//    {
-//        QMessageBox::information(this, "", "is enabled!");
-//    }
     currentDoc = ui->listWidget->currentRow();
     QVector<QVector<QString>> tempItem = converter.getQrItem(currentDoc);
     showTable_2(tempItem);
@@ -360,7 +355,7 @@ void txtFiles::toCodes()
         itemNum++;
         int numGroup = 0;
 //        converter.setQrInfoStatus(currentDoc, ADDED);
-        converter.addItem(currentDoc); // Добавляет выбранный итем в таблицу тобавленных итемов и устанавливает ему статус ADDED
+        converter.addItem(currentDoc); // Добавляет номер выбранного итем в вектор добавленных итемов и устанавливает ему статус ADDED
 
         QVector<QVector<QString>> &tempItem = converter.getQrItem(currentDoc);
 
@@ -664,6 +659,7 @@ void txtFiles::on_pushButtonClearAll_clicked()
 {
     itemNum = 0;
     items.clear();
+    selectedRows.clear();
 
     converter.clearTxt();
     ui->tableWidgetItems->clear();
@@ -702,9 +698,9 @@ void txtFiles::on_pushButtonClearItems_clicked()
 {
     converter.clearInvoiceData();
     items.clear();
+    selectedRows.clear();
     ui->tableWidgetItems->clear();
     ui->widgetItemsInfo->hide();
-
 }
 
 void txtFiles::on_pushButtonCancelUndoResult_clicked()
@@ -744,5 +740,28 @@ void txtFiles::on_pushButtonClearResult_clicked()
     ui->labelResultItems->clear();
     showDocs();
     on_pushButtonShowResult_clicked();
+}
+
+void txtFiles::on_pushButtonMergeFiles_clicked()
+{
+    QList<QListWidgetItem*> selectedItems = ui->listWidget->selectedItems();
+
+    selectedRows.reserve(selectedItems.size());
+
+    for(auto &i : ui->listWidget->selectedItems())
+    {
+        selectedRows.push_back(ui->listWidget->row(i));
+    }
+
+    Dialog *dialogWindow = new Dialog(MERGE_ITEMS, selectedItems);
+    connect(dialogWindow, SIGNAL(sendResultString(QString)), this, SLOT(mergeItems(QString)));
+    dialogWindow->exec();
+}
+
+void txtFiles::mergeItems(QString newName)
+{
+    QVector<int> test;
+    converter.mergeItems(selectedRows, newName);
+    showDocs();
 }
 

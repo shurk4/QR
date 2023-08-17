@@ -114,6 +114,7 @@ public:
     void qrAnalyze(int tab);
     void addQrTxt(const QString name, const QVector<QVector<QString>> &codes);
     void clearQrTxt();
+    void mergeItems(const QVector<int> &selectedRows, QString &name);
 
     bool haveQrSettings(int tab);
     bool qrReady();

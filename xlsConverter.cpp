@@ -234,6 +234,28 @@ void xlsConverter::clearQrTxt()
     qrCodes.clear();
 }
 
+void xlsConverter::mergeItems(const QVector<int> &selectedRows, QString &name)
+{
+    int baseRow = selectedRows[0];
+    qrInfo[baseRow].name = name;
+
+    for(size_t i = 1; i < selectedRows.size(); i++)
+    {
+        qrCodes[baseRow].reserve(qrCodes[baseRow].size() + qrCodes[i].size());
+
+        for(auto &it : qrCodes[i])
+        {
+            qrCodes[baseRow].push_back(it);
+        }
+    }
+
+    for(size_t i = 1; i < selectedRows.size(); i++)
+    {
+        qrInfo.erase(qrInfo.begin() + i);
+        qrCodes.erase(qrCodes.begin() + i);
+    }
+}
+
 bool xlsConverter::haveQrSettings(int tab)
 {
     return qrSheetSettings[tab].itemCol > -1 && qrSheetSettings[tab].qrCol > -1;
