@@ -42,14 +42,14 @@ void MainWindow::on_pushButton_clicked()
 {
     hide();
     txtFiles* textFiles = new txtFiles;
-    textFiles->show();
+    textFiles->exec();
 }
 
 void MainWindow::on_pushButton_2_clicked()
 {
     hide();
     containers* ctnWindow = new containers;
-    ctnWindow->show();
+    ctnWindow->exec();
 }
 
 
