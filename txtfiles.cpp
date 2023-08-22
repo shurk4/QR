@@ -14,24 +14,23 @@ txtFiles::txtFiles(QWidget *parent) :
                          | Qt::WindowSystemMenuHint);
     readConfig();
 
-    ui->widgetTabsPanel->hide();
-    ui->WidgetInvAnalyze->hide();
-    ui->widgetQrButtons->hide();
+    hideFilesWidgets();
     ui->widgetItemsInfo->hide();
     ui->widgetAddItems->hide();
 }
 
 txtFiles::~txtFiles()
 {
-    config.write();
+    config->write();
     delete ui;
 }
 
 void txtFiles::readConfig()
 {
+    config = new UserConfig;
     QString temp;
     //Последний открытый путь к файлам
-    if(config.get("lastPath", temp))
+    if(config->get("lastPath", temp))
     {
         QDir dir(temp);
 
@@ -43,8 +42,17 @@ void txtFiles::readConfig()
     }
 }
 
-void txtFiles::setDisplayType(DisplayType type)
+void txtFiles::hideFilesWidgets()
 {
+    ui->widgetTabsPanel->hide();
+    ui->WidgetInvAnalyze->hide();
+    ui->widgetQrButtons->hide();
+}
+
+void txtFiles::setDisplayType(DisplayType type)
+{    
+    hideFilesWidgets();
+
     switch (type)
     {
     case (INV):
@@ -54,21 +62,16 @@ void txtFiles::setDisplayType(DisplayType type)
         break;
 
     case (QR):
-        ui->WidgetInvAnalyze->hide();
         ui->widgetTabsPanel->show();
         ui->widgetQrButtons->show();
         displayType = QR;
         break;
 
     case (TXT):
-        ui->widgetTabsPanel->hide();
-        ui->WidgetInvAnalyze->hide();
         displayType = TXT;
         break;
 
     case (RESULT):
-        ui->WidgetInvAnalyze->hide();
-        ui->widgetTabsPanel->hide();
         ui->tableWidget_1->scrollToBottom();
         displayType = RESULT;
         break;
@@ -153,6 +156,7 @@ void txtFiles::on_pushButtonInv_clicked()
     else
     {
         lastPath.setPath(invPathTemp);
+        config->set("lastPath", lastPath.absolutePath());
 
         QDate date = QDate::currentDate();
         QTime time = QTime::currentTime();
@@ -354,8 +358,8 @@ void txtFiles::toCodes()
     {
         itemNum++;
         int numGroup = 0;
-//        converter.setQrInfoStatus(currentDoc, ADDED);
         converter.addItem(currentDoc); // Добавляет номер выбранного итем в вектор добавленных итемов и устанавливает ему статус ADDED
+        markItemsTable();
 
         QVector<QVector<QString>> &tempItem = converter.getQrItem(currentDoc);
 
@@ -453,7 +457,7 @@ void txtFiles::on_pushButtonOpenQr_clicked()
     else
     {
         lastPath.setPath(QFileInfo(qrPathTemp).absolutePath());
-        config.set("lastPath", lastPath.absolutePath());
+        config->set("lastPath", lastPath.absolutePath());
 
         QDate date = QDate::currentDate();
         QTime time = QTime::currentTime();
@@ -691,6 +695,7 @@ void txtFiles::on_pushButtonClearFiles_clicked()
 {
     ui->listWidget->clear();
     converter.clearResult();
+    converter.clearQrTxt();
 
 }
 
@@ -744,6 +749,7 @@ void txtFiles::on_pushButtonClearResult_clicked()
 
 void txtFiles::on_pushButtonMergeFiles_clicked()
 {
+    selectedRows.clear();
     QList<QListWidgetItem*> selectedItems = ui->listWidget->selectedItems();
 
     selectedRows.reserve(selectedItems.size());
@@ -765,3 +771,26 @@ void txtFiles::mergeItems(QString newName)
     showDocs();
 }
 
+void txtFiles::markItemsTable()
+{
+    // if(Инвойс не пустой)
+    for(size_t row = 0; row < items.size(); row++)
+    {
+        QString tempName = converter.getQrItemName(currentDoc);
+        QString tempQty = QString::number(converter.getQrQtyInItem(currentDoc));
+        if((tempName.contains(items[row][0]) || tempName.contains(items[row][1])) && items[row][2] == tempQty)
+        {
+            QMessageBox::information(this, "", "Added codes contains in item row: " + QString::number(row));
+            for(size_t col = 0; col < items[row].size(); col++)
+            {
+                QTableWidgetItem* item = ui->tableWidgetItems->item(row, col);
+                QBrush bg(Qt::green);
+                item->setBackground(bg);
+            }
+        }
+//        else
+//        {
+//            QMessageBox::information(this, "", "Added codes not found in items table");
+//        }
+    }
+}

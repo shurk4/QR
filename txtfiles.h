@@ -29,12 +29,6 @@ enum DisplayType
     RESULT
 };
 
-//struct FileData
-//{
-//    QString name;
-//    FileStatus status;
-//};
-
 namespace Ui {
 class txtFiles;
 }
@@ -115,16 +109,18 @@ private slots:
     void on_pushButtonMergeFiles_clicked();
 
 public slots:
+    void hideFilesWidgets();
     // Результат диалогового окна объединения итемов
     void mergeItems(QString newName);
+    void markItemsTable();
 
 private:
     Ui::txtFiles *ui;
 
-    UserConfig config;
+    UserConfig *config;
 
 //    std::vector<FileData> docsInfo;
-    QVector<QVector<QVector<QString>>> data;
+//    QVector<QVector<QVector<QString>>> data;
     QVector<QVector<QString>> items;
 
     // Для объединения итемов mergeItems
