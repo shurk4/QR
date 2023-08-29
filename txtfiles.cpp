@@ -17,6 +17,11 @@ txtFiles::txtFiles(QWidget *parent) :
     hideFilesWidgets();
     ui->widgetItemsInfo->hide();
     ui->widgetAddItems->hide();
+
+    helpWindow = new help(this);
+    helpWindow->showTextfilesHelp();
+    helpWindow->setModal(false);
+    helpWindow->hide();
 }
 
 txtFiles::~txtFiles()
@@ -641,10 +646,8 @@ void txtFiles::on_pushButtonQrAnalyze_clicked()
 
 void txtFiles::on_pushButtonHelp_clicked()
 {
-    help *helpWindow = new help;
-    helpWindow->showTextfilesHelp();
-    helpWindow->setModal(false);
-    helpWindow->show();
+    if(helpWindow->isHidden()) helpWindow->show();
+    else helpWindow->hide();
 }
 
 void txtFiles::on_pushButtonAuto_clicked()

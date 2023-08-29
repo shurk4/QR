@@ -118,6 +118,7 @@ private:
     Ui::txtFiles *ui;
 
     UserConfig *config;
+    help *helpWindow;
 
 //    std::vector<FileData> docsInfo;
 //    QVector<QVector<QVector<QString>>> data;
