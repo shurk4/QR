@@ -50,13 +50,18 @@ void txtFiles::readConfig()
 void txtFiles::hideFilesWidgets()
 {
     ui->widgetTabsPanel->hide();
+    qDebug() << "widgetTabsPanel - hided";
     ui->WidgetInvAnalyze->hide();
+    qDebug() << "WidgetInvAnalyze - hidded";
     ui->widgetQrButtons->hide();
+    qDebug() << "widgetQrButtons - hided";
 }
 
 void txtFiles::setDisplayType(DisplayType type)
-{    
+{
+    qDebug() <<"setDisplayType" << type;
     hideFilesWidgets();
+    qDebug() << "Widgets hided!";
 
     switch (type)
     {
@@ -84,6 +89,7 @@ void txtFiles::setDisplayType(DisplayType type)
     default:
         break;
     }
+    qDebug() <<"setDisplayType - done";
 }
 
 void txtFiles::showTable_1(const QVector<QVector<QString>> &inTab)
@@ -160,6 +166,7 @@ void txtFiles::on_pushButtonInv_clicked()
     }
     else
     {
+        setDisplayType(INV);
         lastPath.setPath(invPathTemp);
         config->set("lastPath", lastPath.absolutePath());
 
@@ -204,11 +211,11 @@ void txtFiles::on_pushButtonInv_clicked()
 
         // !!! ТАБЛИЦА !!!
         converter.invoiceSheetSettings.resize(converter.invoiceXls.size());
+        currentTab = 0;
         showTable_1(converter.invoiceXls[currentTab]);
 
         invoiceShowed = true;
         ui->pushButtonShow->setText("Результат");
-        setDisplayType(INV);
     }
 }
 
@@ -550,12 +557,15 @@ void txtFiles::on_pushButtonAnalyze_clicked()
     items = converter.getItemsForTxt(currentTab);
     if(items.empty()) QMessageBox::critical(this, "", "items empty");
     else
-    {
+    {        
+        qDebug() << "items = converter.getItemsForTxt(currentTab) - NOT EMPTY";
         Extras::showTable(items, ui->tableWidgetItems);
+        qDebug() << "Extras::showTable(items, ui->tableWidgetItems) - done";
         ui->tableWidgetItems->setHorizontalHeaderLabels(QStringList() << "Ctn num" << "Name" << "Qty");
         ui->tableWidgetItems->verticalHeader()->setVisible(false);
         bool setColor = false;
 
+        qDebug() << "Loop started. items.size() = " << items.size();
         for(size_t i = 0; i < items.size(); i++)
         {
             if(i != 0 && items[i][0] != items[i - 1][0])
@@ -572,14 +582,24 @@ void txtFiles::on_pushButtonAnalyze_clicked()
                 }
             }
         }
+        qDebug() << "Loop ended.";
 
         setDisplayType(TXT);
+        qDebug() << "setDisplayType(TXT)";
+
         ui->widgetItemsInfo->show();
+        qDebug() << "widgetItemsInfo showed";
+
         ui->tableWidgetItems->horizontalHeader()->setStretchLastSection(true);
 
+        qDebug() << "widgetItemsInfo showed";
+
         ui->labelItemsNum->setText(QString::number(converter.getItemsPosQty()));
+        qDebug() << "labelItemsNum - showed";
         ui->labelCtnsNum->setText(QString::number(converter.getCtnsQty()));
+        qDebug() << "labelCtnsNum - showed";
         ui->labelOverallItems->setText(QString::number(converter.getItemsQty()));
+        qDebug() << "labelOverallItems - showed";
     }
 }
 

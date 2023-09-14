@@ -636,11 +636,15 @@ QVector<QVector<QString> > xlsConverter::getItemsBasic(int tab)
 
 QVector<QVector<QString>> xlsConverter::getItemsForTxt(int tab)
 {
+    qDebug() << "xlsConverter::getItemsForTxt started";
+    qDebug() << "Current tab = " << tab;
     int qtyCol = invoiceSheetSettings[tab].qtyCol;
     int qtyFirstCell = invoiceSheetSettings[tab].startRow;
     int qtyLastCell = invoiceSheetSettings[tab].stopRow;
     int itemCol = invoiceSheetSettings[tab].itemCol;
+    qDebug() << "Basic variables ready";
 
+    qDebug() << "First loop started";
     for(size_t row = qtyFirstCell - 1; row <= qtyLastCell + 1; row++)
     {
         for(size_t col = 0; col < invoiceXls[tab][row].size(); col++)
@@ -651,6 +655,11 @@ QVector<QVector<QString>> xlsConverter::getItemsForTxt(int tab)
             }
         }
     }
+
+    qDebug() << "First loop stopped";
+
+
+    qDebug() << "";
 
     if(invoiceXls.empty() || invoiceXls[tab].empty()) return invoiceResult;
 
@@ -688,6 +697,7 @@ QVector<QVector<QString>> xlsConverter::getItemsForTxt(int tab)
         }
         if(founded) invoiceResult.push_back(rowVec);
     }
+    qDebug() << "xlsConverter::getItemsForTxt stoped";
     return invoiceResult;
 }
 
