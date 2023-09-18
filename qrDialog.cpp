@@ -14,8 +14,9 @@ qrDialog::qrDialog(QWidget *parent) :
                          | Qt::WindowSystemMenuHint);
 
     readConfig();
+    readReg();
     ui->lonelyCodesWidget->hide(); // Скрыть виджет "Коды без привязок"
-    ui->notUsedCodes->hide(); // Скрыть виджет "Неиспользованные коды
+    ui->widgetNotUsedCodes->hide(); // Скрыть виджет "Неиспользованные коды
     ui->usedFilesListWidget->hide(); // Скрыть виджет "обработанных файлов"
     ui->lineEditQRLenght->setValidator(new QIntValidator(0, 10, this));
 
@@ -24,9 +25,26 @@ qrDialog::qrDialog(QWidget *parent) :
 
 qrDialog::~qrDialog()
 {
+    writeReg();
     delete helpWindow;
     delete config;
     delete ui;
+}
+
+void qrDialog::readReg()
+{
+    QSettings settings("ShurkSoft", "QR to TKS");
+    settings.beginGroup("basic");
+    restoreGeometry(settings.value("geometry").toByteArray());
+    settings.endGroup();
+}
+
+void qrDialog::writeReg()
+{
+    QSettings settings("ShurkSoft", "QR to TKS");
+    settings.beginGroup("basic");
+    settings.setValue("geometry", saveGeometry());
+    settings.endGroup();
 }
 
 void qrDialog::readConfig()
@@ -876,6 +894,25 @@ void qrDialog::on_pushButtonShowResult_clicked()
         }
         showTabQr(converter.result);
         showTab(converter.resultInfo);
+
+        // Если сопоставлено кодов меньше чем указано в инвойсе заполняем таблицу неиспользованных кодов
+        if(ui->labelCodesFounded->text().toInt() < ui->labelItemsQty->text().toInt())
+        {
+            for(int i = 0; i < tempQr.size(); i++)
+            {
+                if(tempQr[i][1] != "used")
+                {
+                    notUsedQr.push_back(tempQr[i]);
+                    qDebug() << tempQr[i][0] << " " << tempQr[i][1] << "Added to notUsedCodes";
+                }
+            }
+            qDebug() << "notUsedQr size: " << notUsedQr.size();
+            if(!notUsedQr.empty())
+            {
+                ui->widgetNotUsedCodes->show();
+                ui->labelNotUsedCodesNum->setText(QString::number(notUsedQr.size()));
+            }
+        }
     }
     else
     {
@@ -895,25 +932,24 @@ void qrDialog::on_pushButtonClearResult_clicked()
     ui->labelCodesFounded->clear();
 }
 
-void qrDialog::on_pushButtonShowNotUsedCodes_clicked()
-{
-    for(int rowQr = 0; rowQr < converter.qrResult.size(); rowQr++)
-    {
-        if(converter.qrResult[rowQr][0] != "used")
-        {
-            notUsedQr.push_back(converter.qrResult[rowQr]);
-        }
-    }
-    if(notUsedQr.empty())
-    {
-        QMessageBox::information(this, "Внимание!", "Нет неиспользованных QR кодов");
-    }
-    else
-    {
-        showTabQr(notUsedQr);
-    }
-}
-
+//void qrDialog::on_pushButtonShowNotUsedCodes_clicked()
+//{
+//    for(int rowQr = 0; rowQr < converter.qrResult.size(); rowQr++)
+//    {
+//        if(converter.qrResult[rowQr][0] != "used")
+//        {
+//            notUsedQr.push_back(converter.qrResult[rowQr]);
+//        }
+//    }
+//    if(notUsedQr.empty())
+//    {
+//        QMessageBox::information(this, "Внимание!", "Нет неиспользованных QR кодов");
+//    }
+//    else
+//    {
+//        showTabQr(notUsedQr);
+//    }
+//}
 
 void qrDialog::on_pushButtonSave_clicked()
 {
@@ -1087,5 +1123,31 @@ void qrDialog::on_lineEditQRLenght_textEdited(const QString &arg1)
 {
     qrCodeLenght = ui->lineEditQRLenght->text().toInt();
 //    QMessageBox::information(this, "!", "Qr code lenght: " + QString::number(qrCodeLenght));
+}
+
+
+void qrDialog::on_pushButtonShowNotUsedCodes_clicked()
+{
+    Extras::showTable(notUsedQr, ui->tableWidget_2);
+}
+
+
+void qrDialog::on_pushButtonSaveNotUsedCodes_clicked()
+{
+    lastPath = lastPath.path() + "/notUsed.xls";
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Сохранить результат"), lastPath.absolutePath(), tr("Таблица xls (*.xls)"));
+    if (fileName != "")
+    {
+        try
+        {
+            std::wstring path = fileName.toStdWString();
+            converter.saveTable(notUsedQr, path);
+            QMessageBox::information(this, "!", "Файл сохранён!");
+        }
+        catch (...)
+        {
+            QMessageBox::critical(this, "!", "Не удалось сохранить файл!");
+        }
+    }
 }
 

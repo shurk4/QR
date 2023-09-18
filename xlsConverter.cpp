@@ -517,6 +517,32 @@ void xlsConverter::saveContainers(std::wstring patch)
     xls.SaveAs(&(patch[0]));
 }
 
+void xlsConverter::saveTable(const QVector<QVector<QString>> &table, const std::wstring path)
+{
+    BasicExcel xls; // объявление переменной эксель
+
+    // create sheet 1 and get the associated BasicExcelWorksheet pointer
+    xls.New(1); // создание одной страницы
+    BasicExcelWorksheet* sheet = xls.GetWorksheet(0); // получаем текущую рабочую страницу по индексу из созданной переменной эксель
+
+    XLSFormatManager fmt_mgr(xls);
+    CellFormat fmt(fmt_mgr);
+    fmt.set_format_string(XLS_FORMAT_TEXT);
+
+    BasicExcelCell* cell;
+
+    for(int row = 0; row < table.size(); row++)
+    {
+        for(int col = 0; col < table[row].size(); col++)
+        {
+            cell = sheet->Cell(row, col);
+            cell->Set(&(table[row][col].toStdWString()[0]));
+            cell->SetFormat(fmt);
+        }
+    }
+    xls.SaveAs(&(path[0]));
+}
+
 int xlsConverter::getItemsPosQty()
 {
     return invoiceResult.size();

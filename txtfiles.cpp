@@ -13,6 +13,8 @@ txtFiles::txtFiles(QWidget *parent) :
                          | Qt::WindowMaximizeButtonHint
                          | Qt::WindowSystemMenuHint);
     readConfig();
+    ui->splitter->setStretchFactor(0, 1); // столбец с ид 0 занимает всё доступное простанство
+    readReg();
 
     hideFilesWidgets();
     ui->widgetItemsInfo->hide();
@@ -26,8 +28,28 @@ txtFiles::txtFiles(QWidget *parent) :
 
 txtFiles::~txtFiles()
 {
+    qDebug() << "TXT destructor!";
+    writeReg();
     config->write();
     delete ui;
+}
+
+void txtFiles::readReg()
+{
+    QSettings settings("ShurkSoft", "QR to TKS");
+    settings.beginGroup("txt");
+    restoreGeometry(settings.value("geometry").toByteArray());
+    ui->splitter->restoreState(settings.value("mainSplitter").toByteArray());
+    settings.endGroup();
+}
+
+void txtFiles::writeReg()
+{
+    QSettings settings("ShurkSoft", "QR to TKS");
+    settings.beginGroup("txt");
+    settings.setValue("geometry", saveGeometry());
+    settings.setValue("mainSplitter", ui->splitter->saveState());
+    settings.endGroup();
 }
 
 void txtFiles::readConfig()
@@ -50,18 +72,13 @@ void txtFiles::readConfig()
 void txtFiles::hideFilesWidgets()
 {
     ui->widgetTabsPanel->hide();
-    qDebug() << "widgetTabsPanel - hided";
     ui->WidgetInvAnalyze->hide();
-    qDebug() << "WidgetInvAnalyze - hidded";
     ui->widgetQrButtons->hide();
-    qDebug() << "widgetQrButtons - hided";
 }
 
 void txtFiles::setDisplayType(DisplayType type)
 {
-    qDebug() <<"setDisplayType" << type;
     hideFilesWidgets();
-    qDebug() << "Widgets hided!";
 
     switch (type)
     {
@@ -89,7 +106,6 @@ void txtFiles::setDisplayType(DisplayType type)
     default:
         break;
     }
-    qDebug() <<"setDisplayType - done";
 }
 
 void txtFiles::showTable_1(const QVector<QVector<QString>> &inTab)
@@ -557,15 +573,12 @@ void txtFiles::on_pushButtonAnalyze_clicked()
     items = converter.getItemsForTxt(currentTab);
     if(items.empty()) QMessageBox::critical(this, "", "items empty");
     else
-    {        
-        qDebug() << "items = converter.getItemsForTxt(currentTab) - NOT EMPTY";
+    {
         Extras::showTable(items, ui->tableWidgetItems);
-        qDebug() << "Extras::showTable(items, ui->tableWidgetItems) - done";
         ui->tableWidgetItems->setHorizontalHeaderLabels(QStringList() << "Ctn num" << "Name" << "Qty");
         ui->tableWidgetItems->verticalHeader()->setVisible(false);
         bool setColor = false;
 
-        qDebug() << "Loop started. items.size() = " << items.size();
         for(size_t i = 0; i < items.size(); i++)
         {
             if(i != 0 && items[i][0] != items[i - 1][0])
@@ -582,24 +595,16 @@ void txtFiles::on_pushButtonAnalyze_clicked()
                 }
             }
         }
-        qDebug() << "Loop ended.";
 
         setDisplayType(TXT);
-        qDebug() << "setDisplayType(TXT)";
 
         ui->widgetItemsInfo->show();
-        qDebug() << "widgetItemsInfo showed";
 
         ui->tableWidgetItems->horizontalHeader()->setStretchLastSection(true);
 
-        qDebug() << "widgetItemsInfo showed";
-
         ui->labelItemsNum->setText(QString::number(converter.getItemsPosQty()));
-        qDebug() << "labelItemsNum - showed";
         ui->labelCtnsNum->setText(QString::number(converter.getCtnsQty()));
-        qDebug() << "labelCtnsNum - showed";
         ui->labelOverallItems->setText(QString::number(converter.getItemsQty()));
-        qDebug() << "labelOverallItems - showed";
     }
 }
 

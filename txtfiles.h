@@ -7,19 +7,13 @@
 #include <QTextStream>
 #include <QListWidget>
 #include <QDir>
+#include <QSettings>
 
 #include "xlsConverter.h"
 #include "extras.h"
 #include "config.h"
 #include "help.h"
 #include "dialog.h"
-
-//enum FileStatus
-//{
-//    NEW,
-//    DELETED,
-//    ADDED
-//};
 
 enum DisplayType
 {
@@ -43,6 +37,10 @@ public:
 
     void readConfig();
     void setDisplayType(DisplayType type);
+
+    //Сохранение настроек в реестр \HKEY_CURRENT_USER\Software\ShurkSoft\QR to TKS\txt
+    void readReg();
+    void writeReg();
 
     xlsConverter converter;
     void toCodes();

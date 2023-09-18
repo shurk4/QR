@@ -7,16 +7,17 @@
 #include <QDateTime>
 #include <QTextStream>
 #include <QScrollBar>
+#include <QSettings>
+#include "QFileDialog"
+#include "QCheckBox"
+#include "QDir"
+
 #include <iostream>
 #include <fstream>
 
 #include "help.h"
 #include "config.h"
 #include "ui_qrDialog.h"
-#include "QFileDialog"
-#include "QCheckBox"
-
-#include "qdir.h"
 #include "xlsConverter.h"
 #include "help.h"
 #include "extras.h"
@@ -41,6 +42,11 @@ public:
 
     xlsConverter converter;
     void readConfig();
+
+    //Сохранение настроек в реестр \HKEY_CURRENT_USER\Software\ShurkSoft\QR to TKS\txt
+    void readReg();
+    void writeReg();
+
     void showTab(const QVector<QVector<QString>> &inTab);
     void showTabQr(const QVector<QVector<QString>> &inTab);
 
@@ -133,6 +139,8 @@ private slots:
     void on_checkBoxFilesPath_stateChanged(int arg1);
 
     void on_lineEditQRLenght_textEdited(const QString &arg1);
+
+    void on_pushButtonSaveNotUsedCodes_clicked();
 
 private:
     Ui::qrDialog *ui;

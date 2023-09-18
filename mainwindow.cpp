@@ -41,7 +41,7 @@ void MainWindow::on_pushButtonExit_clicked()
 void MainWindow::on_pushButton_clicked()
 {
     hide();
-    txtFiles* textFiles = new txtFiles;
+    txtFiles* textFiles = new txtFiles(this);
     textFiles->exec();
 }
 

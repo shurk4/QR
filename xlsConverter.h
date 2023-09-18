@@ -92,6 +92,7 @@ public:
 
     void saveResult(std::wstring path);
     void saveContainers(std::wstring patch);
+    void saveTable(const QVector<QVector<QString>> &table, const std::wstring path);
 
 
     // Новые методы, переделать класс в нормальный вид
