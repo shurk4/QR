@@ -8,6 +8,8 @@ txtFiles::txtFiles(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    this->setAttribute(Qt::WA_DeleteOnClose); // Для мгновенного вызова деструктора при закрытии окна
+
     this->resize(1280, 720);
     this->setWindowFlags(windowFlags() | Qt::WindowMinimizeButtonHint
                          | Qt::WindowMaximizeButtonHint
@@ -31,6 +33,8 @@ txtFiles::~txtFiles()
     qDebug() << "TXT destructor!";
     writeReg();
     config->write();
+    delete config;
+    delete helpWindow;
     delete ui;
 }
 
@@ -50,6 +54,7 @@ void txtFiles::writeReg()
     settings.setValue("geometry", saveGeometry());
     settings.setValue("mainSplitter", ui->splitter->saveState());
     settings.endGroup();
+    qDebug() << "Reg config is writed";
 }
 
 void txtFiles::readConfig()
@@ -794,7 +799,7 @@ void txtFiles::on_pushButtonMergeFiles_clicked()
 
 void txtFiles::mergeItems(QString newName)
 {
-    QVector<int> test;
+//    QVector<int> test;
     converter.mergeItems(selectedRows, newName);
     showDocs();
 }

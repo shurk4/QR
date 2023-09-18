@@ -25,6 +25,7 @@ qrDialog::qrDialog(QWidget *parent) :
 
 qrDialog::~qrDialog()
 {
+    qDebug() << "qrDialog Destructor";
     writeReg();
     delete helpWindow;
     delete config;

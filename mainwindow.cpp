@@ -33,15 +33,10 @@ void MainWindow::on_pushButtonStartBasic_clicked()
     qrDiag->exec();
 }
 
-void MainWindow::on_pushButtonExit_clicked()
-{
-    QCoreApplication::quit();
-}
-
 void MainWindow::on_pushButton_clicked()
 {
     hide();
-    txtFiles* textFiles = new txtFiles(this);
+    txtFiles* textFiles = new txtFiles;
     textFiles->exec();
 }
 
@@ -52,7 +47,6 @@ void MainWindow::on_pushButton_2_clicked()
     ctnWindow->exec();
 }
 
-
 void MainWindow::on_pushButton_3_clicked()
 {
     QString updater = "./updater/updater.exe"; // Путь к программе
@@ -60,3 +54,7 @@ void MainWindow::on_pushButton_3_clicked()
         this->close();
 }
 
+void MainWindow::on_pushButtonExit_clicked()
+{
+        QCoreApplication::quit();
+}

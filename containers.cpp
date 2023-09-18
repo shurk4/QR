@@ -15,6 +15,7 @@ containers::containers(QWidget *parent) :
 
 containers::~containers()
 {
+    qDebug() << "Containers destructor";
     delete ui;
 }
 
