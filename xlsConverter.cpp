@@ -236,24 +236,39 @@ void xlsConverter::clearQrTxt()
 
 void xlsConverter::mergeItems(const QVector<int> &selectedRows, QString &name)
 {
+    qDebug() << "Selected items:";
+
+    for(auto i : selectedRows)
+    {
+        qDebug() << i;
+    }
+
+    qDebug() << "qrInfo size: " << qrInfo.size();
     int baseRow = selectedRows[0];
+    qDebug() << "Base row: " << baseRow;
     qrInfo[baseRow].name = name;
+    qDebug() << "New item name: " << qrInfo[baseRow].name;
+    qDebug() << "qrCodes size: " << qrCodes.size();
 
     for(size_t i = 1; i < selectedRows.size(); i++)
     {
-        qrCodes[baseRow].reserve(qrCodes[baseRow].size() + qrCodes[i].size());
+        qrCodes[baseRow].reserve(qrCodes[baseRow].size() + qrCodes[selectedRows[i]].size());
 
-        for(auto &it : qrCodes[i])
+        for(auto &it : qrCodes[selectedRows[i]])
         {
             qrCodes[baseRow].push_back(it);
         }
     }
 
+    qDebug() << "Qr merge complited";
+
     for(size_t i = 1; i < selectedRows.size(); i++)
     {
-        qrInfo.erase(qrInfo.begin() + i);
-        qrCodes.erase(qrCodes.begin() + i);
+        qrInfo.erase(qrInfo.begin() + selectedRows[i]);
+        qrCodes.erase(qrCodes.begin() + selectedRows[i]);
     }
+
+    qDebug() << "Old item deleted";
 }
 
 bool xlsConverter::haveQrSettings(int tab)
@@ -662,15 +677,15 @@ QVector<QVector<QString> > xlsConverter::getItemsBasic(int tab)
 
 QVector<QVector<QString>> xlsConverter::getItemsForTxt(int tab)
 {
-    qDebug() << "xlsConverter::getItemsForTxt started";
-    qDebug() << "Current tab = " << tab;
+    invoiceResult.clear();
+
     int qtyCol = invoiceSheetSettings[tab].qtyCol;
     int qtyFirstCell = invoiceSheetSettings[tab].startRow;
     int qtyLastCell = invoiceSheetSettings[tab].stopRow;
     int itemCol = invoiceSheetSettings[tab].itemCol;
-    qDebug() << "Basic variables ready";
 
-    qDebug() << "First loop started";
+    if(qtyCol == -1 || qtyFirstCell == -1 || qtyLastCell == - 1 ||  itemCol == -1) return invoiceResult;
+
     for(size_t row = qtyFirstCell - 1; row <= qtyLastCell + 1; row++)
     {
         for(size_t col = 0; col < invoiceXls[tab][row].size(); col++)
@@ -681,11 +696,6 @@ QVector<QVector<QString>> xlsConverter::getItemsForTxt(int tab)
             }
         }
     }
-
-    qDebug() << "First loop stopped";
-
-
-    qDebug() << "";
 
     if(invoiceXls.empty() || invoiceXls[tab].empty()) return invoiceResult;
 
@@ -723,7 +733,6 @@ QVector<QVector<QString>> xlsConverter::getItemsForTxt(int tab)
         }
         if(founded) invoiceResult.push_back(rowVec);
     }
-    qDebug() << "xlsConverter::getItemsForTxt stoped";
     return invoiceResult;
 }
 

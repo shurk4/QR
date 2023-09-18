@@ -8,7 +8,7 @@ txtFiles::txtFiles(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    this->setAttribute(Qt::WA_DeleteOnClose); // Для мгновенного вызова деструктора при закрытии окна
+    this->setAttribute(Qt::WA_DeleteOnClose);
 
     this->resize(1280, 720);
     this->setWindowFlags(windowFlags() | Qt::WindowMinimizeButtonHint
@@ -141,6 +141,9 @@ void txtFiles::showTable_2(const QVector<QVector<QString>> &table)
 
 void txtFiles::showDocs()
 {
+    currentDoc = 0;
+
+    qDebug() << "showDocs";
     if(!converter.qrReady())
     {
         QMessageBox::information(this, "!", "Не добавлено ни одного документа!");
@@ -148,6 +151,7 @@ void txtFiles::showDocs()
     }
 
     ui->labelCodesInDoc->setText(QString::number(converter.getQrQtyInItem(currentDoc)));
+    qDebug() << "converter.getQrQtyInItem(currentDoc): " << converter.getQrQtyInItem(currentDoc);
 
     ui->listWidget->clear();
 
@@ -320,7 +324,6 @@ void txtFiles::on_pushButtonTxt_clicked()
             converter.addQrTxt(info.fileName(), doc);
         }
 
-        currentDoc = 0;
         showTable_2(converter.getQrItem(currentDoc));
 
         showDocs();
@@ -576,7 +579,7 @@ void txtFiles::on_pushButtonLastCell_clicked()
 void txtFiles::on_pushButtonAnalyze_clicked()
 {
     items = converter.getItemsForTxt(currentTab);
-    if(items.empty()) QMessageBox::critical(this, "", "items empty");
+    if(items.empty()) QMessageBox::critical(this, "", "Не отмечены поля для выборки данных");
     else
     {
         Extras::showTable(items, ui->tableWidgetItems);
@@ -799,7 +802,7 @@ void txtFiles::on_pushButtonMergeFiles_clicked()
 
 void txtFiles::mergeItems(QString newName)
 {
-//    QVector<int> test;
+    QVector<int> test;
     converter.mergeItems(selectedRows, newName);
     showDocs();
 }
@@ -813,7 +816,6 @@ void txtFiles::markItemsTable()
         QString tempQty = QString::number(converter.getQrQtyInItem(currentDoc));
         if((tempName.contains(items[row][0]) || tempName.contains(items[row][1])) && items[row][2] == tempQty)
         {
-            QMessageBox::information(this, "", "Added codes contains in item row: " + QString::number(row));
             for(size_t col = 0; col < items[row].size(); col++)
             {
                 QTableWidgetItem* item = ui->tableWidgetItems->item(row, col);

@@ -6,6 +6,7 @@ Dialog::Dialog(Type type, QWidget *parent) :
     ui(new Ui::Dialog)
 {
     ui->setupUi(this);
+    this->setAttribute(Qt::WA_DeleteOnClose);
 
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
