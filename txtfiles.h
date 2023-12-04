@@ -51,6 +51,8 @@ public:
 
     void showAutoButton();
 
+    void toLog(QString _log);
+
 private slots:
     void on_pushButtonInv_clicked();
 
@@ -137,6 +139,9 @@ private:
     int itemNum = 0;
 
     bool invoiceShowed = false;
+
+signals:
+    void log(QString);
 };
 
 #endif // TXTFILES_H

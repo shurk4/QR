@@ -11,6 +11,7 @@
 #include <string>
 #include <locale>
 #include <iostream>
+#include <algorithm>
 
 #include "XlsFormat.h"
 #include "OpenXLSX/OpenXLSX.hpp"
@@ -115,7 +116,7 @@ public:
     void qrAnalyze(int tab);
     void addQrTxt(const QString name, const QVector<QVector<QString>> &codes);
     void clearQrTxt();
-    void mergeItems(const QVector<int> &selectedRows, QString &name);
+    void mergeItems(QVector<int> &selectedRows, QString &name);
 
     bool haveQrSettings(int tab);
     bool qrReady();

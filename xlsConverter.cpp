@@ -234,7 +234,7 @@ void xlsConverter::clearQrTxt()
     qrCodes.clear();
 }
 
-void xlsConverter::mergeItems(const QVector<int> &selectedRows, QString &name)
+void xlsConverter::mergeItems(QVector<int> &selectedRows, QString &name)
 {
     qDebug() << "Selected items:";
 
@@ -245,12 +245,13 @@ void xlsConverter::mergeItems(const QVector<int> &selectedRows, QString &name)
 
     qDebug() << "qrInfo size: " << qrInfo.size();
     int baseRow = selectedRows[0];
+    selectedRows.erase(selectedRows.begin());
     qDebug() << "Base row: " << baseRow;
     qrInfo[baseRow].name = name;
     qDebug() << "New item name: " << qrInfo[baseRow].name;
     qDebug() << "qrCodes size: " << qrCodes.size();
 
-    for(size_t i = 1; i < selectedRows.size(); i++)
+    for(size_t i = 0; i < selectedRows.size(); i++)
     {
         qrCodes[baseRow].reserve(qrCodes[baseRow].size() + qrCodes[selectedRows[i]].size());
 
@@ -262,7 +263,10 @@ void xlsConverter::mergeItems(const QVector<int> &selectedRows, QString &name)
 
     qDebug() << "Qr merge complited";
 
-    for(size_t i = 1; i < selectedRows.size(); i++)
+    std::sort(selectedRows.begin(), selectedRows.end(), std::greater<int>());
+
+    qDebug() << "Deleting selected rows";
+    for(size_t i = 0; i < selectedRows.size(); i++)
     {
         qrInfo.erase(qrInfo.begin() + selectedRows[i]);
         qrCodes.erase(qrCodes.begin() + selectedRows[i]);

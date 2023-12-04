@@ -23,6 +23,10 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    void log(QString _log);
+    void optimizeLogs();
+    void deleteOldLogs();
+
 private slots:
 
     void on_pushButtonStartBasic_clicked();
@@ -35,12 +39,19 @@ private slots:
 
     void on_pushButton_3_clicked();
 
+    void on_checkBoxLog_stateChanged(int arg1);
+
 private:
     Ui::MainWindow *ui;
 
     Config config;
     QString currentVer;
     QString sourseVer;
+
+    QString logFileName;
+
+public slots:
+    void logs(QString _log);
 };
 
 #endif // MAINWINDOW_H
