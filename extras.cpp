@@ -62,6 +62,30 @@ void Extras::showTable(const QVector<QVector<QString>> &data, QTableWidget *tabl
     table->resizeRowsToContents();
 }
 
+void Extras::setTableSettings(QVector<QVector<CellSettings>> settings, QTableWidget *table)
+{
+    qDebug() << "------Extras::setTableSetting settings.size(): " << settings.size() << " settings[0].size(): " << settings[0].size();
+    for(int row = 0; row < settings.size(); row++)
+    {
+        for(int col = 0; col < settings.size(); col++)
+        {
+//            if(settings[row][col].mergedRows > 0 && settings[row][col].mergedRows < settings.size() && settings[row][col].mergedCols > 0 && settings[row][col].mergedCols < settings[row].size())
+//            {
+                if(table->rowSpan(row, col) < 2 && table->columnSpan(row, col < 2))
+                {
+                    table->setSpan(row, col, row + settings[row][col].mergedRows, col + settings[row][col].mergedCols);
+                    qDebug() << "Extras::setTableSettings: " << row << " " << col << " settings[row][col].mergedRows: " << settings[row][col].mergedRows
+                             << "settings[row][col].mergedCols: " << settings[row][col].mergedCols;
+                    qDebug() << "Extras::setTableSettings: " << row << " " << col << " table->rowSpan(row, col): " << table->rowSpan(row, col)
+                             << " table->columnSpan: " << table->rowSpan(row, col);
+                }
+//            }
+        }
+    }
+//        table->resizeColumnsToContents();
+//        table->resizeRowsToContents();
+}
+
 void Extras::scaleTable(const int size, QTableWidget *table)
 {
     QFont font;

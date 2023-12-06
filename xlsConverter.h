@@ -20,6 +20,13 @@
 using namespace ExcelFormat;
 
 // Структуры для нового хранения найденных QR кодов используется для сопоставления данных векторов qrInfo и qrCodes
+enum DocType
+{
+    NONE,
+    TypeINV,
+    TypeQR
+};
+
 enum QrStatus
 {
     NEW,
@@ -62,13 +69,13 @@ public:
     std::vector<StructInvoice> invoiceSheetSettings;
 
     QVector<QVector<QVector<QString>>>  invoiceXls;
+    QVector<QString> invoiceSheetNames;
 
-    std::vector<StructQR> qrSheetSettings;
     QVector<QVector<QVector<QString>>> qrXls;
+    QVector<QString> qrSheetNames;
+    std::vector<StructQR> qrSheetSettings;
     QVector<QVector<QString>> qrResult;
 
-    QVector<QString> invoiceSheetNames;
-    QVector<QString> qrSheetNames;
 
     //Артикулы QR
     std::map<QString, int> qrArticules;
@@ -82,7 +89,7 @@ public:
     QVector<QVector<QString>> result;
     QVector<QVector<QString>> resultInfo;
 
-    void readXls(std::wstring path, QVector<QVector<QVector<QString>>> &tempXls, QVector<QString> &sheetNames);
+    void readXls(std::wstring path, QVector<QVector<QVector<QString>>> &tempXls, QVector<QString> &sheetNames, DocType type = NONE);
     void readXlsX(std::string path, QVector<QVector<QVector<QString>>> &tempXls, QVector<QString> &sheetNames);
 
     void clearInvoiceData();
@@ -141,6 +148,13 @@ public:
     int undoResult(); // Отменить последний добавленный итем - возвращает номер позиции удаляемых из результата данных в QlistWidget
     int redoResult(); // Вернуть отменённый итем - возвращает номер позиции возвращаемых в результат данных в QlistWidget
 
+    CellSettings getInvCellSettings(int page, int row, int col);
+    CellSettings getQrCellSettings(int page, int row, int col);
+
+    QVector<QVector<CellSettings>> getInvPageCellsSettings(int page);
+    bool haveInvCellsSettings();
+    QVector<QVector<CellSettings>> getQrPageCellsSettings(int page);
+    bool haveQrCellsSettings();
 
     // Новые методы
 
@@ -159,6 +173,10 @@ private:
     QVector<QVector<QVector<QString>>> qrCodes; // Содержит qr коды отсортированные по итемам, порядок соответствует qrInfo
     QList<int> addedItems;
     QList<int> undoItems;
+
+    // Форматирование ячеек
+    QVector<QVector<QVector<CellSettings>>> qrCellSettings;
+    QVector<QVector<QVector<CellSettings>>> invCellSettings;
 };
 
 #endif // XLSCONVERTER_H

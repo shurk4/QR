@@ -54,7 +54,7 @@
      <property name="childrenCollapsible">
       <bool>false</bool>
      </property>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <layout class="QVBoxLayout" name="verticalLayout">
        <property name="spacing">
         <number>0</number>
@@ -633,7 +633,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <property name="spacing">
         <number>0</number>
@@ -1307,6 +1307,70 @@
     </widget>
    </item>
   </layout>
+  <action name="actionItemQtyFirstCell">
+   <property name="text">
+    <string>Первая</string>
+   </property>
+   <property name="toolTip">
+    <string>Первая ячейка количества</string>
+   </property>
+  </action>
+  <action name="actionItemQtyLastCell">
+   <property name="text">
+    <string>Последняя</string>
+   </property>
+   <property name="toolTip">
+    <string>Последняя ячейка количества</string>
+   </property>
+  </action>
+  <action name="actionInvQtyRange">
+   <property name="text">
+    <string>Диапазон</string>
+   </property>
+   <property name="toolTip">
+    <string>Диапазон ячеек количества</string>
+   </property>
+  </action>
+  <action name="actionInvAnalize">
+   <property name="text">
+    <string>Анализировать</string>
+   </property>
+   <property name="toolTip">
+    <string>Анализировать данные</string>
+   </property>
+  </action>
+  <action name="actionInvItemNameCol">
+   <property name="text">
+    <string>Колонка итем</string>
+   </property>
+   <property name="toolTip">
+    <string>Колонка наименований для сопоставления</string>
+   </property>
+  </action>
+  <action name="actionQrQrCol">
+   <property name="text">
+    <string>Колонка QR</string>
+   </property>
+   <property name="toolTip">
+    <string>Колонка с кодом QR</string>
+   </property>
+  </action>
+  <action name="actionQrItemCol">
+   <property name="text">
+    <string>Колонка итем</string>
+   </property>
+   <property name="toolTip">
+    <string>Колонка итем для сопоставления кодов</string>
+   </property>
+  </action>
+  <action name="actionQrAnalize">
+   <property name="text">
+    <string>Анализировать</string>
+   </property>
+   <property name="toolTip">
+    <string>Анализировать данные</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

@@ -8,6 +8,7 @@
 #include <QListWidget>
 #include <QDir>
 #include <QSettings>
+#include <QMenu>
 
 #include "xlsConverter.h"
 #include "extras.h"
@@ -54,59 +55,46 @@ public:
     void toLog(QString _log);
 
 private slots:
+    void showContextMenu(QPoint pos);
+
     void on_pushButtonInv_clicked();
-
     void on_pushButtonDown_clicked();
-
     void on_pushButtonUp_clicked();
-
     void on_pushButtonTxt_clicked();
-
     void on_listWidget_itemClicked(QListWidgetItem *item);
-
     void on_pushButtonAddQr_clicked();
-
     void on_pushButtonSave_clicked();
-
     void on_pushButtonShow_clicked();
-
     void on_listWidget_itemDoubleClicked(QListWidgetItem *item);
-
     void on_pushButtonOpenQr_clicked();
-
     void on_pushButtonFirstCell_clicked();
-
     void on_pushButtonLastCell_clicked();
-
     void on_pushButtonAnalyze_clicked();
-
     void on_pushButtonItemCol_clicked();
-
     void on_pushButtonQrCol_clicked();
-
     void on_pushButtonQrItemCol_clicked();
-
     void on_pushButtonQrAnalyze_clicked();
-
     void on_pushButtonHelp_clicked();
-
     void on_pushButtonAuto_clicked();
-
     void on_pushButtonClearAll_clicked();
-
     void on_pushButtonShowResult_clicked();
-
     void on_pushButtonClearFiles_clicked();
-
     void on_pushButtonClearItems_clicked();
-
     void on_pushButtonCancelUndoResult_clicked();
-
     void on_pushButtonUndoRedoResult_clicked();
-
     void on_pushButtonClearResult_clicked();
+    void on_pushButtonMergeFiles_clicked();    
+    void on_actionItemQtyFirstCell_triggered();
+    void on_actionItemQtyLastCell_triggered();
+    void on_actionInvQtyRange_triggered();
+    void on_actionInvAnalize_triggered();
+    void on_actionInvItemNameCol_triggered();
 
-    void on_pushButtonMergeFiles_clicked();
+    void on_actionQrQrCol_triggered();
+
+    void on_actionQrItemCol_triggered();
+
+    void on_actionQrAnalize_triggered();
 
 public slots:
     void hideFilesWidgets();
@@ -139,6 +127,25 @@ private:
     int itemNum = 0;
 
     bool invoiceShowed = false;
+
+    // Конетекстные меню
+    QMenu *invMenu;
+    void createInvMenu();
+    QMenu *qrMenu;
+    void createQrMenu();
+
+    // Действия
+    // invoice
+    void invoiceFirstCell();
+    void invoiceLastCell();
+    void invoiceRangeCell();
+    void invoiceItemCol();
+    void invoiceAnalize();
+
+    // qr
+    void qrQrCol();
+    void qrItemCol();
+    void qrAnalize();
 
 signals:
     void log(QString);

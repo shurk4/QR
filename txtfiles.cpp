@@ -26,6 +26,12 @@ txtFiles::txtFiles(QWidget *parent) :
     helpWindow->showTextfilesHelp();
     helpWindow->setModal(false);
     helpWindow->hide();
+
+    ui->tableWidget_1->setContextMenuPolicy(Qt::CustomContextMenu);
+    // Подключение сигнала контекстного меню таблицы к слоту отображения меню окна
+    connect(ui->tableWidget_1, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
+    createInvMenu();
+    createQrMenu();
 }
 
 txtFiles::~txtFiles()
@@ -106,7 +112,6 @@ void txtFiles::setDisplayType(DisplayType type)
         toLog("--widgetTabsPanel");
         toLog("--WidgetInvAnalyze");
         displayType = INV;
-        toLog("-");
         break;
 
     case (QR):
@@ -133,7 +138,7 @@ void txtFiles::setDisplayType(DisplayType type)
     default:
         break;
     }
-    toLog("\n");
+    toLog("");
 }
 
 void txtFiles::showTable_1(const QVector<QVector<QString>> &inTab)
@@ -163,6 +168,27 @@ void txtFiles::showTable_1(const QVector<QVector<QString>> &inTab)
 
     Extras::showTable(inTab, ui->tableWidget_1);
     toLog("Таблица отображена.");
+//    switch (displayType) {
+//    case INV:
+//        toLog("Форматирования таблицы инвойса");
+//        if(converter.haveInvCellsSettings())
+//        {
+//            Extras::setTableSettings(converter.getInvPageCellsSettings(currentTab), ui->tableWidget_1);
+//        }
+//        else toLog("Нет данных форматирования");
+//        break;
+//    case QR:
+//        toLog("Форматирования таблицы QR кодов");
+//        if(converter.haveQrCellsSettings())
+//        {
+//            Extras::setTableSettings(converter.getQrPageCellsSettings(currentTabQr), ui->tableWidget_1);
+//        }
+//        else toLog("Нет данных форматирования");
+//        break;
+
+//    default:
+//        break;
+//    }
 }
 
 void txtFiles::showTable_2(const QVector<QVector<QString>> &table)
@@ -221,6 +247,23 @@ void txtFiles::toLog(QString _log)
     emit log(logString);
 }
 
+void txtFiles::showContextMenu(QPoint pos)
+{
+    toLog("Вызвано контекстное меню");
+    switch (displayType) {
+    case INV:
+        invMenu->popup(ui->tableWidget_1->viewport()->mapToGlobal(pos));
+        break;
+    case QR:
+        qrMenu->popup(ui->tableWidget_1->viewport()->mapToGlobal(pos));
+        break;
+    case TXT:
+        break;
+    case RESULT:
+        break;
+    }
+}
+
 void txtFiles::on_pushButtonInv_clicked()
 {    
     toLog("Открытие файла инвойса");
@@ -258,9 +301,9 @@ void txtFiles::on_pushButtonInv_clicked()
         else
         {
             ext = ".xls";
-        }
+        }        
 
-
+        toLog("Подготовка к копированию временного файла");
         QString invoiceFileName = "temp/inv" + date.toString("ddMMyy") + time.toString("hhmm") + ext; // Имя копии файла
 
         copySucces = QFile::copy(invPathTemp, invoiceFileName);
@@ -268,7 +311,8 @@ void txtFiles::on_pushButtonInv_clicked()
         if(!copySucces)
         {
             QMessageBox::information(this, "Открытие файла", "Не удалось создать временную копию файла!");
-            toLog("Не удалось создать копию файла");
+            toLog("Не удалось создать временную копию файла");
+            return;
         }
 
         if(ext == ".xlsx")
@@ -279,7 +323,7 @@ void txtFiles::on_pushButtonInv_clicked()
         else
         {
             std::wstring path = invoiceFileName.toStdWString();
-            converter.readXls(path, converter.invoiceXls, converter.invoiceSheetNames);
+            converter.readXls(path, converter.invoiceXls, converter.invoiceSheetNames, TypeINV);
         }
 
         ui->labelInv->setText(lastPath.dirName());
@@ -631,155 +675,38 @@ void txtFiles::on_listWidget_itemDoubleClicked(QListWidgetItem *item)
 
 void txtFiles::on_pushButtonFirstCell_clicked()
 {
-    if(converter.invoiceXls.size() > 0)
-    {
-        // Взять данные из выбранной ячейки
-        int col = ui->tableWidget_1->selectionModel()->currentIndex().column();
-        int row = ui->tableWidget_1->selectionModel()->currentIndex().row();
-        // Взять данные из выбранной ячейки
-
-        converter.invoiceSheetSettings[currentTab].qtyCol = col;
-        converter.invoiceSheetSettings[currentTab].startRow = row;
-
-        ui->labelInvCol->setText(QString::fromStdString(Extras::IntToSymbol(col)));
-        ui->labelRowFirst->setText(QString::number(row + 1));
-        toLog("Выбрана первая ячейка количества.\n   Колонка: " + QString::number(col) + " Строка: " + QString::number(row));
-    }
+    invoiceFirstCell();
 }
-
 
 void txtFiles::on_pushButtonLastCell_clicked()
 {
-    if(converter.invoiceXls.size() > 0)
-    {
-        // Взять данные из выбранной ячейки
-        int row = ui->tableWidget_1->selectionModel()->currentIndex().row();
-        // Взять данные из выбранной ячейки
-
-        converter.invoiceSheetSettings[currentTab].stopRow = row;
-        ui->labelRowEnd->setText(QString::number(row + 1));
-        toLog("Выбрана последняя ячейка количества\n   Строка: " + QString::number(row));
-    }
+    invoiceLastCell();
 }
 
 void txtFiles::on_pushButtonAnalyze_clicked()
 {
-    toLog("Нажата кнопка pushButtonAnalyze - анализ данных инвойса");
-    items = converter.getItemsForTxt(currentTab);
-    if(items.empty())
-    {
-        QMessageBox::critical(this, "", "Не отмечены поля для выборки данных");
-        toLog("Не отмечены поля для выборки данных.");
-    }
-    else
-    {
-        toLog("Анализ данных из инвойса.");
-        Extras::showTable(items, ui->tableWidgetItems);
-        ui->tableWidgetItems->setHorizontalHeaderLabels(QStringList() << "Ctn num" << "Name" << "Qty");
-        ui->tableWidgetItems->verticalHeader()->setVisible(false);
-        bool setColor = false;
-
-        for(size_t i = 0; i < items.size(); i++)
-        {
-            if(i != 0 && items[i][0] != items[i - 1][0])
-            {
-                setColor = !setColor;
-            }
-
-            if(setColor)
-            {
-                for(size_t j = 0; j < items[i].size(); j++)
-                {
-                    QTableWidgetItem* item = ui->tableWidgetItems->item(i, j);
-                    item->setBackgroundColor(Qt::lightGray);
-                }
-            }
-        }
-
-        setDisplayType(TXT);
-
-        ui->widgetItemsInfo->show();
-        toLog("Вывод данных о товарах в таблицу.");
-
-        ui->tableWidgetItems->horizontalHeader()->setStretchLastSection(true);
-
-        ui->labelItemsNum->setText(QString::number(converter.getItemsPosQty()));
-        ui->labelCtnsNum->setText(QString::number(converter.getCtnsQty()));
-        ui->labelOverallItems->setText(QString::number(converter.getItemsQty()));
-    }
+    invoiceAnalize();
 }
 
 void txtFiles::on_pushButtonItemCol_clicked()
 {
-    int col = ui->tableWidget_1->selectionModel()->currentIndex().column();
-
-    toLog("Выбрана колонка итемов: " + QString::number(col));
-
-    converter.invoiceSheetSettings[currentTab].itemCol = col;
-    ui->labelItemCol->setText(QString::fromStdString(Extras::IntToSymbol(col)));
-
+    invoiceItemCol();
 }
 
 
 void txtFiles::on_pushButtonQrCol_clicked()
 {
-    if(converter.qrXls.size() > 0)
-    {
-        // Взять данные из выбранной ячейки
-        int col = ui->tableWidget_1->selectionModel()->currentIndex().column();
-        // Взять данные из выбранной ячейки
-
-        converter.qrSheetSettings[currentTabQr].qrCol = col;
-        ui->labelQrCol->setText(QString::fromStdString(Extras::IntToSymbol(col)));
-        toLog("Выбрана колонка QR кодов: " + QString::number(col));
-    }
-    else
-    {
-        QMessageBox::information(this, "!?", "Файл не открыт или отображается недопустимая для этого действия таблица");
-        toLog("Файл не открыт или отображается недопустимая для этого действия таблица");
-    }
+    qrQrCol();
 }
 
 void txtFiles::on_pushButtonQrItemCol_clicked()
 {
-    if(converter.qrXls.size() > 0)
-    {
-        // Взять данные из выбранной ячейки
-        int col = ui->tableWidget_1->selectionModel()->currentIndex().column();
-        // Взять данные из выбранной ячейки
-
-        converter.qrSheetSettings[currentTabQr].itemCol = col;
-        ui->labelQrItemCol->setText(QString::fromStdString(Extras::IntToSymbol(col)));
-        toLog("Выбрана колонка итемов для сопоставления QR кодов: " + QString::number(col));
-    }
-    else
-    {
-        QMessageBox::information(this, "!?", "Файл не открыт или отображается недопустимая для этого действия таблица");
-        toLog("Файл не открыт или отображается недопустимая для этого действия таблица");
-    }
+    qrItemCol();
 }
 
 void txtFiles::on_pushButtonQrAnalyze_clicked()
 {
-    toLog("Нажата кнопка: pushButtonQrAnalyze - анализ данных в таблице QR кодов.");
-    if(converter.haveQrSettings(currentTabQr))
-    {
-        converter.qrAnalyze(currentTabQr);
-        toLog("Анализ завершён.");
-
-        showDocs();
-        ui->widgetQrButtons->hide();
-    }
-    else
-    {
-        if(converter.qrSheetSettings[currentTabQr].itemCol <= -1)
-            QMessageBox::information(this, "!", "Не выбрана калонка Item!");
-        else
-            QMessageBox::information(this, "!", "Не выбрана колонка QR");
-
-        toLog("Не выбраны данные для анализа.");
-    }
-    toLog("\n");
+    qrAnalize();
 }
 
 void txtFiles::on_pushButtonHelp_clicked()
@@ -947,4 +874,236 @@ void txtFiles::markItemsTable()
             }
         }
     }
+}
+
+void txtFiles::createInvMenu()
+{
+    invMenu = new QMenu();
+    invMenu->addAction(ui->actionItemQtyFirstCell);
+    invMenu->addAction(ui->actionItemQtyLastCell);
+    invMenu->addAction(ui->actionInvQtyRange);
+    invMenu->addSeparator();
+    invMenu->addAction(ui->actionInvItemNameCol);
+    invMenu->addSeparator();
+    invMenu->addAction(ui->actionInvAnalize);
+}
+
+void txtFiles::createQrMenu()
+{
+    qrMenu = new QMenu();
+    qrMenu->addAction(ui->actionQrItemCol);
+    qrMenu->addAction(ui->actionQrQrCol);
+    qrMenu->addSeparator();
+    qrMenu->addAction(ui->actionQrAnalize);
+}
+
+void txtFiles::invoiceFirstCell()
+{
+    if(converter.invoiceXls.size() > 0)
+    {
+        // Взять данные из выбранной ячейки
+        int col = ui->tableWidget_1->selectionModel()->currentIndex().column();
+        int row = ui->tableWidget_1->selectionModel()->currentIndex().row();
+        // Взять данные из выбранной ячейки
+
+        converter.invoiceSheetSettings[currentTab].qtyCol = col;
+        converter.invoiceSheetSettings[currentTab].startRow = row;
+
+        ui->labelInvCol->setText(QString::fromStdString(Extras::IntToSymbol(col)));
+        ui->labelRowFirst->setText(QString::number(row + 1));
+        toLog("Выбрана первая ячейка количества.\n   Колонка: " + QString::number(col) + " Строка: " + QString::number(row));
+    }
+}
+
+void txtFiles::invoiceLastCell()
+{
+    if(converter.invoiceXls.size() > 0)
+    {
+        // Взять данные из выбранной ячейки
+        int row = ui->tableWidget_1->selectionModel()->currentIndex().row();
+        // Взять данные из выбранной ячейки
+
+        converter.invoiceSheetSettings[currentTab].stopRow = row;
+        ui->labelRowEnd->setText(QString::number(row + 1));
+        toLog("Выбрана последняя ячейка количества\n   Строка: " + QString::number(row));
+    }
+}
+
+void txtFiles::invoiceRangeCell()
+{
+    QModelIndexList indexes = ui->tableWidget_1->selectionModel()->selectedIndexes();
+    toLog("Выбран диапазон ячеек: ");
+
+    // данные первого значения диапазона
+    int col = indexes[0].column();
+    int firstRow = indexes[0].row();
+    int lastRow = indexes[indexes.size() - 1].row();
+
+    // данные последнего значения диапазона
+
+
+    converter.invoiceSheetSettings[currentTab].qtyCol = col;
+    converter.invoiceSheetSettings[currentTab].startRow = firstRow;
+    converter.invoiceSheetSettings[currentTab].stopRow = lastRow;
+
+    ui->labelInvCol->setText(QString::fromStdString(Extras::IntToSymbol(col)));
+    ui->labelRowFirst->setText(QString::number(firstRow + 1));
+    ui->labelRowEnd->setText(QString::number(lastRow + 1));
+}
+
+void txtFiles::invoiceItemCol()
+{
+    int col = ui->tableWidget_1->selectionModel()->currentIndex().column();
+
+    toLog("Выбрана колонка итемов: " + QString::number(col));
+    converter.invoiceSheetSettings[currentTab].itemCol = col;
+    ui->labelItemCol->setText(QString::fromStdString(Extras::IntToSymbol(col)));
+}
+
+void txtFiles::invoiceAnalize()
+{
+    toLog("Нажата кнопка pushButtonAnalyze - анализ данных инвойса");
+    items = converter.getItemsForTxt(currentTab);
+    if(items.empty())
+    {
+        QMessageBox::critical(this, "", "Не отмечены поля для выборки данных");
+        toLog("Не отмечены поля для выборки данных.");
+    }
+    else
+    {
+        toLog("Анализ данных из инвойса.");
+        Extras::showTable(items, ui->tableWidgetItems);
+        ui->tableWidgetItems->setHorizontalHeaderLabels(QStringList() << "Ctn num" << "Name" << "Qty");
+        ui->tableWidgetItems->verticalHeader()->setVisible(false);
+        bool setColor = false;
+
+        for(size_t i = 0; i < items.size(); i++)
+        {
+            if(i != 0 && items[i][0] != items[i - 1][0])
+            {
+                setColor = !setColor;
+            }
+
+            if(setColor)
+            {
+                for(size_t j = 0; j < items[i].size(); j++)
+                {
+                    QTableWidgetItem* item = ui->tableWidgetItems->item(i, j);
+                    item->setBackgroundColor(Qt::lightGray);
+                }
+            }
+        }
+
+        setDisplayType(TXT);
+
+        ui->widgetItemsInfo->show();
+        toLog("Вывод данных о товарах в таблицу.");
+
+        ui->tableWidgetItems->horizontalHeader()->setStretchLastSection(true);
+
+        ui->labelItemsNum->setText(QString::number(converter.getItemsPosQty()));
+        ui->labelCtnsNum->setText(QString::number(converter.getCtnsQty()));
+        ui->labelOverallItems->setText(QString::number(converter.getItemsQty()));
+    }
+}
+
+void txtFiles::qrQrCol()
+{
+    if(converter.qrXls.size() > 0)
+    {
+        // Взять данные из выбранной ячейки
+        int col = ui->tableWidget_1->selectionModel()->currentIndex().column();
+        // Взять данные из выбранной ячейки
+
+        converter.qrSheetSettings[currentTabQr].qrCol = col;
+        ui->labelQrCol->setText(QString::fromStdString(Extras::IntToSymbol(col)));
+        toLog("Выбрана колонка QR кодов: " + QString::number(col));
+    }
+    else
+    {
+        QMessageBox::information(this, "!?", "Файл не открыт или отображается недопустимая для этого действия таблица");
+        toLog("Файл не открыт или отображается недопустимая для этого действия таблица");
+    }
+}
+
+void txtFiles::qrItemCol()
+{
+    if(converter.qrXls.size() > 0)
+    {
+        // Взять данные из выбранной ячейки
+        int col = ui->tableWidget_1->selectionModel()->currentIndex().column();
+        // Взять данные из выбранной ячейки
+
+        converter.qrSheetSettings[currentTabQr].itemCol = col;
+        ui->labelQrItemCol->setText(QString::fromStdString(Extras::IntToSymbol(col)));
+        toLog("Выбрана колонка итемов для сопоставления QR кодов: " + QString::number(col));
+    }
+    else
+    {
+        QMessageBox::information(this, "!?", "Файл не открыт или отображается недопустимая для этого действия таблица");
+        toLog("Файл не открыт или отображается недопустимая для этого действия таблица");
+    }
+}
+
+void txtFiles::qrAnalize()
+{
+    toLog("Нажата кнопка: pushButtonQrAnalyze - анализ данных в таблице QR кодов.");
+    if(converter.haveQrSettings(currentTabQr))
+    {
+        converter.qrAnalyze(currentTabQr);
+        toLog("Анализ завершён.");
+
+        showDocs();
+        ui->widgetQrButtons->hide();
+    }
+    else
+    {
+        if(converter.qrSheetSettings[currentTabQr].itemCol <= -1)
+            QMessageBox::information(this, "!", "Не выбрана калонка Item!");
+        else
+            QMessageBox::information(this, "!", "Не выбрана колонка QR");
+
+        toLog("Не выбраны данные для анализа.");
+    }
+    toLog("\n");
+}
+
+void txtFiles::on_actionItemQtyFirstCell_triggered()
+{
+    invoiceFirstCell();
+}
+
+void txtFiles::on_actionItemQtyLastCell_triggered()
+{
+    invoiceLastCell();
+}
+
+void txtFiles::on_actionInvQtyRange_triggered()
+{
+    invoiceRangeCell();
+}
+
+void txtFiles::on_actionInvAnalize_triggered()
+{
+    invoiceAnalize();
+}
+
+void txtFiles::on_actionInvItemNameCol_triggered()
+{
+    invoiceItemCol();
+}
+
+void txtFiles::on_actionQrQrCol_triggered()
+{
+    qrQrCol();
+}
+
+void txtFiles::on_actionQrItemCol_triggered()
+{
+    qrItemCol();
+}
+
+void txtFiles::on_actionQrAnalize_triggered()
+{
+    qrAnalize();
 }

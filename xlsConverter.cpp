@@ -7,15 +7,33 @@ xlsConverter::xlsConverter()
 
 }
 
-void xlsConverter::readXls(std::wstring path, QVector<QVector<QVector<QString>>> &tempXls, QVector<QString> &sheetNames)
+void xlsConverter::readXls(std::wstring path, QVector<QVector<QVector<QString>>> &tempXls, QVector<QString> &sheetNames, DocType type)
 {
+    //    QVector<QVector<QVector<CellSettings>>> *cellSettings = nullptr;
+
+    //    switch (type) {
+    //    case TypeINV:
+    //        qDebug() << "Case INV";
+    //        cellSettings = &invCellSettings;
+    //        break;
+    //    case TypeQR:
+    //        qDebug() << "Case QR";
+    //        cellSettings = &qrCellSettings;
+    //        break;
+    //    case NONE:
+    //        break;
+    //    }
+
     BasicExcel xls;
 
     xls.Load(&(path[0]));
 
     tempXls.resize(xls.GetTotalWorkSheets());
+
     for(int tab = 0; tab < xls.GetTotalWorkSheets(); tab++)
     {
+        int maxCol = 0;
+        QVector<QVector<CellSettings>> pageSettings;
         BasicExcelWorksheet* sheet = xls.GetWorksheet(tab); // получение нужной страницы из файла
 
         wchar_t* wName;
@@ -28,9 +46,9 @@ void xlsConverter::readXls(std::wstring path, QVector<QVector<QVector<QString>>>
 
         if(xls.GetUnicodeSheetName(tab) == NULL)
         {
-             std::string tempName = xls.GetAnsiSheetName(tab);
+            std::string tempName = xls.GetAnsiSheetName(tab);
 
-             qTempName = QString::fromStdString(tempName);
+            qTempName = QString::fromStdString(tempName);
         }
         else
         {
@@ -42,43 +60,100 @@ void xlsConverter::readXls(std::wstring path, QVector<QVector<QVector<QString>>>
         sheetNames.push_back(qTempName);
 
         tempXls[tab].resize(sheet->GetTotalRows());
+        pageSettings.resize(sheet->GetTotalRows());
+
         for(int row = 0; row < sheet->GetTotalRows(); row++)
         {
             tempXls[tab][row].resize(sheet->GetTotalCols());
+            pageSettings[row].resize(sheet->GetTotalCols());
+            if(maxCol < sheet->GetTotalCols())
+            {
+                maxCol = sheet->GetTotalCols();
+            }
+
             for(int col = 0; col < sheet->GetTotalCols(); col++)
             {
                 if(sheet->Cell(row, col)->GetWString() != NULL)
                 {
-                    tempXls[tab][row][col] = QString::fromStdWString(sheet->Cell(row, col)->GetWString());
+                        tempXls[tab][row][col] = QString::fromStdWString(sheet->Cell(row, col)->GetWString());
                 }
                 else if(sheet->Cell(row, col)->GetString() != NULL)
                 {
-                    tempXls[tab][row][col] = sheet->Cell(row, col)->GetString();
+                        tempXls[tab][row][col] = sheet->Cell(row, col)->GetString();
                 }
                 else if(sheet->Cell(row, col)->GetDouble() != NULL)
                 {
-                    double cellData = sheet->Cell(row, col)->GetDouble();
-                    double integer;
-                    double fractial = std::modf(cellData, &integer);
+                        double cellData = sheet->Cell(row, col)->GetDouble();
+                        double integer;
+                        double fractial = std::modf(cellData, &integer);
 
-                    if(fractial == 0)
-                    {
-                        tempXls[tab][row][col] = QString::number(integer, 'f', 0);
-                    }
-                    else
-                    {
-                        tempXls[tab][row][col] = QString::number(sheet->Cell(row, col)->GetDouble(), 'f', 2);
-                    }
+                        if(fractial == 0)
+                        {
+                            tempXls[tab][row][col] = QString::number(integer, 'f', 0);
+                        }
+                        else
+                        {
+                            tempXls[tab][row][col] = QString::number(sheet->Cell(row, col)->GetDouble(), 'f', 2);
+                        }
                 }
                 else if(sheet->Cell(row, col)->GetInteger() != NULL)
                 {
-                    tempXls[tab][row][col] = QString::number(sheet->Cell(row, col)->GetInteger());
+                        tempXls[tab][row][col] = QString::number(sheet->Cell(row, col)->GetInteger());
                 }
                 else
                 {
-                    std::stringstream tempStream;
-                    tempXls[tab][row][col] = QString::fromStdString(tempStream.str());
+                        std::stringstream tempStream;
+                        tempXls[tab][row][col] = QString::fromStdString(tempStream.str());
                 }
+
+                if(sheet->Cell(row, col)->GetMergedRows() > 0 && sheet->Cell(row, col)->GetMergedRows() < pageSettings.size())
+                {
+                        pageSettings[row][col].mergedRows = sheet->Cell(row, col)->GetMergedRows();
+                }
+                else
+                {
+                        pageSettings[row][col].mergedRows = 0;
+                }
+
+                if(sheet->Cell(row, col)->GetMergedColumns() > 0 && sheet->Cell(row, col)->GetMergedColumns() < maxCol)
+                {
+                        pageSettings[row][col].mergedCols = sheet->Cell(row, col)->GetMergedColumns();
+                }
+                else
+                {
+                        pageSettings[row][col].mergedCols = 0;
+                }
+
+                sheet->Cell(row, col)->GetXFormatIdx();
+
+                qDebug() << "sheet->Cell(row, col)->GetMergedColumns() - " << sheet->Cell(row, col)->GetMergedColumns();
+                qDebug() << "sheet->Cell(row, col)->GetMergedRows(); - " << sheet->Cell(row, col)->GetMergedRows();
+                qDebug() << "pageSettings[row][col].mergedRows - " << pageSettings[row][col].mergedRows;
+                qDebug() << "pageSettings[row][col].mergedCols - " << pageSettings[row][col].mergedCols;
+                //                         << "sheet->Cell(row, col)->GetXFormatIdx() - " << sheet->Cell(row, col)->GetXFormatIdx(); //
+            }
+        }
+
+        switch (type) {
+        case TypeINV:
+            qDebug() << "Case INV";
+            invCellSettings.push_back(pageSettings);
+            break;
+        case TypeQR:
+            qDebug() << "Case QR";
+            qrCellSettings.push_back(pageSettings);
+            break;
+        case NONE:
+            break;
+        }
+
+        qDebug() << "---=== Вывод pageSettings - pageSettings.size(): " << pageSettings.size();
+        for(int row = 0; row < pageSettings.size(); row++)
+        {
+            qDebug() << " pageSettings[row].size(): " << pageSettings[row].size();
+            for(int col = 0; col < pageSettings[row].size(); col++)
+            {
+                qDebug() << "row: " << row << " col: " << col << " связано строк:" << pageSettings[row][col].mergedRows << "Связано столбцов: " << pageSettings[row][col].mergedCols;
             }
         }
     }
@@ -791,4 +866,34 @@ int xlsConverter::redoResult()
     int undoItem = undoItems.back();
     undoItems.pop_back();
     return undoItem;
+}
+
+CellSettings xlsConverter::getInvCellSettings(int page, int row, int col)
+{
+    return invCellSettings[page][row][col];
+}
+
+CellSettings xlsConverter::getQrCellSettings(int page, int row, int col)
+{
+    return qrCellSettings[page][row][col];
+}
+
+QVector<QVector<CellSettings> > xlsConverter::getInvPageCellsSettings(int page)
+{
+    return invCellSettings[page];
+}
+
+bool xlsConverter::haveInvCellsSettings()
+{
+    return !invCellSettings.isEmpty();
+}
+
+QVector<QVector<CellSettings> > xlsConverter::getQrPageCellsSettings(int page)
+{
+    return qrCellSettings[page];
+}
+
+bool xlsConverter::haveQrCellsSettings()
+{
+    return !qrCellSettings.isEmpty();
 }

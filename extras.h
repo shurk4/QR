@@ -1,10 +1,18 @@
 #ifndef EXTRAS_H
 #define EXTRAS_H
+#pragma once
 
 #include <QObject>
 #include <QWidget>
 #include <QTableWidget>
 #include <QRegExp>
+#include <QDebug>
+
+struct CellSettings
+{
+    int mergedRows = 0;
+    int mergedCols = 0;
+};
 
 class Extras
 {
@@ -14,6 +22,8 @@ public:
     static QVector<QVector<QString>> toQvecConvert(std::vector<std::vector<std::string>> const &data);
 
     static void showTable(const QVector<QVector<QString>> &data, QTableWidget *table);
+    static void setTableSettings(QVector<QVector<CellSettings>> settings, QTableWidget *table);
+
     static void scaleTable(const int size, QTableWidget *table);
 
     static std::string IntToSymbol(const int in);
