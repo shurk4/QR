@@ -9,6 +9,7 @@
 #include <QDir>
 #include <QSettings>
 #include <QMenu>
+#include <QPainter>
 
 #include "xlsConverter.h"
 #include "extras.h"
@@ -77,7 +78,6 @@ private slots:
     void on_pushButtonHelp_clicked();
     void on_pushButtonAuto_clicked();
     void on_pushButtonClearAll_clicked();
-    void on_pushButtonShowResult_clicked();
     void on_pushButtonClearFiles_clicked();
     void on_pushButtonClearItems_clicked();
     void on_pushButtonCancelUndoResult_clicked();
@@ -104,6 +104,8 @@ public slots:
 
 private:
     Ui::txtFiles *ui;
+
+    void setStyle();
 
     UserConfig *config;
     help *helpWindow;
@@ -135,6 +137,8 @@ private:
     void createQrMenu();
 
     // Действия
+    void showResult();
+
     // invoice
     void invoiceFirstCell();
     void invoiceLastCell();
@@ -149,6 +153,10 @@ private:
 
 signals:
     void log(QString);
+
+    // QWidget interface
+protected:
+    void paintEvent(QPaintEvent *event);
 };
 
 #endif // TXTFILES_H

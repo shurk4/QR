@@ -14,6 +14,10 @@ txtFiles::txtFiles(QWidget *parent) :
     this->setWindowFlags(windowFlags() | Qt::WindowMinimizeButtonHint
                          | Qt::WindowMaximizeButtonHint
                          | Qt::WindowSystemMenuHint);
+
+    this->styleSheet().clear();
+    setStyle();
+
     readConfig();
     ui->splitter->setStretchFactor(0, 1); // столбец с ид 0 занимает всё доступное простанство
     readReg();
@@ -32,6 +36,26 @@ txtFiles::txtFiles(QWidget *parent) :
     connect(ui->tableWidget_1, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
     createInvMenu();
     createQrMenu();
+}
+
+void txtFiles::setStyle()
+{
+    qDebug("setStyle");
+    QFile styleF;
+    styleF.setFileName("://res/txtStyle.css");
+
+    if(styleF.open(QFile::ReadOnly))
+    {
+        QString qssStr = styleF.readAll();
+        this->setStyleSheet(qssStr);
+        styleF.close();
+        qDebug("Стили установлены");
+    }
+    else qDebug("Не удалось открыть файл стилей");
+
+        ui->tableWidget_1->verticalHeader()->setDefaultAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+        ui->tableWidget_1->horizontalHeader()->setDefaultAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+        ui->tableWidget_1-> setAlternatingRowColors(true);
 }
 
 txtFiles::~txtFiles()
@@ -755,13 +779,6 @@ void txtFiles::on_pushButtonClearAll_clicked()
     ui->widgetAddItems->hide();
 }
 
-void txtFiles::on_pushButtonShowResult_clicked()
-{
-    toLog("Нажата кнопка pushButtonShowResult - отобразить результат.");
-    if(converter.resultEmpty()) QMessageBox::information(this, "", "Таблица результатов пуста!");
-    showTable_1(converter.result);
-}
-
 void txtFiles::on_pushButtonClearFiles_clicked()
 {
     toLog("Нажата кнопка pushButtonClearFiles - очистка выборки QR кодов");
@@ -797,7 +814,7 @@ void txtFiles::on_pushButtonCancelUndoResult_clicked()
         ui->labelResultItems->setText(QString::number(ui->labelResultItems->text().toInt() - 1));
         ui->labelResultCodes->setText(QString::number(ui->labelResultCodes->text().toInt() - converter.getQrQtyInItem(currentDoc)));
         showDocs();
-        if(itemNum > 0) on_pushButtonShowResult_clicked();
+        if(itemNum > 0) showResult();
     }
 }
 
@@ -827,7 +844,7 @@ void txtFiles::on_pushButtonClearResult_clicked()
     ui->labelResultCodes->clear();
     ui->labelResultItems->clear();
     showDocs();
-    on_pushButtonShowResult_clicked();
+    showResult();
 }
 
 void txtFiles::on_pushButtonMergeFiles_clicked()
@@ -897,6 +914,13 @@ void txtFiles::createQrMenu()
     qrMenu->addAction(ui->actionQrAnalize);
 }
 
+void txtFiles::showResult()
+{
+    toLog("Отображение результата.");
+    if(converter.resultEmpty()) QMessageBox::information(this, "", "Таблица результатов пуста!");
+    showTable_1(converter.result);
+}
+
 void txtFiles::invoiceFirstCell()
 {
     if(converter.invoiceXls.size() > 0)
@@ -909,8 +933,9 @@ void txtFiles::invoiceFirstCell()
         converter.invoiceSheetSettings[currentTab].qtyCol = col;
         converter.invoiceSheetSettings[currentTab].startRow = row;
 
-        ui->labelInvCol->setText(QString::fromStdString(Extras::IntToSymbol(col)));
-        ui->labelRowFirst->setText(QString::number(row + 1));
+        ui->labelInvCol->setText("Диапазон кол-ва Кол: " + QString::fromStdString(Extras::IntToSymbol(col)));
+//        ui->labelRowFirst->setText(QString::number(row + 1));
+        ui->pushButtonFirstCell->setText("Первая - " + QString::number(row + 1));
         toLog("Выбрана первая ячейка количества.\n   Колонка: " + QString::number(col) + " Строка: " + QString::number(row));
     }
 }
@@ -924,7 +949,8 @@ void txtFiles::invoiceLastCell()
         // Взять данные из выбранной ячейки
 
         converter.invoiceSheetSettings[currentTab].stopRow = row;
-        ui->labelRowEnd->setText(QString::number(row + 1));
+//        ui->labelRowEnd->setText(QString::number(row + 1));
+        ui->pushButtonLastCell->setText("Последняя - " + QString::number(row + 1));
         toLog("Выбрана последняя ячейка количества\n   Строка: " + QString::number(row));
     }
 }
@@ -946,9 +972,11 @@ void txtFiles::invoiceRangeCell()
     converter.invoiceSheetSettings[currentTab].startRow = firstRow;
     converter.invoiceSheetSettings[currentTab].stopRow = lastRow;
 
-    ui->labelInvCol->setText(QString::fromStdString(Extras::IntToSymbol(col)));
-    ui->labelRowFirst->setText(QString::number(firstRow + 1));
-    ui->labelRowEnd->setText(QString::number(lastRow + 1));
+    ui->labelInvCol->setText("Диапазон кол-ва Кол: " + QString::fromStdString(Extras::IntToSymbol(col)));
+    ui->pushButtonFirstCell->setText("Первая - " + QString::number(firstRow + 1));
+//    ui->labelRowFirst->setText(QString::number(firstRow + 1));
+    ui->pushButtonLastCell->setText("Последняя - " + QString::number(lastRow + 1));
+//    ui->labelRowEnd->setText(QString::number(lastRow + 1));
 }
 
 void txtFiles::invoiceItemCol()
@@ -957,7 +985,8 @@ void txtFiles::invoiceItemCol()
 
     toLog("Выбрана колонка итемов: " + QString::number(col));
     converter.invoiceSheetSettings[currentTab].itemCol = col;
-    ui->labelItemCol->setText(QString::fromStdString(Extras::IntToSymbol(col)));
+//    ui->labelItemCol->setText(QString::fromStdString(Extras::IntToSymbol(col)));
+    ui->pushButtonItemCol->setText("Колонка итем - " + QString::number(col));
 }
 
 void txtFiles::invoiceAnalize()
@@ -989,7 +1018,7 @@ void txtFiles::invoiceAnalize()
                 for(size_t j = 0; j < items[i].size(); j++)
                 {
                     QTableWidgetItem* item = ui->tableWidgetItems->item(i, j);
-                    item->setBackgroundColor(Qt::lightGray);
+                    item->setBackgroundColor("#e0ecff");
                 }
             }
         }
@@ -1066,6 +1095,14 @@ void txtFiles::qrAnalize()
         toLog("Не выбраны данные для анализа.");
     }
     toLog("\n");
+}
+
+void txtFiles::paintEvent(QPaintEvent *event)
+{
+    QStyleOption opt;
+    opt.initFrom(this);
+    QPainter p(this);
+    style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }
 
 void txtFiles::on_actionItemQtyFirstCell_triggered()

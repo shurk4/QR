@@ -10,17 +10,22 @@ MainWindow::MainWindow(QWidget *parent) :
     Version versionCurrent(config.getDestPath() + "/.ver");
     Version versionSource(config.getSourcePath() + "/.ver");
 
-    if(versionCurrent.getVersion() < versionSource.getVersion())
-    {
-         ui->labelVersion->setText("Текущая версия: " + versionCurrent.getVersion() + "\n Доступна версия: " + versionSource.getVersion());
-    }
-    else
-    {
-        ui->labelVersion->hide();
-        ui->pushButton_3->hide();
-    }
+    // показать окно версии
+    ui->labelVersion->setText("Текущая версия: " + versionCurrent.getVersion() + "\n Доступна версия: " + versionSource.getVersion());
+//    if(versionCurrent.getVersion() < versionSource.getVersion())
+//    {
+//        ui->labelVersion->setText("Текущая версия: " + versionCurrent.getVersion() + "\n Доступна версия: " + versionSource.getVersion());
+//    }
+//    else
+//    {
+//        ui->widgetUpdate->hide();
+//    }
+
+    this->setWindowFlags(Qt::FramelessWindowHint); // Убрать рамку
+    this->setAttribute(Qt::WA_TranslucentBackground);
 
     optimizeLogs();
+    setStyle();
 }
 
 MainWindow::~MainWindow()
@@ -30,7 +35,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::log(QString _log)
 {
-    if(ui->checkBoxLog->isChecked())
+    if(ui->pushButtonLog->isChecked())
     {
         QFile logFile(logFileName);
         if(logFile.open(QIODevice::Append | QIODevice::Text))
@@ -77,7 +82,7 @@ void MainWindow::on_pushButtonStartBasic_clicked()
     qrDiag->exec();
 }
 
-void MainWindow::on_pushButton_clicked()
+void MainWindow::on_pushButtonStartTxt_clicked()
 {
     hide();
     txtFiles* textFiles = new txtFiles;
@@ -85,14 +90,14 @@ void MainWindow::on_pushButton_clicked()
     textFiles->exec();
 }
 
-void MainWindow::on_pushButton_2_clicked()
+void MainWindow::on_pushButtonCont_clicked()
 {
     hide();
     containers* ctnWindow = new containers;
     ctnWindow->exec();
 }
 
-void MainWindow::on_pushButton_3_clicked()
+void MainWindow::on_pushButtonUpdate_clicked()
 {
     QString updater = "./updater/updater.exe"; // Путь к программе
         QProcess::startDetached(updater);
@@ -109,9 +114,23 @@ void MainWindow::on_pushButtonExit_clicked()
     QCoreApplication::quit();
 }
 
-void MainWindow::on_checkBoxLog_stateChanged(int arg1)
+void MainWindow::setStyle()
 {
-    if(arg1)
+    QFile styleF;
+    styleF.setFileName("://res/style.css");
+    if(styleF.open(QFile::ReadOnly))
+    {
+        QString qssStr = styleF.readAll();
+        this->setStyleSheet(qssStr);
+        styleF.close();
+        qDebug("Стили установлены");
+    }
+    else qDebug("Не удалось открыть файл стилей");
+}
+
+void MainWindow::on_pushButtonLog_clicked()
+{
+    if(ui->pushButtonLog->isChecked())
     {
         logFileName = "./Logs/" + QDateTime::currentDateTime().toString("yy_MM_dd_hhmmss") + ".txt";
         qDebug() << "Log file name: " << logFileName;

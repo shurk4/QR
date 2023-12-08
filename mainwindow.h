@@ -33,13 +33,13 @@ private slots:
 
     void on_pushButtonExit_clicked();
 
-    void on_pushButton_clicked();
+    void on_pushButtonStartTxt_clicked();
 
-    void on_pushButton_2_clicked();
+    void on_pushButtonCont_clicked();
 
-    void on_pushButton_3_clicked();
+    void on_pushButtonUpdate_clicked();
 
-    void on_checkBoxLog_stateChanged(int arg1);
+    void on_pushButtonLog_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -49,6 +49,8 @@ private:
     QString sourseVer;
 
     QString logFileName;
+
+    void setStyle();
 
 public slots:
     void logs(QString _log);

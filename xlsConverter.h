@@ -156,6 +156,8 @@ public:
     QVector<QVector<CellSettings>> getQrPageCellsSettings(int page);
     bool haveQrCellsSettings();
 
+    void removeItem(int i);
+
     // Новые методы
 
     // подготовка к переносу в приват

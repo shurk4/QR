@@ -126,10 +126,10 @@ void xlsConverter::readXls(std::wstring path, QVector<QVector<QVector<QString>>>
 
                 sheet->Cell(row, col)->GetXFormatIdx();
 
-                qDebug() << "sheet->Cell(row, col)->GetMergedColumns() - " << sheet->Cell(row, col)->GetMergedColumns();
-                qDebug() << "sheet->Cell(row, col)->GetMergedRows(); - " << sheet->Cell(row, col)->GetMergedRows();
-                qDebug() << "pageSettings[row][col].mergedRows - " << pageSettings[row][col].mergedRows;
-                qDebug() << "pageSettings[row][col].mergedCols - " << pageSettings[row][col].mergedCols;
+//                qDebug() << "sheet->Cell(row, col)->GetMergedColumns() - " << sheet->Cell(row, col)->GetMergedColumns();
+//                qDebug() << "sheet->Cell(row, col)->GetMergedRows(); - " << sheet->Cell(row, col)->GetMergedRows();
+//                qDebug() << "pageSettings[row][col].mergedRows - " << pageSettings[row][col].mergedRows;
+//                qDebug() << "pageSettings[row][col].mergedCols - " << pageSettings[row][col].mergedCols;
                 //                         << "sheet->Cell(row, col)->GetXFormatIdx() - " << sheet->Cell(row, col)->GetXFormatIdx(); //
             }
         }
@@ -147,15 +147,15 @@ void xlsConverter::readXls(std::wstring path, QVector<QVector<QVector<QString>>>
             break;
         }
 
-        qDebug() << "---=== Вывод pageSettings - pageSettings.size(): " << pageSettings.size();
-        for(int row = 0; row < pageSettings.size(); row++)
-        {
-            qDebug() << " pageSettings[row].size(): " << pageSettings[row].size();
-            for(int col = 0; col < pageSettings[row].size(); col++)
-            {
-                qDebug() << "row: " << row << " col: " << col << " связано строк:" << pageSettings[row][col].mergedRows << "Связано столбцов: " << pageSettings[row][col].mergedCols;
-            }
-        }
+//        qDebug() << "---=== Вывод pageSettings - pageSettings.size(): " << pageSettings.size();
+//        for(int row = 0; row < pageSettings.size(); row++)
+//        {
+//            qDebug() << " pageSettings[row].size(): " << pageSettings[row].size();
+//            for(int col = 0; col < pageSettings[row].size(); col++)
+//            {
+//                qDebug() << "row: " << row << " col: " << col << " связано строк:" << pageSettings[row][col].mergedRows << "Связано столбцов: " << pageSettings[row][col].mergedCols;
+//            }
+//        }
     }
 }
 
@@ -896,4 +896,11 @@ QVector<QVector<CellSettings> > xlsConverter::getQrPageCellsSettings(int page)
 bool xlsConverter::haveQrCellsSettings()
 {
     return !qrCellSettings.isEmpty();
+}
+
+void xlsConverter::removeItem(int i)
+{
+    qDebug() << "xlsConverter::removeItem";
+    qrInfo.remove(i);
+    qrCodes.remove(i);
 }

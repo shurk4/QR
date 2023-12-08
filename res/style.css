@@ -1,0 +1,61 @@
+#MainWindow QPushButton
+{
+    background-color: #D8D8E7;
+    border: none;
+}
+
+#MainWindow QPushButton:hover
+{
+    background-color: #C8BAC2;
+}
+
+#MainWindow QPushButton:pressed
+{
+    background-color: #D8D8E7;
+    border: 3px inset #9892A1;
+}
+
+#pushButtonStartBasic
+{
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+#pushButtonExit
+{
+    border-bottom-right-radius: 20px;
+    padding-right: 70px;
+}
+
+#pushButtonLog
+{
+    border-bottom-left-radius : 20px;
+    background-image: url("://res/log30x30_black.png");
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+#pushButtonLog:checked
+{
+    background-color: #C8BAC2;
+    background-image: url("://res/log30x30_white.png");
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+#MainWindow #widgetUpdate
+{
+    background-color: red;
+    border-radius: 20px;
+}
+
+#MainWindow #widgetUpdate QLabel
+{
+    color: white;
+    padding-right: 5px;
+}
+
+#MainWindow #widgetUpdate QPushButton
+{
+    border-radius: 10px;
+}

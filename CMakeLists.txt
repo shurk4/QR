@@ -65,6 +65,7 @@ add_executable(QR WIN32 main.cpp
     dialog.h
     dialog.cpp
     dialog.ui
+    res.qrc
 )
 
 target_link_libraries(QR
