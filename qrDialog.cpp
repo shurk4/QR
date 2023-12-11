@@ -21,6 +21,11 @@ qrDialog::qrDialog(QWidget *parent) :
     ui->lineEditQRLenght->setValidator(new QIntValidator(0, 10, this));
 
     helpWindow = new help(this); // Указатель создан в хедере для одновременного использования окон
+
+    setStyle();
+    ui->widgetExtras->hide();
+
+    ui->widgetQr->hide();
 }
 
 qrDialog::~qrDialog()
@@ -30,6 +35,29 @@ qrDialog::~qrDialog()
     delete helpWindow;
     delete config;
     delete ui;
+}
+
+void qrDialog::setStyle()
+{
+    qDebug("setStyle");
+    QFile styleF;
+    styleF.setFileName("://res/basicStyle.css");
+
+    if(styleF.open(QFile::ReadOnly))
+    {
+        QString qssStr = styleF.readAll();
+        this->setStyleSheet(qssStr);
+        styleF.close();
+        qDebug("txtFiles - Стили установлены");
+    }
+    else qDebug("Не удалось открыть файл стилей");
+
+    ui->tableWidget->verticalHeader()->setDefaultAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    ui->tableWidget->horizontalHeader()->setDefaultAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    ui->tableWidget-> setAlternatingRowColors(true);
+    ui->tableWidget_2->verticalHeader()->setDefaultAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    ui->tableWidget_2->horizontalHeader()->setDefaultAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    ui->tableWidget_2-> setAlternatingRowColors(true);
 }
 
 void qrDialog::readReg()
@@ -45,6 +73,7 @@ void qrDialog::writeReg()
     QSettings settings("ShurkSoft", "QR to TKS");
     settings.beginGroup("basic");
     settings.setValue("geometry", saveGeometry());
+    settings.setValue("mainSplitter", ui->splitter->saveState());
     settings.endGroup();
 }
 
@@ -182,63 +211,7 @@ void qrDialog::on_pushButtonLastQty_clicked()
 // Открыть файл
 void qrDialog::on_pushButtonOpenFile_clicked()
 {
-    converter.clearInvoiceData(); // Надо ли делать выборку из нескольких инвойсов
-
-    QString invPathTemp = QFileDialog::getOpenFileName(this, "Выберите файл инвойса", lastPath.absolutePath(), "*.xls *.xlsx");
-    if(invPathTemp.isEmpty())
-    {
-        ui->labelPath->setText("Выберите файл!");
-    }
-    else
-    {
-        lastPath.setPath(QFileInfo(invPathTemp).absolutePath());
-        config->set("lastPath", lastPath.absolutePath());
-
-        QDate date = QDate::currentDate();
-        QTime time = QTime::currentTime();
-        QString ext; // расширение файла
-        bool copySucces = false;
-
-        if(!QDir("temp").exists()) QDir().mkdir("temp"); // Создание папки temp
-
-        // определение разрешения
-        if(invPathTemp.right(4) == "xlsx" || invPathTemp.right(4) == "XLSX")
-        {
-            ext = ".xlsx";
-        }
-        else
-        {
-            ext = ".xls";
-        }
-
-        invoiceFileName = "temp/inv" + date.toString("ddMMyy") + time.toString("hhmm") + ext; // Имя копии файла
-
-        copySucces = QFile::copy(invPathTemp, invoiceFileName);
-
-        if(!copySucces) QMessageBox::information(this, "Открытие файла", "Что-то пошло не так!");
-
-        if(ext == ".xlsx")
-        {
-            std::string path = invoiceFileName.toStdString();
-            converter.readXlsX(path, converter.invoiceXls, converter.invoiceSheetNames);
-        }
-        else
-        {
-            std::wstring path = invoiceFileName.toStdWString();
-            converter.readXls(path, converter.invoiceXls, converter.invoiceSheetNames);
-        }
-
-        ui->labelPath->setText(QFileInfo(invPathTemp).fileName());
-
-        QFile::remove(invoiceFileName);
-
-        // !!! ТАБЛИЦА !!!
-        currentTab = 0;
-        converter.invoiceSheetSettings.resize(converter.invoiceXls.size());
-
-        showTab(converter.invoiceXls[currentTab]);
-        ui->labelTabName1->setText(converter.invoiceSheetNames[currentTab]);
-    }
+    openInv();
 }
 // Открыть файл
 
@@ -249,7 +222,6 @@ void qrDialog::on_pushButtonTabUp_clicked()
     {
         currentTab++;
         showInvoice = true;
-        ui->pushButtonShowInvoice->setText("Товары");
 
         showTab(converter.invoiceXls[currentTab]);        
         ui->labelTabName1->setText(converter.invoiceSheetNames[currentTab]);
@@ -262,7 +234,6 @@ void qrDialog::on_pushButtonTabDown_clicked()
     {
         currentTab--;
         showInvoice = true;
-        ui->pushButtonShowInvoice->setText("Товары");
 
         showTab(converter.invoiceXls[currentTab]);
         ui->labelTabName1->setText(converter.invoiceSheetNames[currentTab]);
@@ -309,27 +280,6 @@ void qrDialog::on_pushButtonResetInvoice_clicked()
 }
 // Сбросить все данные
 
-//Показать Инвойс
-void qrDialog::on_pushButtonShowInvoice_clicked()
-{
-    if(converter.invoiceXls.size() > 0 && converter.getItemsPosQty() > 0)
-    {
-        if(showInvoice)
-        {
-            showInvoice = false;
-            showTab(converter.getInvoiceResult());
-            ui->pushButtonShowInvoice->setText("Инвойс");
-        }
-        else
-        {
-            showInvoice = true;
-            showTab(converter.invoiceXls[currentTab]);
-            ui->pushButtonShowInvoice->setText("Товары");
-        }
-    }
-}
-//Показать Инвойс
-
 // Анализируем данные в инвойс по заданным параметрам
 void qrDialog::on_pushButtonAnalyzeInvoice_clicked()
 {
@@ -337,7 +287,6 @@ void qrDialog::on_pushButtonAnalyzeInvoice_clicked()
 
     ui->labelPositions->setText(QString::number(converter.getItemsPosQty()));
     ui->labelItemsQty->setText(QString::number(converter.getItemsQty()));
-    ui->pushButtonShowInvoice->setText("Инвойс");
     showTab(converter.getInvoiceResult());
     analyzed = true;
 }
@@ -392,7 +341,6 @@ void qrDialog::on_pushButton_clicked()
             }
         }
         ui->labelPositions->setText(QString::number(converter.getItemsQty()));
-        ui->pushButtonShowInvoice->setText("Инвойс");
         showTab(invResult);
         analyzed = true;
         //удаление не нужных столбцов // ПРОВЕРИТЬ ФАЙЛ C:\Users\User\Desktop\test\F22ST11GX035CIPL_UPD.xlsx,_Spec14
@@ -403,75 +351,7 @@ void qrDialog::on_pushButton_clicked()
 // ПРАВАЯ ТАБЛИЦА
 void qrDialog::on_pushButtonOpenQR_clicked()
 {
-    converter.qrXls.clear();
-    converter.qrSheetNames.clear();
-
-    qrNewFileClear();
-
-    QString qrPathTemp = QFileDialog::getOpenFileName(this, "Выберите файл QR", lastPath.absolutePath(), "*.xls *.xlsx");
-    if(qrPathTemp.isEmpty())
-    {
-        ui->labelPathQR->setText("Выберите файл!");
-    }
-    else if(fileIsUsed(qrPathTemp))
-    {
-        QMessageBox::information(this, "!", "Данные из этого файла уже добавлены!");
-    }
-    else
-    {
-        if(ui->listWidgetUsedFiles->count() > 0)
-        {
-            ui->usedFilesListWidget->show();
-        }
-        lastPath.setPath(QFileInfo(qrPathTemp).absolutePath());
-        config->set("lastPath", lastPath.absolutePath());
-
-        QDate date = QDate::currentDate();
-        QTime time = QTime::currentTime();
-        QString ext; // расширение файла
-        bool copySucces = false;
-
-        if(!QDir("temp").exists()) QDir().mkdir("temp"); // Создание папки temp
-
-        // определение разрешения
-        if(qrPathTemp.right(4) == "xlsx" || qrPathTemp.right(4) == "XLSX")
-        {
-            ext = ".xlsx";
-        }
-        else
-        {
-            ext = ".xls";
-        }
-
-        qrFileName = "temp/qr" + date.toString("ddMMyy") + time.toString("hhmm") + ext; // Имя копии файла
-
-        copySucces = QFile::copy(qrPathTemp, qrFileName);
-
-        if(!copySucces) QMessageBox::information(this, "Открытие файла", "Что-то пошло не так!");
-
-        if(ext == ".xlsx")
-        {
-            std::string path = qrFileName.toStdString();
-            converter.readXlsX(path, converter.qrXls, converter.qrSheetNames);
-        }
-        else
-        {
-            std::wstring path = qrFileName.toStdWString();
-            converter.readXls(path, converter.qrXls, converter.qrSheetNames);
-        }
-
-        ui->labelPathQR->setText(QFileInfo(qrPathTemp).fileName());
-
-        QFile::remove(qrFileName);
-
-        // !!! ТАБЛИЦА !!!
-        currentTabQr = 0;
-        converter.qrSheetSettings.resize(converter.qrXls.size());
-        selectedQrCols.resize(converter.qrXls.size());
-
-        showQr = true;
-        showTabQr(converter.qrXls[currentTabQr]);
-    }
+    openQr();
 }
 
 void qrDialog::on_pushButtonTabUpQR_clicked()
@@ -481,7 +361,6 @@ void qrDialog::on_pushButtonTabUpQR_clicked()
         currentTabQr++;
         showQr = true;
         showTabQr(converter.qrXls[currentTabQr]);
-        ui->pushButtonShowQR->setText("Показать выбранные");
 
         ui->listWidget->clear();
         if(selectedQrCols[currentTabQr].size() > 0)
@@ -506,7 +385,6 @@ void qrDialog::on_pushButtonTabDownQR_clicked()
         currentTabQr--;
         showQr = true;
         showTabQr(converter.qrXls[currentTabQr]);
-        ui->pushButtonShowQR->setText("Показать выбранные");
 
         ui->listWidget->clear();
         if(!selectedQrCols[currentTabQr].empty())
@@ -525,6 +403,11 @@ void qrDialog::on_pushButtonTabDownQR_clicked()
 
 void qrDialog::showTabQr(const QVector<QVector<QString> > &inTab)
 {
+    if(!ui->widgetQr->isVisible())
+    {
+        ui->widgetInv->hide();
+        ui->widgetQr->show();
+    }
     QString labelTabString = QString::number(currentTabQr + 1);
     QString labelTabsString = QString::number(converter.qrXls.size());
 
@@ -659,7 +542,6 @@ void qrDialog::on_pushButtonAddToQrResult_clicked()
             {
                 showQr = false;
                 showTabQr(converter.qrResult);
-                ui->pushButtonShowQR->setText("Файл");
             }
 
             addedQrTabs.push_back(currentTabQr);
@@ -667,25 +549,6 @@ void qrDialog::on_pushButtonAddToQrResult_clicked()
             ui->labelQrQty->setText(QString::number(converter.qrResult.size()));
             showTabQr(converter.qrResult);
             ui->listWidgetUsedFiles->addItem(ui->labelPathQR->text());
-        }
-    }
-}
-
-void qrDialog::on_pushButtonShowQR_clicked()
-{
-    if(converter.qrXls.size() > 0 && converter.qrResult.size() > 0)
-    {
-        if(showQr)
-        {
-            showQr = false;
-            showTabQr(converter.qrResult);
-            ui->pushButtonShowQR->setText("Файл");
-        }
-        else
-        {
-            showQr = true;
-            showTabQr(converter.qrXls[currentTabQr]);
-            ui->pushButtonShowQR->setText("Коды");
         }
     }
 }
@@ -1150,5 +1013,180 @@ void qrDialog::on_pushButtonSaveNotUsedCodes_clicked()
             QMessageBox::critical(this, "!", "Не удалось сохранить файл!");
         }
     }
+}
+
+void qrDialog::openInv()
+{
+    converter.clearInvoiceData(); // Надо ли делать выборку из нескольких инвойсов
+
+    QString invPathTemp = QFileDialog::getOpenFileName(this, "Выберите файл инвойса", lastPath.absolutePath(), "*.xls *.xlsx");
+    if(invPathTemp.isEmpty())
+    {
+        ui->labelPath->setText("Выберите файл!");
+    }
+    else
+    {
+        lastPath.setPath(QFileInfo(invPathTemp).absolutePath());
+        config->set("lastPath", lastPath.absolutePath());
+
+        QDate date = QDate::currentDate();
+        QTime time = QTime::currentTime();
+        QString ext; // расширение файла
+        bool copySucces = false;
+
+        if(!QDir("temp").exists()) QDir().mkdir("temp"); // Создание папки temp
+
+        // определение разрешения
+        if(invPathTemp.right(4) == "xlsx" || invPathTemp.right(4) == "XLSX")
+        {
+            ext = ".xlsx";
+        }
+        else
+        {
+            ext = ".xls";
+        }
+
+        invoiceFileName = "temp/inv" + date.toString("ddMMyy") + time.toString("hhmm") + ext; // Имя копии файла
+
+        copySucces = QFile::copy(invPathTemp, invoiceFileName);
+
+        if(!copySucces) QMessageBox::information(this, "Открытие файла", "Что-то пошло не так!");
+
+        if(ext == ".xlsx")
+        {
+            std::string path = invoiceFileName.toStdString();
+            converter.readXlsX(path, converter.invoiceXls, converter.invoiceSheetNames);
+        }
+        else
+        {
+            std::wstring path = invoiceFileName.toStdWString();
+            converter.readXls(path, converter.invoiceXls, converter.invoiceSheetNames);
+        }
+
+        ui->labelPath->setText(QFileInfo(invPathTemp).fileName());
+
+        QFile::remove(invoiceFileName);
+
+        // !!! ТАБЛИЦА !!!
+        currentTab = 0;
+        converter.invoiceSheetSettings.resize(converter.invoiceXls.size());
+
+        showTab(converter.invoiceXls[currentTab]);
+        ui->labelTabName1->setText(converter.invoiceSheetNames[currentTab]);
+    }
+}
+
+void qrDialog::openQr()
+{
+    converter.qrXls.clear();
+    converter.qrSheetNames.clear();
+
+    qrNewFileClear();
+
+    QString qrPathTemp = QFileDialog::getOpenFileName(this, "Выберите файл QR", lastPath.absolutePath(), "*.xls *.xlsx");
+    if(qrPathTemp.isEmpty())
+    {
+        ui->labelPathQR->setText("Выберите файл!");
+    }
+    else if(fileIsUsed(qrPathTemp))
+    {
+        QMessageBox::information(this, "!", "Данные из этого файла уже добавлены!");
+    }
+    else
+    {
+        if(ui->listWidgetUsedFiles->count() > 0)
+        {
+            ui->usedFilesListWidget->show();
+        }
+        lastPath.setPath(QFileInfo(qrPathTemp).absolutePath());
+        config->set("lastPath", lastPath.absolutePath());
+
+        QDate date = QDate::currentDate();
+        QTime time = QTime::currentTime();
+        QString ext; // расширение файла
+        bool copySucces = false;
+
+        if(!QDir("temp").exists()) QDir().mkdir("temp"); // Создание папки temp
+
+        // определение разрешения
+        if(qrPathTemp.right(4) == "xlsx" || qrPathTemp.right(4) == "XLSX")
+        {
+            ext = ".xlsx";
+        }
+        else
+        {
+            ext = ".xls";
+        }
+
+        qrFileName = "temp/qr" + date.toString("ddMMyy") + time.toString("hhmm") + ext; // Имя копии файла
+
+        copySucces = QFile::copy(qrPathTemp, qrFileName);
+
+        if(!copySucces) QMessageBox::information(this, "Открытие файла", "Что-то пошло не так!");
+
+        if(ext == ".xlsx")
+        {
+            std::string path = qrFileName.toStdString();
+            converter.readXlsX(path, converter.qrXls, converter.qrSheetNames);
+        }
+        else
+        {
+            std::wstring path = qrFileName.toStdWString();
+            converter.readXls(path, converter.qrXls, converter.qrSheetNames);
+        }
+
+        ui->labelPathQR->setText(QFileInfo(qrPathTemp).fileName());
+
+        QFile::remove(qrFileName);
+
+        // !!! ТАБЛИЦА !!!
+        currentTabQr = 0;
+        converter.qrSheetSettings.resize(converter.qrXls.size());
+        selectedQrCols.resize(converter.qrXls.size());
+
+        showQr = true;
+        showTabQr(converter.qrXls[currentTabQr]);
+    }
+}
+
+void qrDialog::on_pushButtonOpenInv2_clicked()
+{
+    ui->widgetQr->hide();
+    ui->widgetInv->show();
+
+    if(converter.invoiceXls.isEmpty())
+    {
+        openInv();
+    }
+    showTab(converter.invoiceXls[currentTab]);
+}
+
+void qrDialog::on_pushButtonOpenQr2_clicked()
+{
+    ui->widgetInv->hide();
+    ui->widgetQr->show();
+    if(converter.qrXls.isEmpty())
+    {
+        openQr();
+    }
+    showTabQr(converter.qrXls[currentTabQr]);
+}
+
+void qrDialog::on_pushButtonExtras_clicked()
+{
+    if(ui->pushButtonExtras->isChecked())
+    {
+        ui->widgetExtras->show();
+    }
+    else
+    {
+        ui->widgetExtras->hide();
+    }
+}
+
+void qrDialog::on_pushButtonMainMenu_clicked()
+{
+    emit showMainMenu();
+    this->hide();
 }
 

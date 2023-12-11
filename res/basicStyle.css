@@ -1,0 +1,328 @@
+*
+{
+    background-color: #f6f8fb;
+    padding: 0;
+    margin: 0;
+}
+
+/* Кнопки */
+QPushButton
+{
+    border: none;
+    border-radius: 10px;
+    background-color: #76db74;
+    color: #ffffff;
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+QPushButton:hover
+{
+    background-color: qlineargradient(spread:pad, x1:1, y1:0, x2:1, y2:1, stop:0 rgba(118, 219, 116, 255), stop:0.1 rgba(156, 243, 154, 255), stop:0.1 rgba(156, 243, 154, 255), stop:1 rgba(118, 219, 116, 255));
+
+    font-weight: bolder;
+}
+
+QPushButton:pressed
+{
+    background-color: qlineargradient(spread:pad, x1:1, y1:0, x2:1, y2:1, stop:0 rgba(118, 219, 116, 255), stop:0.113636 rgba(156, 243, 154, 255), stop:0.35 rgba(118, 219, 116, 255), stop:0.65 rgba(118, 219, 116, 255), stop:0.9 rgba(156, 243, 154, 255), stop:1 rgba(118, 219, 116, 255));
+
+    color: #423965;
+}
+
+QPushButton:disabled
+{
+    background-color: #9cf39a;
+}
+
+#pushButtonTabUpQR, #pushButtonTabUp, #pushButtonTabDownQR, #pushButtonTabDown
+{
+/*    background-color: #f6f8fb;*/
+    border: 1px solid #F3F3F3;
+    padding: 0;
+}
+
+#pushButtonTabUpQR, #pushButtonTabUp
+{
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+#pushButtonTabDownQR, #pushButtonTabDown
+{
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+#pushButtonShowInvoice, #pushButtonMergeFiles, #pushButtonAddToInv, #pushButtonArticulesQr, #pushButtonShowResult, #pushButtonShowNotUsedCodes, #pushButtonNew, #pushButtonMainMenu
+{
+    background-color: #423965;
+}
+
+#pushButtonShowInvoice:hover, #pushButtonAddToInv:hover, #pushButtonArticulesQr:hover, #pushButtonShowResult:hover, #pushButtonShowNotUsedCodes:hover, #pushButtonNew:hover, #pushButtonMainMenu:hover
+{
+    background-color: qlineargradient(spread:pad, x1:1, y1:0, x2:1, y2:0.988636, stop:0 rgba(66, 57, 101, 255), stop:0.113636 rgba(119, 84, 248, 255), stop:0.897727 rgba(119, 84, 248, 255), stop:1 rgba(66, 57, 101, 255));
+}
+
+#pushButtonShowInvoice:pressed, #pushButtonAddToInv:pressed, #pushButtonArticulesQr:pressed, #pushButtonShowResult:pressed, #pushButtonShowNotUsedCodes:pressed, #pushButtonNew:pressed, #pushButtonMainMenu:pressed
+{
+    background-color: qlineargradient(spread:pad, x1:1, y1:0, x2:1, y2:0.988636, stop:0 rgba(66, 57, 101, 255), stop:0.113636 rgba(119, 84, 248, 255), stop:0.346591 rgba(66, 57, 101, 255), stop:0.670455 rgba(66, 57, 101, 255), stop:0.897727 rgba(119, 84, 248, 255), stop:1 rgba(66, 57, 101, 255));
+    color: #41a5ff;
+}
+
+#pushButtonDelete, #pushButtonClear, #pushButtonClearItems, #pushButtonArticulesQrReset, #pushButtonClearResult, #pushButtonResetQR, #pushButtonResetInvoice
+{
+    background-color: #ff5881;
+}
+
+#pushButtonDelete:hover, #pushButtonClear:hover, #pushButtonClearItems:hover, #pushButtonArticulesQrReset:hover, #pushButtonClearResult:hover, #pushButtonResetQR:hover, #pushButtonResetInvoice:hover
+{
+    background-color: qlineargradient(spread:pad, x1:1, y1:0, x2:1, y2:1, stop:0 rgba(255, 88, 129, 255), stop:0.1 rgba(255, 154, 179, 255), stop:0.9 rgba(255, 154, 179, 255), stop:1 rgba(255, 88, 129, 255));
+}
+
+#pushButtonDelete:pressed, #pushButtonClear:pressed, #pushButtonClearItems:pressed, #pushButtonArticulesQrReset:pressed, #pushButtonClearResult:pressed, #pushButtonResetQR:pressed, #pushButtonResetInvoice:pressed
+{
+    background-color: qlineargradient(spread:pad, x1:1, y1:0, x2:1, y2:1, stop:0 rgba(255, 88, 129, 255), stop:0.1 rgba(255, 154, 179, 255), stop:0.35 rgba(255, 88, 129, 255), stop:0.65 rgba(255, 88, 129, 255), stop:0.897727 rgba(255, 154, 179, 255), stop:1 rgba(255, 88, 129, 255));
+    color: red;
+}
+
+#pushButtonClear
+{
+    margin-left: 2px;
+}
+
+#pushButtonDelete
+{
+    margin-right: 2px;
+}
+
+#pushButtonExtras
+{
+    background-color: #60669b;
+    border-radius: 8px;
+    margin: 0;
+}
+
+#pushButtonExtras:checked
+{
+    border-radius: 0px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+#pushButton
+{
+    margin-left: 5px;
+    margin-right: 5px;
+}
+/* Кнопки */
+/* Лейблы */
+#labelTabName1, #labelPath, #labelTabName2, #labelPathQR
+{
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+#widgetQtySelect, #labelQtyName
+{
+    background-color: #60669b;
+    color: #ffffff;
+    margin-left: 10px;
+    border-radius: 12px;
+}
+/* Лейблы */
+
+/* Виджеты */
+#widgetInvInfo, #widgetQrInfo, #widgetResultInfo, #lonelyCodesWidget, #widgetResultButtons, #widgetExtras
+{
+    background-color: #60669b;
+    border-radius: 12px;
+    padding: 5px;
+    padding-top: 12px;
+}
+
+#widgetInvInfo QLabel, #widgetQrInfo QLabel, #widgetQrInfo #widgetQrInfoButtons, #widgetResultInfo QLabel, #lonelyCodesWidget QLabel, #widgetResultButtons QLabel, #widgetExtras, #widgetExtras QLabel, #widgetExtras #checkBoxFilesPath
+{
+    background-color: #60669b;
+    color: #ffffff;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+#widgetInvInfo #labelLastQty, #widgetInvInfo #labelFirstQty, #widgetInvInfo #labelColQty, #widgetQrInfo #labelColQR, #widgetResultInfo #labelPositions, #widgetResultInfo #labelItemsQty, #widgetResultInfo #labelQrQty, #widgetResultInfo #labelCodesFounded
+{
+    background-color: #6c719c;
+    color: #ffffff;
+    border-radius: 5px;
+    margin: 2px;
+    height: 30px;
+}
+
+#listWidget
+{
+    border-radius: 10px;
+    margin-left: 2px;
+    margin-right: 2px;
+    padding: 5px;
+}
+
+#widgetExtras
+{
+/*
+    padding-left: 10px;
+    margin: 2px;
+    margin-top: -5px;
+    border-radius: 12px;
+*/
+    padding: 0;
+    margin: 0;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+}
+
+#widgetExtras #checkBoxFilesPath
+{
+    margin-left: 10px;
+    height: 15px;
+}
+
+#widgetExtras #checkBoxFilesPath::indicator
+{
+    background-color: #ffffff;
+    width: 11px;
+    height: 11px;
+    border: 2px solid #ffffff;
+    border-radius: 7px;
+}
+
+
+#widgetExtras #checkBoxFilesPath::indicator:checked
+{
+/*    border: 2px solid #ffffff;*/
+/*    border-radius: 7px;*/
+    background-color: #41a5ff;
+}
+
+#widgetExtras_2
+{
+    background-color: #60669b;
+    border-radius: 12px;
+    padding: 5px;
+}
+
+#widgetExtras QLineEdit
+{
+    margin-right: 10px;
+    border-radius: 10px;
+}
+
+/* Всплывающие окна */
+QMessageBox
+{
+    background-color: #F6F8FB;
+}
+
+QMessageBox QPushButton
+{
+    width: 100px;
+    height: 28px;
+    background-color: #76db74;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+QMessageBox QLabel
+{
+    font-size: 20px;
+}
+QListWidget
+{
+    border-radius: 10px;
+    background-color: #ffffff;
+}
+
+QListWidget QScrollBar
+{
+    background-color: #60669B;
+}
+
+ QListView::item:selected
+{
+    background-color: #7754f8;
+}
+
+QTableWidget
+{
+    border: 2px solid #60669B;
+    padding: 8px;
+    border-radius: 10px;
+    background-color: #ffffff;
+    alternate-background-color: #f6f8fb;
+}
+
+QTableWidget::item:selected
+{
+    background-color: #7754f8;
+}
+
+QTableWidget QScrollBar
+{
+    background-color: #60669B;
+/*    width: 10px;*/
+}
+
+QTableWidget QScrollBar::up-arrow
+{
+    border-radius: 2px;
+}
+
+
+QScrollBar/*::handle:vertical*/
+{
+    background-color: #60669B;
+    min-height: 25px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+  width: 15px;
+}
+
+QScrollBar::sub-line:vertical {
+    border: 1px solid grey;
+    background-color: rgb(241, 241, 241);
+    height: 20px;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+}
+
+QHeaderView
+{
+ Background:transparent;
+}
+
+QHeaderView::section
+{
+    Color: #FFFFFF;
+
+    Background:#60669B;
+    Border: 1px solid #60669B;
+    text-align: center; /*  // Alignment of each title (seemingly unusable). It is recommended to use tableWidget->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft | Qt::AlignVCenter)*/
+
+    Min-height: 20px; /* // height of the title area*/
+    max-height:20px;
+    min-width: 30px;
+    text-align: center;
+    Margin-left:0px; /* // The margin of each title area*/
+    Padding-left: 0px; /* padding for each title area*/
+}
+
+QListView QHeaderView::section
+{
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}

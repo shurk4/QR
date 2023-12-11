@@ -4,5 +4,7 @@
         <file>res/log30x30_black.png</file>
         <file>res/log30x30_white.png</file>
         <file>res/txtStyle.css</file>
+        <file>res/basicStyle.css</file>
+        <file>res/dialogStyle.css</file>
     </qresource>
 </RCC>

@@ -96,15 +96,11 @@ private slots:
 
     void on_pushButtonResetInvoice_clicked();
 
-    void on_pushButtonShowInvoice_clicked();
-
     void on_pushButton_clicked();
 
     void on_pushButtonAddColsQR_clicked();
 
     void on_pushButtonAddToQrResult_clicked();
-
-    void on_pushButtonShowQR_clicked();
 
     void on_pushButtonResetQR_clicked();
 
@@ -142,6 +138,14 @@ private slots:
 
     void on_pushButtonSaveNotUsedCodes_clicked();
 
+    void on_pushButtonOpenInv2_clicked();
+
+    void on_pushButtonOpenQr2_clicked();
+
+    void on_pushButtonExtras_clicked();
+
+    void on_pushButtonMainMenu_clicked();
+
 private:
     Ui::qrDialog *ui;
 
@@ -162,8 +166,15 @@ private:
     int qrCodeLenght = 31;
     int tableFontSize;
 
+    void setStyle();
+    void openInv();
+    void openQr();
+
+
 signals: // отправка данных
     void toTextFiles(std::vector<std::vector<std::string>>);
+    void log(QString);
+    void showMainMenu();
 
 public slots: // Приём данных
     void fromTextFiles(QVector<QVector<QString>> data);

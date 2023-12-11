@@ -49,7 +49,7 @@ void txtFiles::setStyle()
         QString qssStr = styleF.readAll();
         this->setStyleSheet(qssStr);
         styleF.close();
-        qDebug("Стили установлены");
+        qDebug("txtFiles - Стили установлены");
     }
     else qDebug("Не удалось открыть файл стилей");
 
@@ -63,6 +63,7 @@ txtFiles::~txtFiles()
     writeReg();
     config->write();
     toLog("Работа завершена.");
+    qDebug() << "txtFiles - destructor";
     delete config;
     delete helpWindow;
     delete ui;
@@ -895,7 +896,9 @@ void txtFiles::markItemsTable()
 
 void txtFiles::createInvMenu()
 {
-    invMenu = new QMenu();
+    invMenu = new QMenu(this);
+    invMenu->setAttribute(Qt::WA_TranslucentBackground);;
+
     invMenu->addAction(ui->actionItemQtyFirstCell);
     invMenu->addAction(ui->actionItemQtyLastCell);
     invMenu->addAction(ui->actionInvQtyRange);
@@ -907,7 +910,8 @@ void txtFiles::createInvMenu()
 
 void txtFiles::createQrMenu()
 {
-    qrMenu = new QMenu();
+    qrMenu = new QMenu(this);
+    qrMenu->setAttribute(Qt::WA_TranslucentBackground);
     qrMenu->addAction(ui->actionQrItemCol);
     qrMenu->addAction(ui->actionQrQrCol);
     qrMenu->addSeparator();
@@ -1045,7 +1049,7 @@ void txtFiles::qrQrCol()
         // Взять данные из выбранной ячейки
 
         converter.qrSheetSettings[currentTabQr].qrCol = col;
-        ui->labelQrCol->setText(QString::fromStdString(Extras::IntToSymbol(col)));
+        ui->pushButtonQrCol->setText("Колонка QR - " + QString::fromStdString(Extras::IntToSymbol(col)));
         toLog("Выбрана колонка QR кодов: " + QString::number(col));
     }
     else
@@ -1064,7 +1068,7 @@ void txtFiles::qrItemCol()
         // Взять данные из выбранной ячейки
 
         converter.qrSheetSettings[currentTabQr].itemCol = col;
-        ui->labelQrItemCol->setText(QString::fromStdString(Extras::IntToSymbol(col)));
+        ui->pushButtonQrItemCol->setText("Колонка item - " + QString::fromStdString(Extras::IntToSymbol(col)));
         toLog("Выбрана колонка итемов для сопоставления QR кодов: " + QString::number(col));
     }
     else
@@ -1144,3 +1148,10 @@ void txtFiles::on_actionQrAnalize_triggered()
 {
     qrAnalize();
 }
+
+void txtFiles::on_pushButtonMainMenu_clicked()
+{
+    emit showMainMenu();
+    this->hide();
+}
+

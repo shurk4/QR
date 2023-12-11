@@ -59,3 +59,8 @@
 {
     border-radius: 10px;
 }
+
+#widgetHeat
+{
+    background-image:url("://res/heat.png")
+}

@@ -8,16 +8,9 @@ Dialog::Dialog(Type type, QWidget *parent) :
     ui->setupUi(this);
     this->setAttribute(Qt::WA_DeleteOnClose);
 
-    setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+    this->setWindowFlags(Qt::FramelessWindowHint); // Убрать рамку
 
-    switch (type) {
-    case MERGE_ITEMS:
-
-
-        break;
-    default:
-        break;
-    }
+    setStyle();
 }
 
 Dialog::Dialog(Type type, QList<QListWidgetItem *> &selectedItems) : Dialog(type)
@@ -40,6 +33,22 @@ Dialog::~Dialog()
     delete ui;
 }
 
+void Dialog::setStyle()
+{
+    qDebug("setStyle");
+    QFile styleF;
+    styleF.setFileName("://res/dialogStyle.css");
+
+    if(styleF.open(QFile::ReadOnly))
+    {
+        QString qssStr = styleF.readAll();
+        this->setStyleSheet(qssStr);
+        styleF.close();
+        qDebug("txtFiles - Стили установлены");
+    }
+    else qDebug("Не удалось открыть файл стилей");
+}
+
 void Dialog::on_pushButtonCancel_clicked()
 {
     this->close();
@@ -54,4 +63,12 @@ void Dialog::on_pushButtonOk_clicked()
     }
     emit sendResultString(ui->lineEditMergeItems->text());
     this->close();
+}
+
+void Dialog::paintEvent(QPaintEvent *event)
+{
+    QStyleOption opt;
+    opt.initFrom(this);
+    QPainter p(this);
+    style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }

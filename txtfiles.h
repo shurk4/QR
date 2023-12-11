@@ -96,6 +96,8 @@ private slots:
 
     void on_actionQrAnalize_triggered();
 
+    void on_pushButtonMainMenu_clicked();
+
 public slots:
     void hideFilesWidgets();
     // Результат диалогового окна объединения итемов
@@ -153,6 +155,7 @@ private:
 
 signals:
     void log(QString);
+    void showMainMenu();
 
     // QWidget interface
 protected:

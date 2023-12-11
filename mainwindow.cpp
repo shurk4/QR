@@ -30,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    qDebug("MainWindow - destructor");
     delete ui;
 }
 
@@ -78,35 +79,43 @@ void MainWindow::deleteOldLogs()
 void MainWindow::on_pushButtonStartBasic_clicked()
 {
     hide();
-    qrDialog* qrDiag = new qrDialog;
+    qrDiag = new qrDialog;
+    connect(qrDiag, &qrDialog::log, this, &MainWindow::logs);
+    connect(qrDiag, &qrDialog::showMainMenu, this, &MainWindow::showMainMenu);
     qrDiag->exec();
 }
 
 void MainWindow::on_pushButtonStartTxt_clicked()
 {
     hide();
-    txtFiles* textFiles = new txtFiles;
+    textFiles = new txtFiles;
     connect(textFiles, &txtFiles::log, this, &MainWindow::logs);
+    connect(textFiles, &txtFiles::showMainMenu, this, &MainWindow::showMainMenu);
     textFiles->exec();
 }
 
 void MainWindow::on_pushButtonCont_clicked()
 {
     hide();
-    containers* ctnWindow = new containers;
+    ctnWindow = new containers;
     ctnWindow->exec();
 }
 
 void MainWindow::on_pushButtonUpdate_clicked()
 {
-    QString updater = "./updater/updater.exe"; // Путь к программе
-        QProcess::startDetached(updater);
+    const QString updater = "./updater/updater.exe"; // Путь к программе
+    QProcess::startDetached(updater);
     this->close();
 }
 
 void MainWindow::logs(QString _log)
 {
     log(_log);
+}
+
+void MainWindow::showMainMenu()
+{
+    this->show();
 }
 
 void MainWindow::on_pushButtonExit_clicked()

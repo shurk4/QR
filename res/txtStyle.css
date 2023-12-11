@@ -9,14 +9,11 @@
 QPushButton
 {
     border: none;
-/*
-    border-left: 2px solid #F3F3F3;
-    border-right: 2px solid #F3F3F3;
-*/
     border-radius: 10px;
     background-color: #76db74;
     color: #ffffff;
-/*    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(216, 216, 231, 255), stop:0.1 rgba(249, 251, 252, 255), stop:0.1 rgba(249, 251, 252, 255), stop:1 rgba(216, 216, 231, 255));*/
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
 QPushButton:hover
@@ -48,17 +45,17 @@ QPushButton:disabled
 
 }
 
-#pushButtonShow, #pushButtonMergeFiles
+#pushButtonShow, #pushButtonMergeFiles, #pushButtonMainMenu
 {
     background-color: #423965;
 }
 
-#pushButtonShow:hover, #pushButtonMergeFiles:hover
+#pushButtonShow:hover, #pushButtonMergeFiles:hover, #pushButtonMainMenu:hover
 {
     background-color: qlineargradient(spread:pad, x1:1, y1:0, x2:1, y2:0.988636, stop:0 rgba(66, 57, 101, 255), stop:0.113636 rgba(119, 84, 248, 255), stop:0.897727 rgba(119, 84, 248, 255), stop:1 rgba(66, 57, 101, 255));
 }
 
-#pushButtonShow:pressed, #pushButtonMergeFiles:pressed
+#pushButtonShow:pressed, #pushButtonMergeFiles:pressed, #pushButtonMainMenu:pressed
 {
     background-color: qlineargradient(spread:pad, x1:1, y1:0, x2:1, y2:0.988636, stop:0 rgba(66, 57, 101, 255), stop:0.113636 rgba(119, 84, 248, 255), stop:0.346591 rgba(66, 57, 101, 255), stop:0.670455 rgba(66, 57, 101, 255), stop:0.897727 rgba(119, 84, 248, 255), stop:1 rgba(66, 57, 101, 255));
     color: #41a5ff;
@@ -123,11 +120,13 @@ QPushButton:disabled
     border-bottom-right-radius: 0px;
 }
 
+/*
 QListWidget
 {
     border-radius: 10px;
     background-color: #ffffff;
 }
+*/
 
 QListWidget QScrollBar
 {
@@ -139,7 +138,7 @@ QListWidget QScrollBar
     background-color: #7754f8;
 }
 
-QTableWidget
+QTableWidget, QListWidget
 {
     border: 2px solid #60669B;
     padding: 8px;
@@ -214,7 +213,6 @@ QListView QHeaderView::section
     background-color: #60669b;
     border-radius: 10px;
     padding: 2px;
-    align-content: center;
 }
 
 #labelFilesNumName, #labelCodesInDocName, #labelCtnsNumName, #labelItemsNumName, #labelOverallItemsName, #labelResult, #labelResultItemsName, #labelResultCodesName
@@ -231,4 +229,56 @@ QListView QHeaderView::section
     color: #ffffff;
     border-radius: 5px;
     margin: 2px;
+}
+
+
+/* Всплывающие окна */
+QMessageBox
+{
+    background-color: #F6F8FB;
+}
+
+QMessageBox QPushButton
+{
+    width: 100px;
+    height: 28px;
+    background-color: #76db74;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+QMessageBox QLabel
+{
+    font-size: 20px;
+}
+
+QMenu
+{
+    padding: 5px;
+    border: 2px solid #a1a5c8;
+    align-content: center;
+    text-align: center;
+}
+
+QMenu::item
+{
+    border: 1px solid #a1a5c8;
+    background-color: #60669B;
+    color: white;
+    height: 28px;
+    text-align: right;
+    width: 140px;
+    border-radius: 10px;
+    font-size: 15px;
+    margin-left: 3px;
+    margin-right: 3px;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    padding-left: 20px;
+    font-weight: bold;
+}
+
+QMenu::item:selected
+{
+    background-color: #6c719c;
 }

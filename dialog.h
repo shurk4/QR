@@ -4,6 +4,8 @@
 #include <QDialog>
 #include <QListWidget>
 #include <QMessageBox>
+#include <QPainter>
+#include <QFile>
 
 enum Type
 {
@@ -28,6 +30,7 @@ public:
 
 private:
     Ui::Dialog *ui;
+    void setStyle();
 
 signals:
     void sendResultString(QString);
@@ -35,6 +38,10 @@ signals:
 private slots:
     void on_pushButtonCancel_clicked();
     void on_pushButtonOk_clicked();
+
+    // QWidget interface
+protected:
+    void paintEvent(QPaintEvent *event);
 };
 
 #endif // DIALOG_H

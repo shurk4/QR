@@ -50,10 +50,15 @@ private:
 
     QString logFileName;
 
+    qrDialog* qrDiag = nullptr;
+    txtFiles* textFiles = nullptr;
+    containers* ctnWindow = nullptr;
+
     void setStyle();
 
 public slots:
     void logs(QString _log);
+    void showMainMenu();
 };
 
 #endif // MAINWINDOW_H

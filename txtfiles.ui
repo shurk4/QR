@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1121</width>
-    <height>594</height>
+    <width>1152</width>
+    <height>492</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -441,7 +441,7 @@
            <widget class="QPushButton" name="pushButtonFirstCell">
             <property name="minimumSize">
              <size>
-              <width>130</width>
+              <width>170</width>
               <height>30</height>
              </size>
             </property>
@@ -469,7 +469,7 @@
            <widget class="QPushButton" name="pushButtonLastCell">
             <property name="minimumSize">
              <size>
-              <width>130</width>
+              <width>170</width>
               <height>30</height>
              </size>
             </property>
@@ -497,7 +497,7 @@
            <widget class="QPushButton" name="pushButtonItemCol">
             <property name="minimumSize">
              <size>
-              <width>130</width>
+              <width>170</width>
               <height>30</height>
              </size>
             </property>
@@ -525,7 +525,7 @@
            <widget class="QPushButton" name="pushButtonAnalyze">
             <property name="minimumSize">
              <size>
-              <width>130</width>
+              <width>170</width>
               <height>30</height>
              </size>
             </property>
@@ -594,7 +594,7 @@
            <widget class="QPushButton" name="pushButtonQrCol">
             <property name="minimumSize">
              <size>
-              <width>130</width>
+              <width>170</width>
               <height>30</height>
              </size>
             </property>
@@ -619,32 +619,10 @@
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="labelQrCol">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>30</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>-</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QPushButton" name="pushButtonQrItemCol">
             <property name="minimumSize">
              <size>
-              <width>130</width>
+              <width>170</width>
               <height>30</height>
              </size>
             </property>
@@ -669,32 +647,10 @@
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="labelQrItemCol">
-            <property name="minimumSize">
-             <size>
-              <width>30</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>16777207</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>-</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QPushButton" name="pushButtonQrAnalyze">
             <property name="minimumSize">
              <size>
-              <width>130</width>
+              <width>170</width>
               <height>30</height>
              </size>
             </property>
@@ -761,24 +717,27 @@
         <number>5</number>
        </property>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_12">
+        <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <property name="spacing">
+          <number>5</number>
+         </property>
          <item>
           <widget class="QPushButton" name="pushButtonInv">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
            <property name="minimumSize">
             <size>
-             <width>130</width>
+             <width>0</width>
              <height>28</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>130</width>
+             <width>16777215</width>
              <height>28</height>
             </size>
            </property>
@@ -802,20 +761,20 @@
          <item>
           <widget class="QPushButton" name="pushButtonOpenQr">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
            <property name="minimumSize">
             <size>
-             <width>130</width>
+             <width>0</width>
              <height>28</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>130</width>
+             <width>16777215</width>
              <height>28</height>
             </size>
            </property>
@@ -836,20 +795,20 @@
          <item>
           <widget class="QPushButton" name="pushButtonTxt">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
            <property name="minimumSize">
             <size>
-             <width>130</width>
+             <width>0</width>
              <height>28</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>130</width>
+             <width>16777215</width>
              <height>28</height>
             </size>
            </property>
@@ -914,6 +873,12 @@
           </item>
           <item>
            <widget class="QLabel" name="labelFilesNum">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="minimumSize">
              <size>
               <width>28</width>
@@ -967,6 +932,12 @@
           </item>
           <item>
            <widget class="QLabel" name="labelCodesInDoc">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="minimumSize">
              <size>
               <width>28</width>
@@ -1110,6 +1081,12 @@
        </item>
        <item>
         <widget class="QListWidget" name="listWidget">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Список позиций/итемов. При выделении позиции отображается относящийся к ней список кодов. При двойном клике коды из этой позиции добавляются в результат.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
@@ -1695,20 +1672,32 @@
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_9">
-         <property name="spacing">
-          <number>5</number>
-         </property>
-         <property name="leftMargin">
-          <number>5</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-        </layout>
-       </item>
-       <item>
         <layout class="QHBoxLayout" name="horizontalLayout_11">
+         <item>
+          <widget class="QPushButton" name="pushButtonMainMenu">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>28</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>28</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Главное меню</string>
+           </property>
+          </widget>
+         </item>
          <item>
           <widget class="QPushButton" name="pushButtonClearAll">
            <property name="minimumSize">

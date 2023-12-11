@@ -7,8 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>404</width>
-    <height>263</height>
+    <height>128</height>
    </rect>
+  </property>
+  <property name="font">
+   <font>
+    <pointsize>10</pointsize>
+    <bold>true</bold>
+   </font>
   </property>
   <property name="windowTitle">
    <string>Объединение кодов</string>
