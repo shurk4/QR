@@ -12,14 +12,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // показать окно версии
     ui->labelVersion->setText("Текущая версия: " + versionCurrent.getVersion() + "\n Доступна версия: " + versionSource.getVersion());
-//    if(versionCurrent.getVersion() < versionSource.getVersion())
-//    {
-//        ui->labelVersion->setText("Текущая версия: " + versionCurrent.getVersion() + "\n Доступна версия: " + versionSource.getVersion());
-//    }
-//    else
-//    {
-//        ui->widgetUpdate->hide();
-//    }
+    if(versionCurrent.getVersion() < versionSource.getVersion())
+    {
+        ui->labelVersion->setText("Текущая версия: " + versionCurrent.getVersion() + "\n Доступна версия: " + versionSource.getVersion());
+    }
+    else
+    {
+        ui->widgetUpdate->hide();
+    }
 
     this->setWindowFlags(Qt::FramelessWindowHint); // Убрать рамку
     this->setAttribute(Qt::WA_TranslucentBackground);
